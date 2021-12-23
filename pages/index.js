@@ -6,6 +6,7 @@ import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
 import {Title, Subtitle} from '../components/typography'; 
 import {ROUTES} from '../constants/routes'; 
+import {SITE_URLS} from '../constants/site-urls'; 
 
 const {Search} = Input; 
 
@@ -60,7 +61,9 @@ function Login() {
   const handleLogin = async (email) => {
     try {
       setLoading(true)
-      const { error } = await supabase.auth.signIn({ email })
+      const { error } = await supabase.auth.signIn({ email }, {
+        redirectTo: process.env.NODE_ENV === 'production' ? SITE_URLS.PROD : SITE_URLS.DEV, 
+      })
       if (error) throw error
       setMessage('Check your email for the login link!'); 
     } catch (error) {

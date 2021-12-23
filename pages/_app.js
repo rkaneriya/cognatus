@@ -14,13 +14,16 @@ export default function MyApp(props) {
         router.push(ROUTES.ADMIN); 
       }
             
-      // Send session to /api/auth route to set the auth cookie.
-      fetch('/api/auth', {
-        method: 'POST',
-        headers: new Headers({ 'Content-Type': 'application/json' }),
-        credentials: 'same-origin',
-        body: JSON.stringify({ event, session }),
-      }).then((res) => res.json())
+      async function updateAuthCookie() { 
+        await fetch('/api/auth', {
+          method: 'POST',
+          headers: new Headers({ 'Content-Type': 'application/json' }),
+          credentials: 'same-origin',
+          body: JSON.stringify({ event, session }),
+        })  
+      }
+       
+      updateAuthCookie(); 
     }); 
 
     return () => { 
