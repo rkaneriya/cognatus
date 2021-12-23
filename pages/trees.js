@@ -1,10 +1,14 @@
+import {useEffect, useState} from 'react';
 import {useStyletron} from 'styletron-react'; 
-import {Button, Table, Tag, Space } from 'antd';
-import {ArrowLeftOutlined} from '@ant-design/icons'; 
+import {DateTime} from 'luxon'; 
+import {message, Button, Space, Table} from 'antd';
+import {ArrowLeftOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons'; 
 import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
 import {Title} from '../components/typography'; 
 import {ROUTES} from '../constants/routes'; 
+import Link from 'next/link'; 
+import EditableTable from '../components/editable-table'; 
 
 function Wrapper({children}) { 
   const [css] = useStyletron(); 
@@ -50,90 +54,110 @@ function NavBar() {
       <Button type="default" onClick={logout}>Logout</Button>
     </div>
   );
-}
-
-// TODO -- replace with real data fetch 
-const columns = [
-  {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name',
-    render: text => <a>{text}</a>,
-  },
-  {
-    title: 'Age',
-    dataIndex: 'age',
-    key: 'age',
-  },
-  {
-    title: 'Address',
-    dataIndex: 'address',
-    key: 'address',
-  },
-  {
-    title: 'Tags',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: tags => (
-      <>
-        {tags.map(tag => {
-          let color = tag.length > 5 ? 'geekblue' : 'green';
-          if (tag === 'loser') {
-            color = 'volcano';
-          }
-          return (
-            <Tag color={color} key={tag}>
-              {tag.toUpperCase()}
-            </Tag>
-          );
-        })}
-      </>
-    ),
-  },
-  {
-    title: 'Action',
-    key: 'action',
-    render: (text, record) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
-];
-
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    age: 32,
-    address: 'New York No. 1 Lake Park',
-    tags: ['nice', 'developer'],
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    age: 42,
-    address: 'London No. 1 Lake Park',
-    tags: ['loser'],
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    age: 32,
-    address: 'Sidney No. 1 Lake Park',
-    tags: ['cool', 'teacher'],
-  },
-];
-
+} 
 
 export default function Trees({user}) {
+  const [loading, setLoading] = useState(false); 
+  const [data, setData] = useState([]); 
+
+  const EDITABLE_COLUMNS = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      width: '25%',
+      editable: true, 
+      key: 'name',
+      render: (text, record) => <Link href={`/trees/${record.uuid}`}>{text}</Link>,
+    },
+    {
+      title: 'Description', 
+      dataIndex: 'description', 
+      width: '50%', 
+      editable: true, 
+      key: 'description', 
+    }, 
+    { 
+      title: 'Created At', 
+      dataIndex: 'created_at', 
+      width: '25%', 
+      editable: false, 
+      key: 'created_at', 
+      render: (text) => DateTime.fromISO(text).toFormat('ff'), 
+    },
+  ];
+
+  async function fetchTrees() {
+    setLoading(true); 
+    const { data: trees, error } = await supabase.from('tree').select('*')
+    if (error) {
+      message.error(error)
+    } else {
+      const transformed = trees.map((t) => ({
+        key: t.uuid, 
+        ...t, 
+      }))
+      setData(transformed); 
+    } 
+    setLoading(false); 
+  }
+
+  async function updateTree(tree) { 
+    setLoading(true); 
+    const editableFields = EDITABLE_COLUMNS
+      .filter(({editable}) => editable)
+      .map(({dataIndex}) => dataIndex); 
+    const editableFieldsSet = new Set(editableFields);  
+    const updatedFields = Object.keys(tree).reduce((acc, field) => { 
+      if (editableFieldsSet.has(field)) { 
+        return { 
+          ...acc,
+          [field]: tree[field], 
+        }; 
+      }
+      return acc; 
+    }, {}); 
+
+    const { error } = await supabase.from('tree').update(updatedFields).eq('uuid', tree.uuid); 
+    if (error) {
+      message.error(error)
+    } else { 
+      fetchTrees(); // reload table 
+    }
+    setLoading(false); 
+  }
+
+  async function deleteTree(uuid) { 
+    setLoading(true); 
+    const { error } = await supabase.from('tree').delete().eq('uuid', uuid);
+    if (error) {
+      message.error(error)
+    } else { 
+      fetchTrees(); // reload table 
+    }
+    setLoading(false); 
+  }
+
+  useEffect(() => {
+    fetchTrees()
+  }, [])
+ 
   return (
     <Wrapper>
       <NavBar />
       <Section>
         <Title>Your trees ({user.email})</Title>
-        <Table columns={columns} dataSource={data} style={{ width: '100%' }} />
+        <EditableTable
+          columns={EDITABLE_COLUMNS}
+          dataSource={data}
+          loading={loading}
+          pagination={{ 
+            defaultCurrent: 1, 
+            total: 50, 
+            simple: true,
+          }}
+          handleRowDelete={deleteTree}
+          handleRowSave={updateTree}
+        />
       </Section>
     </Wrapper>
   ); 

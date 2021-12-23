@@ -1,6 +1,6 @@
 import {useState} from 'react'; 
 import {useStyletron} from 'styletron-react'; 
-import {Alert, Button, Input} from 'antd'; 
+import {message, Button, Input} from 'antd'; 
 import {ArrowRightOutlined} from '@ant-design/icons'; 
 import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
@@ -55,7 +55,6 @@ function Content({children}) {
 
 function Login() {
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState(''); 
   const [css] = useStyletron(); 
 
   const handleLogin = async (email) => {
@@ -65,9 +64,9 @@ function Login() {
         redirectTo: process.env.NODE_ENV === 'production' ? SITE_URLS.PROD : SITE_URLS.DEV, 
       })
       if (error) throw error
-      setMessage('Check your email for the login link!'); 
+      message.success('Check your email for the login link!')
     } catch (error) {
-      setMessage(error.error_description || error.message)
+      message.error(error.error_description || error.message)
     } finally {
       setLoading(false)
     }
@@ -82,7 +81,6 @@ function Login() {
         enterButton="Sign in via magic link"
         onSearch={(email) => handleLogin(email)}
       />
-      {message && <Alert style={{ marginTop: '20px' }} message={message} type='warning' />} 
     </div>
   )
 }
