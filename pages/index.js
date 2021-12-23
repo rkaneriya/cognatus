@@ -1,16 +1,16 @@
 import {useState} from 'react'; 
 import {useStyletron} from 'styletron-react'; 
 import {message, Button, Input} from 'antd'; 
-import {ArrowRightOutlined} from '@ant-design/icons'; 
+import {ArrowRightOutlined, UserAddOutlined} from '@ant-design/icons'; 
 import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
-import {Title, Subtitle} from '../components/typography'; 
 import {ROUTES} from '../constants/routes'; 
 import {SITE_URLS} from '../constants/site-urls'; 
+import Link from 'next/link'; 
 
 const {Search} = Input; 
 
-function ContentWrapper({children}) { 
+function Wrapper({children}) { 
   const [css] = useStyletron(); 
   return (
     <div className={css({
@@ -21,6 +21,22 @@ function ContentWrapper({children}) {
       alignItems: 'center'
     })}>
       {children}
+    </div>
+  ); 
+}
+
+function Header({email}) {
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({
+      color: 'lightgray',
+      position: 'absolute', 
+      top: '10px', 
+      right: '20px', 
+      width: '100%', 
+      textAlign: 'right', 
+    })}>
+      Logged in as {email}
     </div>
   ); 
 }
@@ -86,23 +102,45 @@ function Login() {
 }
 
 export default function Home() {
+  const [css] = useStyletron(); 
   const router = useRouter(); 
   const user = supabase.auth.user(); 
-  const session = supabase.auth.session(); 
 
   return (
     <>
-      <ContentWrapper>
+      <Header email={user?.email} />
+      <Wrapper>
         <Content>
-          <Title>COGNATUS</Title>
-          <Subtitle>Stay connected to your family</Subtitle>
+          <div className={css({fontFamily: 'Vujahday Script', fontSize: '120px'})}>
+            Cognat
+            <span className={css({
+              color: 'red', 
+            })}>
+              us
+            </span>
+          </div>
+          <div className={css({fontStyle: 'italic', fontSize: '24px'})}>
+            Stay
+            {' '}
+            <Link href={ROUTES.ADMIN}>
+              <a>connected</a>
+            </Link> 
+            {' '}
+            to your family
+          </div>
           {
-            session 
-              ? <Button style={{ marginTop: '20px' }} type="primary" onClick={() => router.push(ROUTES.ADMIN)}>View your trees <ArrowRightOutlined /></Button>
+            user 
+              ? <Button 
+                  style={{ marginTop: '20px' }}
+                  type="primary" 
+                  onClick={() => router.push(ROUTES.ADMIN)}
+                >
+                  View your family trees <ArrowRightOutlined />
+                </Button>
               : <Login />
           }
         </Content>
-      </ContentWrapper>
+      </Wrapper>
       <Footer /> 
     </>
   ); 

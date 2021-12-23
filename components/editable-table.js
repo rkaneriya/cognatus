@@ -119,9 +119,9 @@ const EditableTable = ({
             >
               Save
             </Typography.Link>
-            <Popconfirm title="Are you sure?" okText="Yes" onConfirm={cancel}>
-              <a>Cancel</a>
-            </Popconfirm>
+            <Typography.Link onClick={cancel}>
+              Cancel
+            </Typography.Link>
           </span>
         ) : (
           <span>

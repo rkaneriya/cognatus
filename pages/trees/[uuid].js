@@ -1,6 +1,8 @@
 import {useStyletron} from 'styletron-react'; 
 import {useRouter} from 'next/router'
-import {Title} from '../../components/typography'; 
+import {Typography} from 'antd'; 
+
+const {Title} = Typography; 
 
 function Wrapper({children}) { 
   const [css] = useStyletron(); 
@@ -18,7 +20,7 @@ export default function Tree() {
   const {uuid} = router?.query; 
   return (
     <Wrapper>
-      <Title>{uuid}</Title>
+      <Title level={3}>{uuid}</Title>
     </Wrapper>
   ); 
 }
