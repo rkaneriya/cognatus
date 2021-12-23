@@ -1,4 +1,4 @@
-import {Button, Drawer, Form, Input, Typography} from 'antd';
+import {Button, Drawer, Form, Input} from 'antd';
 
 const layout = {
   labelCol: { span: 8 },
@@ -20,10 +20,10 @@ export default function NewTreeDrawer(props) {
       visible={visible}
     >
       <Form {...layout} name="nest-messages" onFinish={onFinish}>
-        <Form.Item name={['name']} label="Name" rules={[{ required: true }]}>
+        <Form.Item name={'name'} label="Name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name={['description']} label="Description" rules={[{ required: true }]}>
+        <Form.Item name={'description'} label="Description" rules={[{ required: true }]}>
           <Input.TextArea />
         </Form.Item>
         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

@@ -2,14 +2,13 @@ import {useCallback, useEffect, useState} from 'react';
 import {useStyletron} from 'styletron-react'; 
 import {DateTime} from 'luxon'; 
 import {message, Button, Typography} from 'antd';
-import {ArrowLeftOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons'; 
 import { v4 as uuidv4 } from 'uuid';
-import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
 import Link from 'next/link'; 
 import EditableTable from '../components/editable-table'; 
 import NewTreeDrawer from '../components/new-tree-drawer';
+import NavBar from '../components/nav-bar'; 
 
 const {Title} = Typography; 
 
@@ -39,27 +38,6 @@ function Section({children}) {
     </div>
   ); 
 }
-
-function NavBar() { 
-  const [css] = useStyletron(); 
-  const router = useRouter(); 
-
-  async function logout() {
-    const a = await supabase.auth.signOut(); 
-    router.push(ROUTES.HOME)
-  }
-
-  return (
-    <div className={css({
-      width: '100%', 
-      display: 'flex', 
-      justifyContent: 'space-between', 
-    })}>
-      <Button type="default" shape="circle" icon={<ArrowLeftOutlined />} size="large" onClick={() => router.push(ROUTES.HOME)} /> 
-      <Button type="default" onClick={logout}>Logout</Button>
-    </div>
-  );
-} 
 
 export default function Trees({user}) {
   const [css] = useStyletron(); 
@@ -108,7 +86,7 @@ export default function Trees({user}) {
       .range(start, end);
   
     if (error) {
-      message.error(error);
+      message.error(error?.message || 'Error');
     } else {
       const transformed = trees.map((t) => ({
         key: t.uuid, 
@@ -142,7 +120,7 @@ export default function Trees({user}) {
       .update(payload)
       .eq('uuid', tree.uuid); 
     if (error) {
-      message.error(error)
+      message.error(error?.message || 'Error')
     } else { 
       fetchTrees();
     }
@@ -156,7 +134,7 @@ export default function Trees({user}) {
       .delete()
       .eq('uuid', uuid);
     if (error) {
-      message.error(error)
+      message.error(error?.message || 'Error')
     } else { 
       fetchTrees(); 
     }
@@ -174,7 +152,7 @@ export default function Trees({user}) {
         uuid: uuidv4(), 
       }]); 
     if (error) {
-      message.error(error)
+      message.error(error?.message || 'Error')
     } else { 
       setIsDrawerOpen(false); 
       fetchTrees(); 
@@ -188,7 +166,7 @@ export default function Trees({user}) {
  
   return (
     <Wrapper>
-      <NavBar />
+      <NavBar backRoute={ROUTES.HOME}/>
       <Section>
         <div className={css({
           display: 'flex', 
