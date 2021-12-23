@@ -108,7 +108,7 @@ export default function Home() {
 
   return (
     <>
-      <Header email={user?.email} />
+      {user && <Header email={user?.email} />}
       <Wrapper>
         <Content>
           <div className={css({fontFamily: 'Vujahday Script', fontSize: '120px'})}>
