@@ -2,7 +2,7 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Card, Avatar, Tooltip, Row, Col, Divider } from 'antd';
 import { useStyletron, styled, autoComposeDeep } from 'styletron-react';
-import { EditOutlined, ApartmentOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { EditOutlined, ApartmentOutlined, DeleteOutlined } from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
 
 const DATE_FORMAT = 'll'; 
@@ -22,7 +22,7 @@ function Name({children}) {
   ); 
 }
 
-function Date({label, children}) {
+function SectionRow({label, children}) {
   const [css] = useStyletron(); 
   return (
     <div className={css({
@@ -40,12 +40,25 @@ function Date({label, children}) {
         {label}
       </div>
       <div className={css({
+        display: 'flex', 
+        flexDirection: 'column',
         width: '60%', 
       })}>
         {children}
       </div>
     </div>
   )
+}
+
+function SectionRowValue({children}) { 
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({
+      overflowWrap: 'break-word',
+    })}>
+      {children}
+    </div>
+  ); 
 }
 
 function HeaderSection({children}) { 
@@ -71,18 +84,18 @@ function BodySection({children}) {
   ); 
 }
 
-function AddRelationButton() { 
+function DeleteButton({onClick}) { 
   return (
-    <Tooltip placement='bottom' title='Add a new relation'>  
-      <UsergroupAddOutlined key="add_relation" />
+    <Tooltip placement='bottom' title='Delete this member'>  
+      <DeleteOutlined key="delete" onClick={onClick} />
     </Tooltip>
   ); 
 }
 
-function EditButton(props) { 
+function EditButton({onClick}) { 
   return (
     <Tooltip placement='bottom' title='Edit'>  
-      <EditOutlined key="edit" {...props} />
+      <EditOutlined key="edit" onClick={onClick} />
     </Tooltip>
   ); 
 }
@@ -95,7 +108,7 @@ function QueryRelationButton({name}) {
   ); 
 }
 
-export default function MemberCard({onEdit, member, loading}) {
+export default function MemberCard({onEdit, onDelete, member, loading}) {
   const [css] = useStyletron(); 
   const {
     first_name,
@@ -122,13 +135,13 @@ export default function MemberCard({onEdit, member, loading}) {
     <Card
       style={{ 
         float: 'left', 
-        width: '300px',
+        width: '350px',
         boxShadow: '-1px 2px 5px 2px rgba(0, 0, 0, 0.2)',
       }}
       actions={[
-        <AddRelationButton key='add_relation' />,
-        <EditButton key='edit' onClick={onEdit} />,
         <QueryRelationButton key='query_relation' name={first_name} />,
+        <EditButton key='edit' onClick={onEdit} />,
+        <DeleteButton key='add_relation' onClick={onDelete} />,
       ]}
       loading={loading}
     > 
@@ -136,7 +149,7 @@ export default function MemberCard({onEdit, member, loading}) {
         <HeaderSection>
           <Avatar src={is_male ? '/male.jpg' : '/female.jpg'} size={50} />
           <div className={css({
-            marginLeft: '10px', 
+            marginLeft: '20px', 
             display: 'flex', 
             flexDirection: 'column', 
             alignItems: 'flex-start', 
@@ -148,22 +161,22 @@ export default function MemberCard({onEdit, member, loading}) {
         </HeaderSection>
         <Divider /> 
         <BodySection>
-          {birth_date && <Date label='BORN'>{formattedBirthDate} ({pluralize(age, 'year')})</Date>}
-          {death_date && <Date label='DIED'>{formattedDeathDate} ({pluralize(deadYears, 'year')})</Date>}
+          {birth_date && <SectionRow label='BORN'>{formattedBirthDate} ({pluralize(age, 'year')})</SectionRow>}
+          {death_date && <SectionRow label='DIED'>{formattedDeathDate} ({pluralize(deadYears, 'year')})</SectionRow>}
         </BodySection>
         <Divider /> 
         <BodySection>
-          <Date label='SIBLINGS'>
-            <div className={css({display: 'flex', flexDirection: 'column'})}>
-              <div className={css({overflowWrap: 'break-word'})}>
-                Shriyalonglonglongnamelonglongname Kaneriya
-              </div>
-              <span>Martha Kaneriya</span>
-              <span>Jane Kaneriya</span>
-            </div>
-          </Date>
-          <Date label='PARENTS'>Shriya Kaneiya</Date>
-          <Date label='SPOUSES'>Shriya Kaneiya</Date>
+          <SectionRow label='SIBLINGS'>
+              <SectionRowValue>Albert Einstein</SectionRowValue>
+              <SectionRowValue>Richard Nixon</SectionRowValue>
+              <SectionRowValue>Janereallyreallylongname Eyrereallyreallylongname</SectionRowValue>
+          </SectionRow>
+          <SectionRow label='PARENTS'>
+            <SectionRowValue>Harry Kaneriya</SectionRowValue>
+          </SectionRow>
+          <SectionRow label='SPOUSES'>
+            <SectionRowValue>Saoirse Ronan</SectionRowValue>
+          </SectionRow>
         </BodySection>
         <Divider /> 
         <BodySection>

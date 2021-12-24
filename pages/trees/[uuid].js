@@ -37,7 +37,7 @@ export default function Tree() {
     fetchMembers,
     createMember,
     updateMember,
-    // deleteMember,
+    deleteMember,
 
     // data 
     data,
@@ -65,6 +65,10 @@ export default function Tree() {
     setIsDrawerOpen(true);   
     setSelectedMemberUuid(member.uuid); 
   }
+  
+  function handleDelete(member) { 
+    deleteMember(member.uuid); 
+  }
 
   return (
     <Wrapper>
@@ -80,9 +84,10 @@ export default function Tree() {
       { 
         data[0] && (
           <MemberCard 
-          member={data[0]} 
-          loading={loading} 
-          onEdit={() => handleEdit(data[0])} 
+            member={data[0]} 
+            loading={loading} 
+            onEdit={() => handleEdit(data[0])} 
+            onDelete={() => handleDelete(data[0])}
           />
         )
       }
