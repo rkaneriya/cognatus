@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from 'react';
-import {useStyletron} from 'styletron-react'; 
-import {DateTime} from 'luxon'; 
+import {useStyletron} from 'styletron-react';  
+import moment from 'moment'; 
 import {message, Button, Typography} from 'antd';
 import { v4 as uuidv4 } from 'uuid';
 import {supabase} from '../utils/supabase'
@@ -69,7 +69,7 @@ export default function Trees({user}) {
       width: '25%', 
       editable: false, 
       key: 'created_at', 
-      render: (text) => DateTime.fromISO(text).toFormat('ff'), 
+      render: (text) => moment(text).format('ll LT'), 
     },
   ];
 
@@ -121,10 +121,10 @@ export default function Trees({user}) {
       .eq('uuid', tree.uuid); 
     if (error) {
       message.error(error?.message || 'Error')
+      setLoading(false); 
     } else { 
       fetchTrees();
     }
-    setLoading(false); 
   }
 
   async function deleteTree(uuid) { 
@@ -135,10 +135,10 @@ export default function Trees({user}) {
       .eq('uuid', uuid);
     if (error) {
       message.error(error?.message || 'Error')
+      setLoading(false); 
     } else { 
       fetchTrees(); 
     }
-    setLoading(false); 
   }
 
   async function createTree(tree) { 
@@ -153,17 +153,17 @@ export default function Trees({user}) {
       }]); 
     if (error) {
       message.error(error?.message || 'Error')
+      setLoading(false);   
     } else { 
       setIsDrawerOpen(false); 
       fetchTrees(); 
     }
-    setLoading(false);   
   }
 
   useEffect(() => {
     fetchTrees()
   }, [fetchTrees])
- 
+
   return (
     <Wrapper>
       <NavBar backRoute={ROUTES.HOME}/>

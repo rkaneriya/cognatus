@@ -1,63 +1,57 @@
-import { useEffect } from 'react';
+import moment from 'moment'; 
+import { useEffect, useState } from 'react';
 import { Card, Avatar, Typography } from 'antd';
 import { useStyletron, styled } from 'styletron-react';
-import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
+import { EditOutlined, ApartmentOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 
 const DATE_FORMAT = 'MMM D YYYY'; 
 
-const Header = styled('div', { 
-  display: 'flex',
-  alignItems: 'center', 
-}); 
-
-const Footer = styled('div', { 
-  display: 'flex',
-  alignItems: 'flex-start', 
-  flexDirection: 'column', 
-}); 
-
-const HeaderInfo = styled('div', { 
-  marginLeft: '10px', 
-  display: 'flex', 
-  flexDirection: 'column', 
-  alignItems: 'flex-start', 
-}); 
-
-const Name = styled('div', { 
-  fontWeight: '600', 
-  textTransform: 'uppercase',
-  fontSize: '16px',
-});
-
-const Nickname = styled('div', { 
-  fontStyle: 'italic', 
-}); 
-
-const Divider = styled('div', { 
-  border: '0.5px solid lightgray', 
-  margin: '10px 0px', 
-  width: '100%', 
-}); 
-
-const DateHeader = styled('div', { 
-  marginRight: '10px',
-  fontWeight: '600', 
-});
-
-const Date = styled(
-  ({className, header, children}) => (
-    <div className={className}>
-      <DateHeader>{header}</DateHeader>
+function Name({children}) { 
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({
+      fontWeight: '600', 
+      textTransform: 'uppercase',
+      fontSize: '16px',    
+    })}>
       {children}
     </div>
-  ), 
-  {
-    display: 'flex', 
-    flexDirection: 'row', 
-  }
-); 
+  ); 
+}
 
-export default function MemberCard(props) {
+function Divider({children}) { 
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({
+      border: '0.5px solid lightgray', 
+      margin: '20px 0px', 
+      width: '100%', 
+    })}>
+      {children}
+    </div>
+  );
+}
+
+function Date({label, children}) {
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({
+      display: 'flex', 
+      flexDirection: 'row',   
+    })}>
+      <div className={css({
+        marginRight: '10px', 
+        fontWeight: '600', 
+      })}>
+        {label}
+      </div>
+      {children}
+    </div>
+  )
+}
+
+export default function MemberCard({onEdit, member, loading}) {
+  const [css] = useStyletron(); 
   const {
     first_name,
     last_name,
@@ -68,33 +62,41 @@ export default function MemberCard(props) {
     birth_date,
     death_date, 
     notes, 
-    loading, 
-  } = props; 
+  } = member; 
 
   const displayName = `${first_name} ${last_name}` + (maiden_name ? `(${maiden_name})` : ''); 
   return (
     <Card
-      style={{ float: 'right', width: '25%' }}
+      style={{ float: 'right', width: '300px' }}
       actions={[  
-        <SettingOutlined key="setting" />,
-        <EditOutlined key="edit" />,
-        <EllipsisOutlined key="ellipsis" />,
+        <UsergroupAddOutlined key="add_relation" />,
+        <EditOutlined key="edit" onClick={onEdit} />,
+        <ApartmentOutlined key="search_relation" />,
       ]}
       loading={loading}
     > 
       <div>
-        <Header>
+        <div className={css({display: 'flex', alignItems: 'center'})}>
           <Avatar src={is_male ? '/male.jpg' : '/female.jpg'} size={50} />
-          <HeaderInfo>
+          <div className={css({
+            marginLeft: '10px', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'flex-start', 
+          })}>
             <Name>{first_name} {last_name}</Name>
-            {nickname && <Nickname>&quot;{nickname}&quot;</Nickname>}
-          </HeaderInfo>
-        </Header>
+            {nickname && <div className={css({fontStyle: 'italic'})}>&quot;{nickname}&quot;</div>}
+          </div>
+        </div>
         <>
           <Divider /> 
-          <Footer>
-            {birth_date && <Date header='BORN'>{birth_date}</Date>}
-          </Footer>
+          <div className={css({
+            display: 'flex',
+            alignItems: 'flex-start', 
+            flexDirection: 'column',             
+          })}>
+            {birth_date && <Date label='BORN'>{moment(birth_date).format('ll')}</Date>}
+          </div>
         </>
       </div>
     </Card>

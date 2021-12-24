@@ -1,7 +1,7 @@
 import {useState} from 'react'; 
 import {useStyletron} from 'styletron-react'; 
-import {message, Button, Input} from 'antd'; 
-import {ArrowRightOutlined, UserAddOutlined} from '@ant-design/icons'; 
+import {message, Button, Input, Tooltip} from 'antd'; 
+import {ArrowRightOutlined, UserAddOutlined, QuestionCircleOutlined} from '@ant-design/icons'; 
 import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
@@ -89,7 +89,7 @@ function Login() {
   }
 
   return (
-    <div className={css({marginTop: '20px'})}>
+    <div className={css({marginTop: '20px', display: 'flex', alignItems: 'center'})}>
       <Search
         allowClear
         placeholder="Enter e-mail address"
@@ -97,14 +97,16 @@ function Login() {
         enterButton="Sign in via magic link"
         onSearch={(email) => handleLogin(email)}
       />
+      <Tooltip placement="right" title={'All you need in order to use Cognatus is an e-mail address. No need for a password!'}>
+        <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
+      </Tooltip>
     </div>
   )
 }
 
-export default function Home() {
+export default function Home({user}) {
   const [css] = useStyletron(); 
   const router = useRouter(); 
-  const user = supabase.auth.user(); 
 
   return (
     <>
@@ -144,4 +146,12 @@ export default function Home() {
       <Footer /> 
     </>
   ); 
+}
+
+export async function getServerSideProps({ req }) {
+  const { user } = await supabase.auth.api.getUserByCookie(req)
+  if (!user) {
+    return { props: {} }; 
+  }
+  return { props: { user } }
 }
