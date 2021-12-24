@@ -1,5 +1,5 @@
 import {Button, DatePicker, Drawer, Form, Input, Radio} from 'antd';
-import { useEffect } from 'react/cjs/react.development';
+import { useEffect } from 'react';
 
 const layout = {
   labelCol: { span: 8 },
