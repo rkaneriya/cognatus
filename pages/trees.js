@@ -30,7 +30,6 @@ function Section({children}) {
       display: 'flex',
       flexDirection: 'column', 
       alignItems: 'flex-start', 
-      marginTop: '48px', 
     })}>
       {children}
     </div>

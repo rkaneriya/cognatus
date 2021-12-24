@@ -19,8 +19,15 @@ export default function NavBar({backRoute}) {
       width: '100%', 
       display: 'flex', 
       justifyContent: 'space-between', 
+      marginBottom: '48px', 
     })}>
-      <Button type="default" shape="circle" icon={<ArrowLeftOutlined />} size="large" onClick={() => router.push(backRoute)} /> 
+      <Button 
+        type="default" 
+        shape="circle" 
+        icon={<ArrowLeftOutlined />} 
+        size="large" 
+        onClick={() => router.push(backRoute)} 
+      /> 
       <Button type="default" onClick={logout}>Logout</Button>
     </div>
   );

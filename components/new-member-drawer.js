@@ -12,6 +12,7 @@ export default function NewMemberDrawer(props) {
     initialValues, 
     onClose, 
     onFinish,
+    submitLabel,  
     title, 
     visible, 
   } = props; 
@@ -71,7 +72,7 @@ export default function NewMemberDrawer(props) {
         </Form.Item>
         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
           <Button type="primary" htmlType="submit">
-            Add
+            {submitLabel}
           </Button>
         </Form.Item>
       </Form>

@@ -68,23 +68,22 @@ export default function Tree() {
   return (
     <Wrapper>
       <NavBar backRoute={ROUTES.ADMIN} /> 
-      Total: {totalCount}
-      <Button onClick={handleAdd}>Add new person</Button>
       <NewMemberDrawer
         initialValues={selectedMemberUuid ? initialEditorValues : DEFAULT_FORM_VALUES}
         onClose={() => setIsDrawerOpen(false)}
         onFinish={selectedMemberUuid ? updateMember : createMember}
+        submitLabel={selectedMemberUuid ? 'Update' : 'Add'}
         title={selectedMemberUuid ? "Edit member" : "Add member"}
         visible={isDrawerOpen}
        /> 
-      {data.map((member, i) => (
+      { data[0] && 
         <MemberCard 
-          key={i} 
-          member={member} 
-          loading={loading} 
-          onEdit={() => handleEdit(member)} 
+        member={data[0]} 
+        loading={loading} 
+        onEdit={() => handleEdit(data[0])} 
         />
-      ))}
+      }
+      <Button onClick={handleAdd}>Add new person</Button>
     </Wrapper>
   ); 
 }
