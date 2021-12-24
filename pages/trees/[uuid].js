@@ -58,7 +58,8 @@ export default function Tree() {
     const initialValues = { 
       ...member, 
       is_male: String(member.is_male), 
-      birth_date: moment(member.birth_date), 
+      birth_date: member.birth_date ? moment(member.birth_date) : undefined, // birth_date should always be defined
+      death_date: member.death_date ? moment(member.death_date) : undefined, 
     }
     setInitialEditorValues(initialValues);  
     setIsDrawerOpen(true);   
@@ -76,12 +77,14 @@ export default function Tree() {
         title={selectedMemberUuid ? "Edit member" : "Add member"}
         visible={isDrawerOpen}
        /> 
-      { data[0] && 
-        <MemberCard 
-        member={data[0]} 
-        loading={loading} 
-        onEdit={() => handleEdit(data[0])} 
-        />
+      { 
+        data[0] && (
+          <MemberCard 
+          member={data[0]} 
+          loading={loading} 
+          onEdit={() => handleEdit(data[0])} 
+          />
+        )
       }
       <Button onClick={handleAdd}>Add new person</Button>
     </Wrapper>

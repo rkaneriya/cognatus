@@ -1,8 +1,9 @@
 import moment from 'moment'; 
 import { useEffect, useState } from 'react';
-import { Card, Avatar, Typography } from 'antd';
+import { Card, Avatar, Tooltip, Row, Col, Divider } from 'antd';
 import { useStyletron, styled, autoComposeDeep } from 'styletron-react';
 import { EditOutlined, ApartmentOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import {pluralize} from '../utils/pluralize'; 
 
 const DATE_FORMAT = 'll'; 
 
@@ -21,47 +22,76 @@ function Name({children}) {
   ); 
 }
 
-function Divider({children}) { 
-  const [css] = useStyletron(); 
-  return (
-    <div className={css({
-      border: '0.5px solid lightgray', 
-      margin: '20px 0px', 
-      width: '100%', 
-    })}>
-      {children}
-    </div>
-  );
-}
-
 function Date({label, children}) {
   const [css] = useStyletron(); 
   return (
     <div className={css({
       display: 'flex', 
       flexDirection: 'row',   
+      width: '100%', 
     })}>
       <div className={css({
-        marginRight: '10px', 
-        fontWeight: '600', 
+        display: 'flex', 
+        justifyContent: 'flex-end', 
+        marginRight: '20px', 
+        fontWeight: '600',
+        width: '75px',  
       })}>
         {label}
       </div>
-      {children}
+      <div className={css({
+        width: '60%', 
+      })}>
+        {children}
+      </div>
     </div>
   )
 }
 
-function DateWrapper({children}) { 
+function HeaderSection({children}) { 
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({display: 'flex', alignItems: 'center'})}>
+      {children}
+    </div>
+  ); 
+}
+
+function BodySection({children}) { 
   const [css] = useStyletron(); 
   return (
     <div className={css({
       display: 'flex',
       alignItems: 'flex-start', 
-      flexDirection: 'column',             
+      flexDirection: 'column',    
+      width: '100%',          
     })}>
       {children}
     </div>
+  ); 
+}
+
+function AddRelationButton() { 
+  return (
+    <Tooltip placement='bottom' title='Add a new relation'>  
+      <UsergroupAddOutlined key="add_relation" />
+    </Tooltip>
+  ); 
+}
+
+function EditButton(props) { 
+  return (
+    <Tooltip placement='bottom' title='Edit'>  
+      <EditOutlined key="edit" {...props} />
+    </Tooltip>
+  ); 
+}
+
+function QueryRelationButton({name}) { 
+  return (
+    <Tooltip placement='bottom' title={`Discover how others are related to ${name}`}>  
+      <ApartmentOutlined key="query_relation" />
+    </Tooltip>
   ); 
 }
 
@@ -95,15 +125,15 @@ export default function MemberCard({onEdit, member, loading}) {
         width: '300px',
         boxShadow: '-1px 2px 5px 2px rgba(0, 0, 0, 0.2)',
       }}
-      actions={[  
-        <UsergroupAddOutlined key="add_relation" />,
-        <EditOutlined key="edit" onClick={onEdit} />,
-        <ApartmentOutlined key="search_relation" />,
+      actions={[
+        <AddRelationButton key='add_relation' />,
+        <EditButton key='edit' onClick={onEdit} />,
+        <QueryRelationButton key='query_relation' name={first_name} />,
       ]}
       loading={loading}
     > 
       <div>
-        <div className={css({display: 'flex', alignItems: 'center'})}>
+        <HeaderSection>
           <Avatar src={is_male ? '/male.jpg' : '/female.jpg'} size={50} />
           <div className={css({
             marginLeft: '10px', 
@@ -112,15 +142,39 @@ export default function MemberCard({onEdit, member, loading}) {
             alignItems: 'flex-start', 
             width: '75%', 
           })}>
-            <Name>{first_name} {last_name}</Name>
+            <Name>{displayName}</Name>
             {nickname && <div className={css({fontStyle: 'italic'})}>&quot;{nickname}&quot;</div>}
           </div>
-        </div>
+        </HeaderSection>
         <Divider /> 
-        <DateWrapper>
-          {birth_date && <Date label='BORN'>{formattedBirthDate} ({age} years)</Date>}
-          {death_date && <Date lable='DIED'>{formattedDeathDate} ({deadYears} years) </Date>}
-        </DateWrapper>
+        <BodySection>
+          {birth_date && <Date label='BORN'>{formattedBirthDate} ({pluralize(age, 'year')})</Date>}
+          {death_date && <Date label='DIED'>{formattedDeathDate} ({pluralize(deadYears, 'year')})</Date>}
+        </BodySection>
+        <Divider /> 
+        <BodySection>
+          <Date label='SIBLINGS'>
+            <div className={css({display: 'flex', flexDirection: 'column'})}>
+              <div className={css({overflowWrap: 'break-word'})}>
+                Shriyalonglonglongnamelonglongname Kaneriya
+              </div>
+              <span>Martha Kaneriya</span>
+              <span>Jane Kaneriya</span>
+            </div>
+          </Date>
+          <Date label='PARENTS'>Shriya Kaneiya</Date>
+          <Date label='SPOUSES'>Shriya Kaneiya</Date>
+        </BodySection>
+        <Divider /> 
+        <BodySection>
+          <div className={css({
+            fontStyle: 'italic',
+            maxHeight: '100px', 
+            overflow: 'auto', 
+          })}>
+            {notes}
+          </div>
+        </BodySection>
       </div>
     </Card>
   )     
