@@ -1,18 +1,16 @@
-import {useCallback, useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useStyletron} from 'styletron-react';  
 import moment from 'moment'; 
-import {message, Button, Typography} from 'antd';
-import { v4 as uuidv4 } from 'uuid';
+import {Button, Typography} from 'antd';
 import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
 import Link from 'next/link'; 
 import EditableTable from '../components/editable-table'; 
 import NewTreeDrawer from '../components/new-tree-drawer';
 import NavBar from '../components/nav-bar'; 
+import useTreeAPI, {PAGE_SIZE} from '../api/tree';
 
 const {Title} = Typography; 
-
-const PAGE_SIZE = 5; 
 
 function Wrapper({children}) { 
   const [css] = useStyletron(); 
@@ -41,10 +39,6 @@ function Section({children}) {
 
 export default function Trees({user}) {
   const [css] = useStyletron(); 
-  const [loading, setLoading] = useState(false); 
-  const [data, setData] = useState([]); 
-  const [currentPage, setCurrentPage] = useState(1); 
-  const [totalCount, setTotalCount] = useState(0); 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
 
   const EDITABLE_COLUMNS = [
@@ -73,92 +67,19 @@ export default function Trees({user}) {
     },
   ];
 
-  const fetchTrees = useCallback(async () => { 
-    setLoading(true); 
+  const { 
+    // crud
+    fetchTrees,
+    createTree,
+    updateTree,
+    deleteTree,
 
-    const start = (currentPage - 1) * PAGE_SIZE; 
-    const end = start + PAGE_SIZE - 1;  
-
-    const { data: trees, count, error } = await supabase
-      .from("tree")
-      .select("*", { count: "exact" })
-      .order("created_at", { ascending: true })
-      .range(start, end);
-  
-    if (error) {
-      message.error(error?.message || 'Error');
-    } else {
-      const transformed = trees.map((t) => ({
-        key: t.uuid, 
-        ...t, 
-      }))
-      setData(transformed); 
-      setTotalCount(count); 
-    } 
-    setLoading(false);  
-  }, [currentPage])
-
-  async function updateTree(tree) { 
-    setLoading(true); 
-    const editableFields = EDITABLE_COLUMNS
-      .filter(({editable}) => editable)
-      .map(({dataIndex}) => dataIndex); 
-    const editableFieldsSet = new Set(editableFields);  
-
-    const payload = Object.keys(tree).reduce((acc, field) => { 
-      if (editableFieldsSet.has(field)) { 
-        return { 
-          ...acc,
-          [field]: tree[field], 
-        }; 
-      }
-      return acc; 
-    }, {}); 
-
-    const { error } = await supabase
-      .from('tree')
-      .update(payload)
-      .eq('uuid', tree.uuid); 
-    if (error) {
-      message.error(error?.message || 'Error')
-      setLoading(false); 
-    } else { 
-      fetchTrees();
-    }
-  }
-
-  async function deleteTree(uuid) { 
-    setLoading(true); 
-    const { error } = await supabase
-      .from('tree')
-      .delete()
-      .eq('uuid', uuid);
-    if (error) {
-      message.error(error?.message || 'Error')
-      setLoading(false); 
-    } else { 
-      fetchTrees(); 
-    }
-  }
-
-  async function createTree(tree) { 
-    const user = supabase.auth.user(); 
-    setLoading(true); 
-    const { error } = await supabase
-      .from('tree')
-      .insert([{
-        ...tree, 
-        creator_uuid: user.id,
-        uuid: uuidv4(), 
-      }]); 
-    if (error) {
-      message.error(error?.message || 'Error')
-      setLoading(false);   
-    } else { 
-      setIsDrawerOpen(false); 
-      fetchTrees(); 
-    }
-  }
+    // data 
+    data,
+    totalCount, 
+    loading,
+    setCurrentPage,
+  } = useTreeAPI(EDITABLE_COLUMNS); 
 
   useEffect(() => {
     fetchTrees()

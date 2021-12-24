@@ -27,6 +27,7 @@ export default function NewMemberDrawer(props) {
 
   function handleFinish(values) { 
     form.resetFields(); 
+    onClose(); 
     onFinish(values); 
   }
 

@@ -12,6 +12,11 @@ export default function NewTreeDrawer(props) {
     visible, 
   } = props; 
 
+  function handleFinish(tree) { 
+    onClose(); 
+    onFinish(tree); 
+  }
+
   return (
     <Drawer 
       title="Create new tree" 
@@ -19,7 +24,7 @@ export default function NewTreeDrawer(props) {
       onClose={onClose} 
       visible={visible}
     >
-      <Form {...layout} name="nest-messages" onFinish={onFinish}>
+      <Form {...layout} name="nest-messages" onFinish={handleFinish}>
         <Form.Item name='name' label="Name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
