@@ -5,33 +5,33 @@ import { useStyletron } from 'styletron-react';
 export default function(props) { 
   const [css] = useStyletron(); 
   const { 
-    people, 
+    members, 
     relations, 
-    selectedPersonId, 
-    sourcePersonId,
-    targetPersonId, 
+    selectedMemberUuid, 
+    sourceMemberUuid,
+    targetMemberUuid, 
     pathNodes,
     pathEdges,
-    setSelectedPersonId,
+    setSelectedMemberUuid,
   } = props; 
 
   const getNodeColor = (id) => { 
     if (
-      id === sourcePersonId || 
-      id === targetPersonId || 
+      id === sourceMemberUuid || 
+      id === targetMemberUuid || 
       pathNodes.includes(id)
     ) return 'red'; 
-    if (id === selectedPersonId) return 'yellow'; 
+    if (id === selectedMemberUuid) return 'yellow'; 
     return 'gray'; 
   }
 
-  const nodes = people.map(({uuid, first_name, is_male}) => ({ 
+  const nodes = members.map(({uuid, first_name, is_male}) => ({ 
     id: uuid,
     shape: 'circularImage',
     image: is_male
-      ? '/images/male.jpg' 
-      : '/images/female.jpg', 
-    color: getNodeColor(id), 
+      ? '/male.jpg' 
+      : '/female.jpg', 
+    color: getNodeColor(uuid), 
     borderWidth: 3,
     label: `${first_name} (${uuid})`, 
   }));
@@ -82,12 +82,15 @@ export default function(props) {
   };
 
   const events = {
-    select: function(event) {
+    selectNode: function(event) {
       const {nodes} = event;
-      const id = nodes[0] || null; 
-      setSelectedPersonId(id); 
+      const uuid = nodes[0] || null; 
+      setSelectedMemberUuid(uuid); 
     },
-  };
+    doubleClick: function(event) { 
+      console.log("DOUBLE CLICKED!"); 
+    },
+};
 
   return (
     <div className={css({height: '100%'})}>

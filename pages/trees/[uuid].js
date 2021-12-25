@@ -6,14 +6,19 @@ import NavBar from '../../components/nav-bar';
 import NewMemberDrawer from '../../components/new-member-drawer'; 
 import MemberCard from '../../components/member-card';
 import { ROUTES } from '../../constants/routes';
+import Graph from '../../components/graph'; 
 import moment from 'moment';
 import useMemberAPI from '../../api/member';
+import {v4 as uuidv4} from 'uuid'; 
+import create from '@ant-design/icons/lib/components/IconFont';
 
 function Wrapper({children}) { 
   const [css] = useStyletron(); 
   return (
     <div className={css({
       padding: '36px', 
+      height: '100vh',
+      backgroundColor: '#eee', 
     })}>
       {children}
     </div>
@@ -29,6 +34,7 @@ export default function Tree() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
   const [initialEditorValues, setInitialEditorValues] = useState({}); 
   const [selectedMemberUuid, setSelectedMemberUuid] = useState(null); // TODO: will change
+  const [isEditMode, setIsEditMode] = useState(false); 
 
   const treeUuid = router?.query?.uuid; 
   
@@ -45,12 +51,17 @@ export default function Tree() {
     loading,
   } = useMemberAPI(treeUuid, selectedMemberUuid); 
 
+  const membersByUuid = data.reduce((acc, val) => ({
+    ...acc, 
+    [val.uuid]: val, 
+  }), {}); 
+
   useEffect(() => {
-    fetchMembers()
+    fetchMembers(); 
   }, [fetchMembers])
 
   function handleAdd() { 
-    setSelectedMemberUuid(null); 
+    setIsEditMode(false); 
     setIsDrawerOpen(true); 
   }
 
@@ -63,35 +74,59 @@ export default function Tree() {
     }
     setInitialEditorValues(initialValues);  
     setIsDrawerOpen(true);   
-    setSelectedMemberUuid(member.uuid); 
+    setIsEditMode(true); 
   }
   
   function handleDelete(member) { 
     deleteMember(member.uuid); 
   }
 
+  const selectedMember = membersByUuid[selectedMemberUuid];
+  const selectedMemberName = selectedMember?.first_name;  
+
+  const isTreeEmpty = !loading && data.length === 0; 
+  const initialDrawerValues = selectedMemberUuid && isEditMode ? initialEditorValues : DEFAULT_FORM_VALUES; 
+  const onFinish = isTreeEmpty 
+  ? createMember 
+  : (isEditMode ? updateMember : createMember); 
+  const submitLabel = isEditMode ? 'Update' : 'Add'; 
+  const title = isTreeEmpty 
+  ? 'Add first person to tree'
+  : (isEditMode ? `Edit ${selectedMemberName}'s profile` : `Add new relative of ${selectedMemberName}`); 
+  
+  console.log("@@@", isTreeEmpty, isEditMode); 
   return (
     <Wrapper>
-      <NavBar backRoute={ROUTES.ADMIN} /> 
+      <NavBar backRoute={ROUTES.ADMIN} />
+      <Graph
+        key={uuidv4()}
+        members={data}
+        relations={[]}
+        selectedMemberUuid={selectedMemberUuid} 
+        sourceMemberUuid={null}
+        targetMemberUuid={null}
+        pathNodes={[]}
+        pathEdges={[]}
+        setSelectedMemberUuid={setSelectedMemberUuid}
+      />       
       <NewMemberDrawer
-        initialValues={selectedMemberUuid ? initialEditorValues : DEFAULT_FORM_VALUES}
+        initialValues={initialDrawerValues}
         onClose={() => setIsDrawerOpen(false)}
-        onFinish={selectedMemberUuid ? updateMember : createMember}
-        submitLabel={selectedMemberUuid ? 'Update' : 'Add'}
-        title={selectedMemberUuid ? "Edit member" : "Add member"}
-        visible={isDrawerOpen}
+        onFinish={onFinish}
+        submitLabel={submitLabel}
+        title={title}
+        visible={isDrawerOpen || isTreeEmpty}
        /> 
       { 
-        data[0] && (
+        selectedMember && (
           <MemberCard 
-            member={data[0]} 
+            member={selectedMember} 
             loading={loading} 
-            onEdit={() => handleEdit(data[0])} 
-            onDelete={() => handleDelete(data[0])}
+            onEdit={() => handleEdit(selectedMember)} 
+            onDelete={() => handleDelete(selectedMember)}
           />
         )
       }
-      <Button onClick={handleAdd}>Add new person</Button>
     </Wrapper>
   ); 
 }

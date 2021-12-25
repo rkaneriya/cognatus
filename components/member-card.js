@@ -1,6 +1,6 @@
 import moment from 'moment'; 
 import { useEffect, useState } from 'react';
-import { Card, Avatar, Tooltip, Row, Col, Divider } from 'antd';
+import { Card, Avatar, Tooltip, Popconfirm, Divider as AntDivider } from 'antd';
 import { useStyletron, styled, autoComposeDeep } from 'styletron-react';
 import { EditOutlined, ApartmentOutlined, DeleteOutlined } from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
@@ -19,6 +19,12 @@ function Name({children}) {
     })}>
       {children}
     </div>
+  ); 
+}
+
+function Divider() { 
+  return (
+    <AntDivider style={{ margin: '16px 0px' }} /> 
   ); 
 }
 
@@ -86,8 +92,10 @@ function BodySection({children}) {
 
 function DeleteButton({onClick}) { 
   return (
-    <Tooltip placement='bottom' title='Delete this member'>  
-      <DeleteOutlined key="delete" onClick={onClick} />
+    <Tooltip placement='bottom' title='Delete'>
+      <Popconfirm title="Are you sure?" okText="Yes" onConfirm={onClick}>
+        <DeleteOutlined key="delete" />
+      </Popconfirm>  
     </Tooltip>
   ); 
 }
@@ -134,8 +142,12 @@ export default function MemberCard({onEdit, onDelete, member, loading}) {
   return (
     <Card
       style={{ 
-        float: 'left', 
-        width: '350px',
+        zIndex: 1, 
+        position: 'absolute', 
+        top: 100, 
+        margin: '20px', 
+        backgroundColor: 'white',     
+        width: '300px',
         boxShadow: '-1px 2px 5px 2px rgba(0, 0, 0, 0.2)',
       }}
       actions={[
@@ -166,16 +178,16 @@ export default function MemberCard({onEdit, onDelete, member, loading}) {
         </BodySection>
         <Divider /> 
         <BodySection>
-          <SectionRow label='SIBLINGS'>
-              <SectionRowValue>Albert Einstein</SectionRowValue>
-              <SectionRowValue>Richard Nixon</SectionRowValue>
-              <SectionRowValue>Janereallyreallylongname Eyrereallyreallylongname</SectionRowValue>
-          </SectionRow>
           <SectionRow label='PARENTS'>
             <SectionRowValue>Harry Kaneriya</SectionRowValue>
           </SectionRow>
           <SectionRow label='SPOUSES'>
             <SectionRowValue>Saoirse Ronan</SectionRowValue>
+          </SectionRow>
+          <SectionRow label='SIBLINGS'>
+              <SectionRowValue>Albert Einstein</SectionRowValue>
+              <SectionRowValue>Richard Nixon</SectionRowValue>
+              <SectionRowValue>Ane Eas</SectionRowValue>
           </SectionRow>
         </BodySection>
         <Divider /> 
