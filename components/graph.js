@@ -2,7 +2,7 @@ import React from 'react';
 import Graph from 'react-graph-vis';
 import { useStyletron } from 'styletron-react';
 
-export default function(props) { 
+export default function TreeGraph(props) { 
   const [css] = useStyletron(); 
   const { 
     members, 
