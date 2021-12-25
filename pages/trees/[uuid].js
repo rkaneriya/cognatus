@@ -10,7 +10,6 @@ import Graph from '../../components/graph';
 import moment from 'moment';
 import useMemberAPI from '../../api/member';
 import {v4 as uuidv4} from 'uuid'; 
-import create from '@ant-design/icons/lib/components/IconFont';
 
 function Wrapper({children}) { 
   const [css] = useStyletron(); 
@@ -94,7 +93,6 @@ export default function Tree() {
   ? 'Add first person to tree'
   : (isEditMode ? `Edit ${selectedMemberName}'s profile` : `Add new relative of ${selectedMemberName}`); 
   
-  console.log("@@@", isTreeEmpty, isEditMode); 
   return (
     <Wrapper>
       <NavBar backRoute={ROUTES.ADMIN} />
@@ -127,6 +125,7 @@ export default function Tree() {
           />
         )
       }
+      <Button onClick={handleAdd}>Add person</Button>
     </Wrapper>
   ); 
 }

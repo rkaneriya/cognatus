@@ -124,7 +124,7 @@ export default function useTreeAPI(columns) {
     fetchTrees,
     createTree,
     updateTree,
-    deleteTree,
+    deleteTree, // TODO: also delete all members and relations associated w tree  
 
     // data 
     data,

@@ -5,7 +5,7 @@ import { supabase } from '../utils/supabase';
 
 const GENERIC_ERROR_MESSAGE = 'Error'; 
 
-export default function useMemberAPI(treeUuid, memberUuid) { 
+export default function useMemberAPI(treeUuid, selectedMemberUuid) { 
   const [data, setData] = useState([]); 
   const [loading, setLoading] = useState(false); 
   const [totalCount, setTotalCount] = useState(0); 
@@ -46,7 +46,7 @@ export default function useMemberAPI(treeUuid, memberUuid) {
       [MEMBER_TABLE_ROWS.TREE_UUID]: treeUuid, 
     }; 
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from(MEMBER_TABLE)
       .insert([payload]); 
 
@@ -55,6 +55,7 @@ export default function useMemberAPI(treeUuid, memberUuid) {
       setLoading(false);   
     } else { 
       fetchMembers();
+      return data; 
     }
   }
 
@@ -67,16 +68,17 @@ export default function useMemberAPI(treeUuid, memberUuid) {
       [MEMBER_TABLE_ROWS.TREE_UUID]: treeUuid, 
     }; 
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from(MEMBER_TABLE)
       .update(payload)
-      .eq(MEMBER_TABLE_ROWS.UUID, memberUuid); 
+      .eq(MEMBER_TABLE_ROWS.UUID, selectedMemberUuid); 
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE)
       setLoading(false);   
     } else { 
       fetchMembers();
+      return data; 
     }
   }
 
@@ -101,7 +103,7 @@ export default function useMemberAPI(treeUuid, memberUuid) {
     fetchMembers,
     createMember,
     updateMember,
-    deleteMember,
+    deleteMember, // TODO: also must delete all relations associated with the tree
 
     // data 
     data,

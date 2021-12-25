@@ -1,0 +1,4 @@
+export const RELATION_TYPES = { 
+  PARENT_CHILD: 'PARENT_CHILD', 
+  SPOUSE: 'SPOUSE',   
+}
