@@ -1,19 +1,29 @@
 import {Button, DatePicker, Drawer, Form, Input, Radio} from 'antd';
 import { useEffect } from 'react';
+import {RELATION_TYPES} from '../constants/relation-types'; 
 
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
 
+export const NEW_MEMBER_DRAWER_CONFIGS = { 
+  EDIT: 'edit', 
+  ADD_FIRST: 'add_first',
+  ADD_PARENT: 'add_parent', 
+  ADD_CHILD: 'add_child', 
+  ADD_SPOUSE: 'add_spouse', 
+}; 
+
+
 export default function NewMemberDrawer(props) {
   const [form] = Form.useForm(); 
   const { 
+    selectedMemberName, 
+    drawerConfig, 
     initialValues, 
     onClose, 
     onFinish,
-    submitLabel,  
-    title, 
     visible, 
   } = props; 
 
@@ -29,9 +39,30 @@ export default function NewMemberDrawer(props) {
   function handleFinish(values) { 
     form.resetFields(); 
     onClose(); 
-    onFinish(values); 
+
+    if (
+      drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT || 
+      drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD
+    ) {
+      onFinish(values, RELATION_TYPES.PARENT_CHILD); 
+    } else if (drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_SPOUSE) { 
+      onFinish(values, RELATION_TYPES.SPOUSE); 
+    } else { 
+      onFinish(values); 
+    }
   }
 
+  const CONFIG_TO_TITLE = { 
+    [NEW_MEMBER_DRAWER_CONFIGS.EDIT]: `Edit ${selectedMemberName}'s profile`,
+    [NEW_MEMBER_DRAWER_CONFIGS.ADD_FIRST]: 'Add first person to tree',
+    [NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT]: `Add new parent of ${selectedMemberName}`,
+    [NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD]: `Add new child of ${selectedMemberName}`,   
+    [NEW_MEMBER_DRAWER_CONFIGS.ADD_SPOUSE]: `Add new spouse of ${selectedMemberName}`,
+  }
+  
+  const submitLabel = drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.EDIT ? 'Edit' : 'Add'; 
+  const title = CONFIG_TO_TITLE[drawerConfig]; 
+  
   return (
     <Drawer 
       title={title}

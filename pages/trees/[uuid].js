@@ -3,13 +3,18 @@ import {useStyletron} from 'styletron-react';
 import {useRouter} from 'next/router'
 import {Button} from 'antd'; 
 import NavBar from '../../components/nav-bar'; 
-import NewMemberDrawer from '../../components/new-member-drawer'; 
+import NewMemberDrawer, {NEW_MEMBER_DRAWER_CONFIGS} from '../../components/new-member-drawer'; 
 import MemberCard from '../../components/member-card';
 import { ROUTES } from '../../constants/routes';
 import Graph from '../../components/graph'; 
 import moment from 'moment';
-import useMemberAPI from '../../api/member';
-import {v4 as uuidv4} from 'uuid'; 
+import {v4 as uuidv4} from 'uuid';
+import useMemberRelationAPI from '../../api/member-relation';
+
+const { 
+  ADD_FIRST,
+  EDIT,
+} = NEW_MEMBER_DRAWER_CONFIGS; 
 
 function Wrapper({children}) { 
   const [css] = useStyletron(); 
@@ -30,37 +35,51 @@ const DEFAULT_FORM_VALUES = {
 
 export default function Tree() {
   const router = useRouter(); 
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerConfig, setDrawerConfig] = useState(ADD_FIRST);  
   const [initialEditorValues, setInitialEditorValues] = useState({}); 
-  const [selectedMemberUuid, setSelectedMemberUuid] = useState(null); // TODO: will change
-  const [isEditMode, setIsEditMode] = useState(false); 
+  const [selectedMemberUuid, setSelectedMemberUuid] = useState(null);
 
   const treeUuid = router?.query?.uuid; 
-  
   const {
-    // crud  
-    fetchMembers,
+    fetchMembersAndRelations, 
+    createMemberAndRelation,
+    deleteMemberAndRelations,
+
     createMember,
     updateMember,
-    deleteMember,
 
-    // data 
-    data,
-    totalCount, 
+    members,
+    relations, 
     loading,
-  } = useMemberAPI(treeUuid, selectedMemberUuid); 
+  } = useMemberRelationAPI(treeUuid, selectedMemberUuid); 
 
-  const membersByUuid = data.reduce((acc, val) => ({
+  const membersByUuid = members.reduce((acc, val) => ({
     ...acc, 
     [val.uuid]: val, 
   }), {}); 
 
-  useEffect(() => {
-    fetchMembers(); 
-  }, [fetchMembers])
+  const relationsByMemberUuid = members.reduce((acc, val) => {
+    if (acc[val.from_member_uuid]) { 
+      acc[val.from_member_uuid].push(val); 
+    } else {
+      acc[val.from_member_uuid] = [val]; 
+    }
 
-  function handleAdd() { 
-    setIsEditMode(false); 
+    if (acc[val.to_member_uuid]) { 
+      acc[val.to_member_uuid].push(val); 
+    } else {
+      acc[val.to_member_uuid] = [val]; 
+    }
+    return acc;
+  }, {}); 
+
+  useEffect(() => {
+    fetchMembersAndRelations(); 
+  }, [fetchMembersAndRelations])
+
+  function handleAdd(config) {
+    setDrawerConfig(config);  
     setIsDrawerOpen(true); 
   }
 
@@ -72,34 +91,34 @@ export default function Tree() {
       death_date: member.death_date ? moment(member.death_date) : undefined, 
     }
     setInitialEditorValues(initialValues);  
-    setIsDrawerOpen(true);   
-    setIsEditMode(true); 
+    setDrawerConfig(EDIT);  
+    setIsDrawerOpen(true);  
   }
   
   function handleDelete(member) { 
-    deleteMember(member.uuid); 
+    deleteMemberAndRelations(member.uuid); 
   }
 
   const selectedMember = membersByUuid[selectedMemberUuid];
   const selectedMemberName = selectedMember?.first_name;  
 
-  const isTreeEmpty = !loading && data.length === 0; 
-  const initialDrawerValues = selectedMemberUuid && isEditMode ? initialEditorValues : DEFAULT_FORM_VALUES; 
-  const onFinish = isTreeEmpty 
-  ? createMember 
-  : (isEditMode ? updateMember : createMember); 
-  const submitLabel = isEditMode ? 'Update' : 'Add'; 
-  const title = isTreeEmpty 
-  ? 'Add first person to tree'
-  : (isEditMode ? `Edit ${selectedMemberName}'s profile` : `Add new relative of ${selectedMemberName}`); 
+  const isTreeEmpty = !loading && members.length === 0; 
+  const initialDrawerValues = selectedMemberUuid && drawerConfig === EDIT ? initialEditorValues : DEFAULT_FORM_VALUES; 
+
+  let handleDrawerFinish = createMemberAndRelation; 
+  if (drawerConfig === EDIT) { 
+    handleDrawerFinish = updateMember; 
+  } else if (drawerConfig === ADD_FIRST) { 
+    handleDrawerFinish = createMember; 
+  }
   
   return (
     <Wrapper>
       <NavBar backRoute={ROUTES.ADMIN} />
       <Graph
         key={uuidv4()}
-        members={data}
-        relations={[]}
+        members={members}
+        relations={relations}
         selectedMemberUuid={selectedMemberUuid} 
         sourceMemberUuid={null}
         targetMemberUuid={null}
@@ -108,18 +127,20 @@ export default function Tree() {
         setSelectedMemberUuid={setSelectedMemberUuid}
       />       
       <NewMemberDrawer
+        selectedMemberName={selectedMemberName}
+        drawerConfig={drawerConfig}
         initialValues={initialDrawerValues}
         onClose={() => setIsDrawerOpen(false)}
-        onFinish={onFinish}
-        submitLabel={submitLabel}
-        title={title}
+        onFinish={handleDrawerFinish}
         visible={isDrawerOpen || isTreeEmpty}
        /> 
       { 
         selectedMember && (
           <MemberCard 
             member={selectedMember} 
+            relations={relationsByMemberUuid[selectedMemberUuid]}
             loading={loading} 
+            onAdd={handleAdd}
             onEdit={() => handleEdit(selectedMember)} 
             onDelete={() => handleDelete(selectedMember)}
           />

@@ -36,9 +36,9 @@ export default function TreeGraph(props) {
     label: `${first_name} (${uuid})`, 
   }));
 
-  const edges = relations.map(({from, to, type}, i) => ({
-    from,
-    to,
+  const edges = relations.map(({from_member_uuid, to_member_uuid, type}, i) => ({
+    from: from_member_uuid,
+    to: to_member_uuid, 
     title: type, 
     color: { 
       color: pathEdges.includes(i) ? 'red' : 'gray', 
@@ -93,7 +93,10 @@ export default function TreeGraph(props) {
 };
 
   return (
-    <div className={css({height: '100%'})}>
+    <div className={css({
+      height: '100%', 
+      margin: '0 -36px',
+    })}>
       <Graph
         graph={graph}
         options={options}

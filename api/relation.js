@@ -68,7 +68,7 @@ export default function useRelationAPI(treeUuid, relationUuid) {
     const { error } = await supabase
       .from(RELATION_TABLE)
       .update(payload)
-      .eq(RELATION_TABLE_ROWS.UUID, relationUuid); 
+      .eq(RELATION_TABLE_ROWS.UUID, relation.uuid); 
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE)

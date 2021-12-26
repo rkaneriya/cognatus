@@ -1,9 +1,10 @@
 import moment from 'moment'; 
 import { useEffect, useState } from 'react';
-import { Card, Avatar, Tooltip, Popconfirm, Divider as AntDivider } from 'antd';
+import { Card, Button, Avatar, Tooltip, Popconfirm, Divider as AntDivider } from 'antd';
 import { useStyletron, styled, autoComposeDeep } from 'styletron-react';
 import { EditOutlined, ApartmentOutlined, DeleteOutlined } from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
+import { NEW_MEMBER_DRAWER_CONFIGS } from './new-member-drawer';
 
 const DATE_FORMAT = 'll'; 
 
@@ -116,7 +117,14 @@ function QueryRelationButton({name}) {
   ); 
 }
 
-export default function MemberCard({onEdit, onDelete, member, loading}) {
+export default function MemberCard({
+  onAdd, 
+  onEdit, 
+  onDelete, 
+  member, 
+  relations, 
+  loading,
+}) {
   const [css] = useStyletron(); 
   const {
     first_name,
@@ -180,14 +188,17 @@ export default function MemberCard({onEdit, onDelete, member, loading}) {
         <BodySection>
           <SectionRow label='PARENTS'>
             <SectionRowValue>Harry Kaneriya</SectionRowValue>
+            <SectionRowValue><Button onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT)}>Add parent</Button></SectionRowValue>
           </SectionRow>
           <SectionRow label='SPOUSES'>
             <SectionRowValue>Saoirse Ronan</SectionRowValue>
+            <SectionRowValue><Button onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_SPOUSE)}>Add spouse</Button></SectionRowValue>
           </SectionRow>
-          <SectionRow label='SIBLINGS'>
+          <SectionRow label='CHILDREN'>
               <SectionRowValue>Albert Einstein</SectionRowValue>
               <SectionRowValue>Richard Nixon</SectionRowValue>
               <SectionRowValue>Ane Eas</SectionRowValue>
+              <SectionRowValue><Button onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD)}>Add child</Button></SectionRowValue>
           </SectionRow>
         </BodySection>
         <Divider /> 
