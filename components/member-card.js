@@ -5,8 +5,15 @@ import { useStyletron, styled, autoComposeDeep } from 'styletron-react';
 import { EditOutlined, ApartmentOutlined, DeleteOutlined } from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
 import { NEW_MEMBER_DRAWER_CONFIGS } from './new-member-drawer';
+import { RELATION_TYPES } from '../constants/relation-types';
 
 const DATE_FORMAT = 'll'; 
+
+const DISPLAY_RELATION_TYPES = { 
+  PARENT: 'parent', 
+  CHILD: 'child', 
+  SPOUSE: 'spouse',
+}; 
 
 function Name({children}) { 
   const [css] = useStyletron(); 
@@ -123,7 +130,9 @@ export default function MemberCard({
   onDelete, 
   member, 
   relations, 
+  relationMembersByUuid, 
   loading,
+  setSelectedMemberUuid,
 }) {
   const [css] = useStyletron(); 
   const {
@@ -138,6 +147,7 @@ export default function MemberCard({
     notes, 
   } = member; 
 
+  // member data 
   const mBirthDate = moment(birth_date); 
   const mDeathDate = moment(death_date); 
   const formattedBirthDate = mBirthDate.format(DATE_FORMAT);
@@ -147,6 +157,29 @@ export default function MemberCard({
     : moment().diff(mBirthDate, 'years'); 
   const deadYears = moment().diff(mDeathDate, 'years'); 
   const displayName = `${first_name} ${last_name}` + (maiden_name ? `(${maiden_name})` : ''); 
+
+  // relation data 
+  const relationMembersByType = relations.reduce((acc, relation) => { 
+    const relationMemberUuid = relation.from_member_uuid === member.uuid 
+      ? relation.to_member_uuid 
+      : relation.from_member_uuid;  
+    const relationMember = relationMembersByUuid[relationMemberUuid]; 
+    const isRelationMemberOlder = moment(member.birth_date).isBefore(moment(relationMember.birth_date));
+    const displayRelationType = relation.type === RELATION_TYPES.SPOUSE 
+      ? DISPLAY_RELATION_TYPES.SPOUSE : 
+      (
+        isRelationMemberOlder 
+          ? DISPLAY_RELATION_TYPES.PARENT 
+          : DISPLAY_RELATION_TYPES.CHILD
+      );  
+    acc[displayRelationType].push(relationMembersByUuid[relationMemberUuid]);
+    return acc; 
+  }, {
+    [DISPLAY_RELATION_TYPES.PARENT]: [], 
+    [DISPLAY_RELATION_TYPES.CHILD]: [], 
+    [DISPLAY_RELATION_TYPES.SPOUSE]: [], 
+  }); 
+
   return (
     <Card
       style={{ 
@@ -179,38 +212,73 @@ export default function MemberCard({
             {nickname && <div className={css({fontStyle: 'italic'})}>&quot;{nickname}&quot;</div>}
           </div>
         </HeaderSection>
+        
         <Divider /> 
+
         <BodySection>
           {birth_date && <SectionRow label='BORN'>{formattedBirthDate} ({pluralize(age, 'year')})</SectionRow>}
           {death_date && <SectionRow label='DIED'>{formattedDeathDate} ({pluralize(deadYears, 'year')})</SectionRow>}
         </BodySection>
+
         <Divider /> 
+
         <BodySection>
           <SectionRow label='PARENTS'>
-            <SectionRowValue>Harry Kaneriya</SectionRowValue>
-            <SectionRowValue><Button onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT)}>Add parent</Button></SectionRowValue>
+            { 
+              relationMembersByType[DISPLAY_RELATION_TYPES.PARENT].map((member) => (
+                <a key={member.uuid} onClick={() => setSelectedMemberUuid(member.uuid)}>
+                  <SectionRowValue>
+                    {member.first_name} {member.last_name}
+                  </SectionRowValue>
+                </a>
+              ))
+            }
+            <a onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT)}>[ + ]</a> 
           </SectionRow>
           <SectionRow label='SPOUSES'>
-            <SectionRowValue>Saoirse Ronan</SectionRowValue>
-            <SectionRowValue><Button onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_SPOUSE)}>Add spouse</Button></SectionRowValue>
+            {   
+              relationMembersByType[DISPLAY_RELATION_TYPES.SPOUSE].map((member) => (
+                <a key={member.uuid} onClick={() => setSelectedMemberUuid(member.uuid)}>
+                  <SectionRowValue>
+                    {member.first_name} {member.last_name}
+                  </SectionRowValue>
+                </a>
+              ))
+            }
+            <a onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_SPOUSE)}>[ + ]</a> 
           </SectionRow>
           <SectionRow label='CHILDREN'>
-              <SectionRowValue>Albert Einstein</SectionRowValue>
-              <SectionRowValue>Richard Nixon</SectionRowValue>
-              <SectionRowValue>Ane Eas</SectionRowValue>
-              <SectionRowValue><Button onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD)}>Add child</Button></SectionRowValue>
+            {  
+              relationMembersByType[DISPLAY_RELATION_TYPES.CHILD].map((member) => (
+                <a key={member.uuid} onClick={() => setSelectedMemberUuid(member.uuid)}>
+                  <SectionRowValue>
+                    {member.first_name} {member.last_name}
+                  </SectionRowValue>
+                </a>
+              ))
+            }
+            <a onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD)}>[ + ]</a> 
           </SectionRow>
         </BodySection>
-        <Divider /> 
-        <BodySection>
-          <div className={css({
-            fontStyle: 'italic',
-            maxHeight: '100px', 
-            overflow: 'auto', 
-          })}>
-            {notes}
-          </div>
-        </BodySection>
+
+        { 
+          notes && 
+          (
+            <>
+              <Divider /> 
+              
+              <BodySection>
+                <div className={css({
+                  fontStyle: 'italic',
+                  maxHeight: '100px', 
+                  overflow: 'auto', 
+                })}>
+                  {notes}
+                </div>
+              </BodySection>
+            </>
+          )
+        }
       </div>
     </Card>
   )     

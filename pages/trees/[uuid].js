@@ -54,22 +54,22 @@ export default function Tree() {
     loading,
   } = useMemberRelationAPI(treeUuid, selectedMemberUuid); 
 
-  const membersByUuid = members.reduce((acc, val) => ({
+  const membersByUuid = members.reduce((acc, member) => ({
     ...acc, 
-    [val.uuid]: val, 
+    [member.uuid]: member, 
   }), {}); 
 
-  const relationsByMemberUuid = members.reduce((acc, val) => {
-    if (acc[val.from_member_uuid]) { 
-      acc[val.from_member_uuid].push(val); 
+  const relationsByMemberUuid = relations.reduce((acc, relation) => {
+    if (acc[relation.from_member_uuid]) { 
+      acc[relation.from_member_uuid].push(relation); 
     } else {
-      acc[val.from_member_uuid] = [val]; 
+      acc[relation.from_member_uuid] = [relation]; 
     }
 
-    if (acc[val.to_member_uuid]) { 
-      acc[val.to_member_uuid].push(val); 
+    if (acc[relation.to_member_uuid]) { 
+      acc[relation.to_member_uuid].push(relation); 
     } else {
-      acc[val.to_member_uuid] = [val]; 
+      acc[relation.to_member_uuid] = [relation]; 
     }
     return acc;
   }, {}); 
@@ -111,7 +111,23 @@ export default function Tree() {
   } else if (drawerConfig === ADD_FIRST) { 
     handleDrawerFinish = createMember; 
   }
+
+
+  const directRelations = relationsByMemberUuid[selectedMemberUuid] || []; 
+  const directRelationMembers = directRelations.map((relation) => (
+    relation.from_member_uuid === selectedMemberUuid 
+      ? membersByUuid[relation.to_member_uuid] 
+      : membersByUuid[relation.from_member_uuid]
+  )); 
+  const directRelationMembersByUuid = directRelationMembers.reduce((acc, member) => {
+    return { 
+      ...acc, 
+      [member.uuid]: member, 
+    }; 
+  }, {}); 
   
+  console.log("@@@ DATA", directRelations, directRelationMembers, directRelationMembersByUuid); 
+
   return (
     <Wrapper>
       <NavBar backRoute={ROUTES.ADMIN} />
@@ -138,11 +154,13 @@ export default function Tree() {
         selectedMember && (
           <MemberCard 
             member={selectedMember} 
-            relations={relationsByMemberUuid[selectedMemberUuid]}
+            relations={directRelations}
+            relationMembersByUuid={directRelationMembersByUuid}
             loading={loading} 
             onAdd={handleAdd}
             onEdit={() => handleEdit(selectedMember)} 
             onDelete={() => handleDelete(selectedMember)}
+            setSelectedMemberUuid={setSelectedMemberUuid}
           />
         )
       }

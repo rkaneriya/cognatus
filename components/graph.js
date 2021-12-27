@@ -33,7 +33,7 @@ export default function TreeGraph(props) {
       : '/female.jpg', 
     color: getNodeColor(uuid), 
     borderWidth: 3,
-    label: `${first_name} (${uuid})`, 
+    label: first_name, 
   }));
 
   const edges = relations.map(({from_member_uuid, to_member_uuid, type}, i) => ({

@@ -3,7 +3,6 @@ import { RELATION_TABLE, RELATION_TABLE_ROWS } from './entities/relation';
 import {MEMBER_TABLE, MEMBER_TABLE_ROWS} from './entities/member';
 import { message } from 'antd';
 import { supabase } from '../utils/supabase';
-import { RELATION_TYPES } from '../constants/relation-types';
 
 const GENERIC_ERROR_MESSAGE = 'Error'; 
 

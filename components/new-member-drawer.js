@@ -40,10 +40,7 @@ export default function NewMemberDrawer(props) {
     form.resetFields(); 
     onClose(); 
 
-    if (
-      drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT || 
-      drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD
-    ) {
+    if (drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT || drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD) {
       onFinish(values, RELATION_TYPES.PARENT_CHILD); 
     } else if (drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_SPOUSE) { 
       onFinish(values, RELATION_TYPES.SPOUSE); 
