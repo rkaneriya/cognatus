@@ -103,8 +103,8 @@ export default function useMemberAPI(treeUuid, selectedMemberUuid) {
     fetchMembers,
     createMember,
     updateMember,
-    deleteMember, // TODO: also must delete all relations associated with the tree
-
+    deleteMember, 
+    
     // data 
     data,
     totalCount, 

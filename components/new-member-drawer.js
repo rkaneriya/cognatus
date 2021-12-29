@@ -1,20 +1,12 @@
 import {Button, DatePicker, Drawer, Form, Input, Radio} from 'antd';
 import { useEffect } from 'react';
 import {RELATION_TYPES} from '../constants/relation-types'; 
+import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
 
 const layout = {
   labelCol: { span: 8 },
   wrapperCol: { span: 16 },
 };
-
-export const NEW_MEMBER_DRAWER_CONFIGS = { 
-  EDIT: 'edit', 
-  ADD_FIRST: 'add_first',
-  ADD_PARENT: 'add_parent', 
-  ADD_CHILD: 'add_child', 
-  ADD_SPOUSE: 'add_spouse', 
-}; 
-
 
 export default function NewMemberDrawer(props) {
   const [form] = Form.useForm(); 
@@ -40,9 +32,9 @@ export default function NewMemberDrawer(props) {
     form.resetFields(); 
     onClose(); 
 
-    if (drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT || drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD) {
+    if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_PARENT || drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_CHILD) {
       onFinish(values, RELATION_TYPES.PARENT_CHILD); 
-    } else if (drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.ADD_SPOUSE) { 
+    } else if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE) { 
       onFinish(values, RELATION_TYPES.SPOUSE); 
     } else { 
       onFinish(values); 
@@ -50,14 +42,14 @@ export default function NewMemberDrawer(props) {
   }
 
   const CONFIG_TO_TITLE = { 
-    [NEW_MEMBER_DRAWER_CONFIGS.EDIT]: `Edit ${selectedMemberName}'s profile`,
-    [NEW_MEMBER_DRAWER_CONFIGS.ADD_FIRST]: 'Add first person to tree',
-    [NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT]: `Add new parent of ${selectedMemberName}`,
-    [NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD]: `Add new child of ${selectedMemberName}`,   
-    [NEW_MEMBER_DRAWER_CONFIGS.ADD_SPOUSE]: `Add new spouse of ${selectedMemberName}`,
+    [MEMBER_RELATION_ACTIONS.EDIT_MEMBER]: `Edit ${selectedMemberName}'s profile`,
+    [MEMBER_RELATION_ACTIONS.ADD_FIRST_MEMBER]: 'Add first person to tree',
+    [MEMBER_RELATION_ACTIONS.ADD_NEW_PARENT]: `Add new parent of ${selectedMemberName}`,
+    [MEMBER_RELATION_ACTIONS.ADD_NEW_CHILD]: `Add new child of ${selectedMemberName}`,   
+    [MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE]: `Add new spouse of ${selectedMemberName}`,
   }
   
-  const submitLabel = drawerConfig === NEW_MEMBER_DRAWER_CONFIGS.EDIT ? 'Edit' : 'Add'; 
+  const submitLabel = drawerConfig === MEMBER_RELATION_ACTIONS.EDIT_MEMBER ? 'Edit' : 'Add'; 
   const title = CONFIG_TO_TITLE[drawerConfig]; 
   
   return (

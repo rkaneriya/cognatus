@@ -175,11 +175,13 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     }
   }
 
-  async function createRelation(relation) { 
+  async function createRelation(toMemberUuid, type) { 
     setLoading(true); 
 
     const payload = { 
-      ...relation, 
+      [RELATION_TABLE_ROWS.FROM_MEMBER_UUID]: selectedMemberUuid, 
+      [RELATION_TABLE_ROWS.TO_MEMBER_UUID]: toMemberUuid, 
+      [RELATION_TABLE_ROWS.TYPE]: type, 
       [RELATION_TABLE_ROWS.TREE_UUID]: treeUuid, 
     }; 
 

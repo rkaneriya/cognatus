@@ -1,11 +1,11 @@
 import moment from 'moment'; 
 import { useEffect, useState } from 'react';
-import { Card, Button, Avatar, Tooltip, Popconfirm, Divider as AntDivider } from 'antd';
+import { Card, Button, Select, Avatar, Tooltip, Tag, AutoComplete, Popconfirm, Divider as AntDivider } from 'antd';
 import { useStyletron, styled, autoComposeDeep } from 'styletron-react';
-import { EditOutlined, ApartmentOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EditOutlined, ApartmentOutlined, DeleteOutlined, PlusOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
-import { NEW_MEMBER_DRAWER_CONFIGS } from './new-member-drawer';
 import { RELATION_TYPES } from '../constants/relation-types';
+import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
 
 const DATE_FORMAT = 'll'; 
 
@@ -43,6 +43,7 @@ function SectionRow({label, children}) {
       display: 'flex', 
       flexDirection: 'row',   
       width: '100%', 
+      marginBottom: '10px', 
     })}>
       <div className={css({
         display: 'flex', 
@@ -64,13 +65,22 @@ function SectionRow({label, children}) {
   )
 }
 
-function SectionRowValue({children}) { 
+function SectionRowValue({children, onDelete}) { 
   const [css] = useStyletron(); 
   return (
     <div className={css({
       overflowWrap: 'break-word',
+      marginBottom: '5px'
     })}>
-      {children}
+      <Tag color="blue" closable onClose={onDelete}>
+        <span style={{ 
+          whiteSpace: 'normal',
+          fontSize: '14px',   
+          padding: '10px 0px', 
+        }}>
+          {children}
+        </span>
+      </Tag>
     </div>
   ); 
 }
@@ -125,29 +135,38 @@ function QueryRelationButton({name}) {
 }
 
 export default function MemberCard({
-  onAdd, 
-  onEdit, 
-  onDelete, 
-  member, 
+  onAddNewMemberAndRelation, 
+  onAddRelation, 
+  onEditMember, 
+  onDeleteMemberAndRelations, 
+  selectedMember, 
+  onDeleteRelation,
+  members, 
   relations, 
-  relationMembersByUuid, 
   loading,
   setSelectedMemberUuid,
 }) {
   const [css] = useStyletron(); 
+  const [relativeUuid, setRelativeUuid] = useState(null); 
+  const [editableSection, setEditableSection] = useState(null); 
+
   const {
     first_name,
     last_name,
     maiden_name,  
     nickname,
-    email, 
     is_male,
     birth_date,
     death_date, 
     notes, 
-  } = member; 
+  } = selectedMember; 
 
   // member data 
+  const membersByUuid = members.reduce((acc, member) => ({
+    ...acc, 
+    [member.uuid]: member, 
+  }), {});
+
   const mBirthDate = moment(birth_date); 
   const mDeathDate = moment(death_date); 
   const formattedBirthDate = mBirthDate.format(DATE_FORMAT);
@@ -156,29 +175,180 @@ export default function MemberCard({
     ? mDeathDate.diff(mBirthDate, 'years')
     : moment().diff(mBirthDate, 'years'); 
   const deadYears = moment().diff(mDeathDate, 'years'); 
-  const displayName = `${first_name} ${last_name}` + (maiden_name ? `(${maiden_name})` : ''); 
+  const displayName = `${first_name} ${last_name}` + (maiden_name ? ` (${maiden_name})` : ''); 
 
   // relation data 
-  const relationMembersByType = relations.reduce((acc, relation) => { 
-    const relationMemberUuid = relation.from_member_uuid === member.uuid 
+  const relationsByMemberUuid = relations.reduce((acc, relation) => {
+    if (acc[relation.from_member_uuid]) { 
+      acc[relation.from_member_uuid].push(relation); 
+    } else {
+      acc[relation.from_member_uuid] = [relation]; 
+    }
+
+    if (acc[relation.to_member_uuid]) { 
+      acc[relation.to_member_uuid].push(relation); 
+    } else {
+      acc[relation.to_member_uuid] = [relation]; 
+    }
+    return acc;
+  }, {}); 
+
+  const directRelations = relationsByMemberUuid[selectedMember.uuid] || []; 
+  const directRelativesByUuid = directRelations.reduce((acc, relation) => {
+    const relative = relation.from_member_uuid === selectedMember.uuid 
+      ? membersByUuid[relation.to_member_uuid] 
+      : membersByUuid[relation.from_member_uuid]; 
+    return { 
+      ...acc,
+      [relative.uuid]: relative, 
+    }
+  }, {}); 
+  const relativesByType = directRelations.reduce((acc, relation) => { 
+    const relativeUuid = relation.from_member_uuid === selectedMember.uuid 
       ? relation.to_member_uuid 
       : relation.from_member_uuid;  
-    const relationMember = relationMembersByUuid[relationMemberUuid]; 
-    const isRelationMemberOlder = moment(member.birth_date).isBefore(moment(relationMember.birth_date));
+    const relative = directRelativesByUuid[relativeUuid]; 
+    const isRelativeOlder = moment(selectedMember.birth_date).isAfter(moment(relative.birth_date));
     const displayRelationType = relation.type === RELATION_TYPES.SPOUSE 
       ? DISPLAY_RELATION_TYPES.SPOUSE : 
       (
-        isRelationMemberOlder 
+        isRelativeOlder 
           ? DISPLAY_RELATION_TYPES.PARENT 
           : DISPLAY_RELATION_TYPES.CHILD
       );  
-    acc[displayRelationType].push(relationMembersByUuid[relationMemberUuid]);
+    acc[displayRelationType].push(relative);
     return acc; 
   }, {
     [DISPLAY_RELATION_TYPES.PARENT]: [], 
     [DISPLAY_RELATION_TYPES.CHILD]: [], 
     [DISPLAY_RELATION_TYPES.SPOUSE]: [], 
   }); 
+
+  const relativeOptions = members.filter(m => 
+    m.uuid !== selectedMember.uuid && !Object.keys(directRelativesByUuid).includes(m.uuid)
+  ); 
+
+  function handleRelativeSelect(value) { 
+    setRelativeUuid(value); 
+  }
+
+  function handleAddRelative(relativeUuid, relationType) {
+    if (relativeUuid) { 
+      onAddRelation(relativeUuid, relationType); 
+    }
+    setRelativeUuid(null);
+    setEditableSection(null); 
+  }
+
+  function handleMemberSelect(uuid) { 
+    setRelativeUuid(null); 
+    setSelectedMemberUuid(uuid); 
+  }
+
+  function handleDeleteRelation(relativeUuid) { 
+    const relations = relationsByMemberUuid[relativeUuid];
+    const relationToDelete = relations.find((relation) => (
+      (relation.from_member_uuid === relativeUuid && relation.to_member_uuid === selectedMember.uuid) || 
+      (relation.from_member_uuid === selectedMember.uuid && relation.to_member_uuid === relativeUuid)
+    )); 
+    onDeleteRelation(relationToDelete.uuid)
+  } 
+
+  function handleEditableSection(displayRelationType) { 
+    setRelativeUuid(null); 
+    setEditableSection(displayRelationType); 
+  }
+
+  function SectionRowContent({displayRelationType}) { 
+    const DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG = {
+      [DISPLAY_RELATION_TYPES.PARENT]: { 
+        label: 'parent', 
+        relationType: RELATION_TYPES.PARENT_CHILD, 
+        memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_PARENT, 
+      },
+      [DISPLAY_RELATION_TYPES.CHILD]: { 
+        label: 'child', 
+        relationType: RELATION_TYPES.PARENT_CHILD, 
+        memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_CHILD, 
+      },
+      [DISPLAY_RELATION_TYPES.SPOUSE]: { 
+        label: 'spouse', 
+        relationType: RELATION_TYPES.SPOUSE, 
+        memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE, 
+      },
+    }; 
+
+    const { 
+      label, 
+      relationType,
+      memberRelationAction, 
+    } = DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[displayRelationType]; 
+
+    return (
+      <>
+        { 
+          relativesByType[displayRelationType].map((member) => (
+            <a key={member.uuid} onClick={() => handleMemberSelect(member.uuid)}>
+              <SectionRowValue onDelete={() => handleDeleteRelation(member.uuid)}>
+                {member.first_name} {member.last_name}
+              </SectionRowValue>
+            </a>
+          ))
+        }
+        { 
+          editableSection === displayRelationType ? (
+            <div className={css({
+              display: 'flex',
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+            })}>
+              <Select
+                showSearch={true}
+                value={relativeUuid}
+                notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${label}`}</a>}
+                style={{ width: 200 }}
+                onSelect={handleRelativeSelect}
+                placeholder={`Select ${label}`}
+                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+              >
+                {
+                  relativeOptions.map(r => (
+                    <Select.Option
+                      key={r.uuid}
+                      value={r.uuid}
+                    >
+                      {`${r.first_name} ${r.last_name}`}
+                    </Select.Option>
+                  ))
+                }
+              </Select>
+              <a 
+                disabled={!relativeUuid}
+                style={{ marginLeft: '5px' }} 
+                onClick={() => handleAddRelative(relativeUuid, relationType)}
+              >
+                Add
+              </a>
+            </div>
+          ) : (
+            <Tag 
+              onClick={() => handleEditableSection(displayRelationType)} 
+              style={{ 
+                border: '1px dashed lightgrey', 
+                backgroundColor: 'white',
+                color: 'grey', 
+                width: 'fit-content', 
+                fontSize: '14px', 
+                padding: '3px 6px'
+              }}
+            >
+              <PlusOutlined /> Add {label}
+            </Tag>
+          )
+        }
+      </>
+    ); 
+  }
 
   return (
     <Card
@@ -188,13 +358,13 @@ export default function MemberCard({
         top: 100, 
         margin: '20px', 
         backgroundColor: 'white',     
-        width: '300px',
+        width: '350px',
         boxShadow: '-1px 2px 5px 2px rgba(0, 0, 0, 0.2)',
       }}
       actions={[
         <QueryRelationButton key='query_relation' name={first_name} />,
-        <EditButton key='edit' onClick={onEdit} />,
-        <DeleteButton key='add_relation' onClick={onDelete} />,
+        <EditButton key='edit' onClick={onEditMember} />,
+        <DeleteButton key='add_relation' onClick={onDeleteMemberAndRelations} />,
       ]}
       loading={loading}
     > 
@@ -224,40 +394,13 @@ export default function MemberCard({
 
         <BodySection>
           <SectionRow label='PARENTS'>
-            { 
-              relationMembersByType[DISPLAY_RELATION_TYPES.PARENT].map((member) => (
-                <a key={member.uuid} onClick={() => setSelectedMemberUuid(member.uuid)}>
-                  <SectionRowValue>
-                    {member.first_name} {member.last_name}
-                  </SectionRowValue>
-                </a>
-              ))
-            }
-            <a onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_PARENT)}>[ + ]</a> 
+            <SectionRowContent displayRelationType={DISPLAY_RELATION_TYPES.PARENT} />
           </SectionRow>
           <SectionRow label='SPOUSES'>
-            {   
-              relationMembersByType[DISPLAY_RELATION_TYPES.SPOUSE].map((member) => (
-                <a key={member.uuid} onClick={() => setSelectedMemberUuid(member.uuid)}>
-                  <SectionRowValue>
-                    {member.first_name} {member.last_name}
-                  </SectionRowValue>
-                </a>
-              ))
-            }
-            <a onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_SPOUSE)}>[ + ]</a> 
+            <SectionRowContent displayRelationType={DISPLAY_RELATION_TYPES.SPOUSE} />
           </SectionRow>
           <SectionRow label='CHILDREN'>
-            {  
-              relationMembersByType[DISPLAY_RELATION_TYPES.CHILD].map((member) => (
-                <a key={member.uuid} onClick={() => setSelectedMemberUuid(member.uuid)}>
-                  <SectionRowValue>
-                    {member.first_name} {member.last_name}
-                  </SectionRowValue>
-                </a>
-              ))
-            }
-            <a onClick={() => onAdd(NEW_MEMBER_DRAWER_CONFIGS.ADD_CHILD)}>[ + ]</a> 
+            <SectionRowContent displayRelationType={DISPLAY_RELATION_TYPES.CHILD} />
           </SectionRow>
         </BodySection>
 
