@@ -4,11 +4,11 @@ import {RELATION_TYPES} from '../constants/relation-types';
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
 
 const layout = {
-  labelCol: { span: 8 },
+  labelCol: { span: 9 },
   wrapperCol: { span: 16 },
 };
 
-export default function NewMemberDrawer(props) {
+export default function MemberDrawer(props) {
   const [form] = Form.useForm(); 
   const { 
     selectedMemberName, 
@@ -33,11 +33,21 @@ export default function NewMemberDrawer(props) {
     onClose(); 
 
     if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_PARENT || drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_CHILD) {
-      onFinish(values, RELATION_TYPES.PARENT_CHILD); 
+      onFinish(values, {
+        type: RELATION_TYPES.PARENT_CHILD,
+      }); // createMemberAndRelation
     } else if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE) { 
-      onFinish(values, RELATION_TYPES.SPOUSE); 
+      onFinish(values, {
+        type: RELATION_TYPES.SPOUSE,
+      }); // createMemberAndRelation 
+    } else if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_EX_SPOUSE) { 
+      onFinish(values, { 
+        type: RELATION_TYPES.EX_SPOUSE, 
+        start_date: values.start_date, 
+        end_date: values.end_date, 
+      }); // createMemberAndRelation
     } else { 
-      onFinish(values); 
+      onFinish(values); // updateMember
     }
   }
 
@@ -47,11 +57,17 @@ export default function NewMemberDrawer(props) {
     [MEMBER_RELATION_ACTIONS.ADD_NEW_PARENT]: `Add new parent of ${selectedMemberName}`,
     [MEMBER_RELATION_ACTIONS.ADD_NEW_CHILD]: `Add new child of ${selectedMemberName}`,   
     [MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE]: `Add new spouse of ${selectedMemberName}`,
+    [MEMBER_RELATION_ACTIONS.ADD_NEW_EX_SPOUSE]: `Add new ex-spouse of ${selectedMemberName}`,
   }
   
   const submitLabel = drawerConfig === MEMBER_RELATION_ACTIONS.EDIT_MEMBER ? 'Edit' : 'Add'; 
   const title = CONFIG_TO_TITLE[drawerConfig]; 
-  
+
+  const isSpouseConfig = (
+    drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE || 
+    drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_EX_SPOUSE
+  );
+
   return (
     <Drawer 
       title={title}
@@ -81,6 +97,18 @@ export default function NewMemberDrawer(props) {
             <Radio.Button value="false">Female</Radio.Button>
           </Radio.Group>
         </Form.Item>
+        { 
+          isSpouseConfig && (
+            <>
+              <Form.Item name='start_date' label="Marriage Start" rules={[{ required: true }]}>
+                <DatePicker /> 
+              </Form.Item>
+              <Form.Item name='end_date' label="Marriage End">
+                <DatePicker /> 
+              </Form.Item>
+            </>
+          )
+        }
         <Form.Item name='birth_date' label="Birth Date" rules={[{ required: true }]}>
           <DatePicker /> 
         </Form.Item>
@@ -90,7 +118,7 @@ export default function NewMemberDrawer(props) {
         <Form.Item name='notes' label="Notes">
           <Input.TextArea />
         </Form.Item>
-        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+        <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 9 }}>
           <Button type="primary" htmlType="submit">
             {submitLabel}
           </Button>

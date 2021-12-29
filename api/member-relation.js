@@ -58,33 +58,40 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     setLoading(false); 
   }, [treeUuid]); 
 
-  async function createMemberAndRelation(member, type) { 
+  async function createMemberAndRelation(member, relation) { 
     setLoading(true); 
+
+    // remove relation-related fields
+    const memberCopy = {...member}; 
+    delete memberCopy.start_date; 
+    delete memberCopy.end_date; 
 
     // 1. create new member
     let payload = { 
-      ...member, 
+      ...memberCopy, 
       [MEMBER_TABLE_ROWS.TREE_UUID]: treeUuid, 
-      [MEMBER_TABLE_ROWS.BIRTH_DATE]: member.birth_date.format(), 
-      [MEMBER_TABLE_ROWS.DEATH_DATE]: member.death_date ? member.death_date.format() : undefined,
+      [MEMBER_TABLE_ROWS.BIRTH_DATE]: memberCopy.birth_date.format(), 
+      [MEMBER_TABLE_ROWS.DEATH_DATE]: memberCopy.death_date ? memberCopy.death_date.format() : undefined,
     }; 
-
+    
     const { data: [newMember], error: memberError } = await supabase
-      .from(MEMBER_TABLE)
-      .insert([payload]); 
-
+    .from(MEMBER_TABLE)
+    .insert([payload]); 
+    
     if (memberError) {
       message.error(memberError?.message || GENERIC_ERROR_MESSAGE)
       setLoading(false);
       return; // error making new member
     } 
-
+    
     // 2. create new relation between source member and newMember
     payload = { 
       [RELATION_TABLE_ROWS.TREE_UUID]: treeUuid, 
       [RELATION_TABLE_ROWS.FROM_MEMBER_UUID]: selectedMemberUuid, 
       [RELATION_TABLE_ROWS.TO_MEMBER_UUID]: newMember.uuid, 
-      [RELATION_TABLE_ROWS.TYPE]: type, 
+      [RELATION_TABLE_ROWS.TYPE]: relation.type, 
+      [RELATION_TABLE_ROWS.START_DATE]: relation.start_date ? relation.start_date.format() : undefined, 
+      [RELATION_TABLE_ROWS.END_DATE]: relation.end_date ? relation.end_date.format() : undefined, 
     }; 
   
     const { error: relationError } = await supabase
@@ -204,8 +211,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     const payload = { 
       ...relation, 
       [RELATION_TABLE_ROWS.TREE_UUID]: treeUuid, 
+      [RELATION_TABLE_ROWS.START_DATE]: relation.start_date ? relation.start_date.format() : undefined, 
+      [RELATION_TABLE_ROWS.END_DATE]: relation.end_date ? relation.end_date.format() : undefined, 
     }; 
-
+    
     const { data, error } = await supabase
       .from(RELATION_TABLE)
       .update(payload)

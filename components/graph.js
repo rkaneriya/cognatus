@@ -1,7 +1,7 @@
 import React from 'react'; 
 import Graph from 'react-graph-vis';
 import { useStyletron } from 'styletron-react';
-import {getRelationColor} from '../utils/relations'; 
+import {getRelationEdgeColor, getIsRelationEdgeDashed} from '../utils/relations'; 
 
 export default function TreeGraph(props) { 
   const [css] = useStyletron(); 
@@ -42,10 +42,11 @@ export default function TreeGraph(props) {
     to: to_member_uuid, 
     title: type, 
     color: { 
-      color: pathEdges.includes(i) ? 'red' : getRelationColor(type), 
+      color: pathEdges.includes(i) ? 'red' : getRelationEdgeColor(type), 
       inherit: 'false',  
     },
     width: pathEdges.includes(i) ? 1 : undefined, 
+    dashes: getIsRelationEdgeDashed(type), 
   })); 
 
   const graph = {
@@ -91,7 +92,7 @@ export default function TreeGraph(props) {
     doubleClick: function(event) { 
       console.log("DOUBLE CLICKED!"); 
     },
-};
+  };
 
   return (
     <div className={css({

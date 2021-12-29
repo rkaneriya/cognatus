@@ -6,7 +6,7 @@ import { EditOutlined, ApartmentOutlined, DeleteOutlined, PlusOutlined, PlusCirc
 import {pluralize} from '../utils/pluralize'; 
 import { RELATION_TYPES } from '../constants/relation-types';
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
-import {getRelationColor} from '../utils/relations'; 
+import {getRelationEdgeColor} from '../utils/relations'; 
 
 const DATE_FORMAT = 'll'; 
 
@@ -14,6 +14,7 @@ const DISPLAY_RELATION_TYPES = {
   PARENT: 'parent', 
   CHILD: 'child', 
   SPOUSE: 'spouse',
+  EX_SPOUSE: 'ex_spouse', 
 }; 
 
 function Name({children}) { 
@@ -37,21 +38,22 @@ function Divider() {
   ); 
 }
 
-function SectionRow({label, children}) {
+function SectionRow({label, children, styles}) {
   const [css] = useStyletron(); 
   return (
     <div className={css({
       display: 'flex', 
       flexDirection: 'row',   
       width: '100%', 
-      marginBottom: '10px', 
+      marginBottom: '10px',
+      ...styles,  
     })}>
       <div className={css({
         display: 'flex', 
         justifyContent: 'flex-end', 
-        marginRight: '20px', 
+        marginRight: '15px', 
         fontWeight: '600',
-        width: '75px',  
+        width: '90px',  
       })}>
         {label}
       </div>
@@ -66,14 +68,23 @@ function SectionRow({label, children}) {
   )
 }
 
-function TagValue({color, children, onDelete}) { 
+function TagValue({relationType, children, onDelete}) { 
   const [css] = useStyletron(); 
+  const color = getRelationEdgeColor(relationType); 
+  const tagStyle = (
+    relationType === RELATION_TYPES.EX_SPOUSE 
+    ? {
+      background: 'unset', 
+      backgroundImage: 'linear-gradient(30deg, #f9f0ff 25%, transparent 25%, transparent 50%, #f9f0ff 50%, #f9f0ff 75%, transparent 75%, #fff)'
+    } 
+    : {}
+  ); 
   return (
     <div className={css({
       overflowWrap: 'break-word',
       marginBottom: '5px'
     })}>
-      <Tag color={color} closable onClose={onDelete}>
+      <Tag color={color} style={tagStyle} closable onClose={onDelete}>
         <span style={{ 
           whiteSpace: 'normal',
           fontSize: '14px',   
@@ -142,6 +153,7 @@ export default function MemberCard({
   onDeleteMemberAndRelations, 
   selectedMember, 
   onDeleteRelation,
+  onEditRelation, 
   members, 
   relations, 
   loading,
@@ -177,6 +189,16 @@ export default function MemberCard({
     : moment().diff(mBirthDate, 'years'); 
   const deadYears = moment().diff(mDeathDate, 'years'); 
   const displayName = `${first_name} ${last_name}` + (maiden_name ? ` (${maiden_name})` : ''); 
+  const dates = [
+    birth_date ? { 
+      label: 'BORN', 
+      content: <>{formattedBirthDate} ({pluralize(age, 'year')})</>,
+    } : {}, 
+    death_date ? { 
+      label: 'DIED', 
+      content: <>{formattedDeathDate} ({pluralize(deadYears, 'year')} ago)</>,
+    } : {}
+  ]; 
 
   // relation data 
   const relationsByMemberUuid = relations.reduce((acc, relation) => {
@@ -195,7 +217,16 @@ export default function MemberCard({
   }, {}); 
 
   const directRelations = relationsByMemberUuid[selectedMember.uuid] || []; 
-  const directRelativesByUuid = directRelations.reduce((acc, relation) => {
+  const directRelationsByRelativeUuid = directRelations.reduce((acc, relation) => { 
+    const relative = relation.from_member_uuid === selectedMember.uuid 
+      ? membersByUuid[relation.to_member_uuid] 
+      : membersByUuid[relation.from_member_uuid]; 
+    return {
+      ...acc,
+      [relative.uuid]: relation, 
+    }; 
+  }, {}); 
+    const directRelativesByUuid = directRelations.reduce((acc, relation) => {
     const relative = relation.from_member_uuid === selectedMember.uuid 
       ? membersByUuid[relation.to_member_uuid] 
       : membersByUuid[relation.from_member_uuid]; 
@@ -210,24 +241,56 @@ export default function MemberCard({
       : relation.from_member_uuid;  
     const relative = directRelativesByUuid[relativeUuid]; 
     const isRelativeOlder = moment(selectedMember.birth_date).isAfter(moment(relative.birth_date));
-    const displayRelationType = relation.type === RELATION_TYPES.SPOUSE 
-      ? DISPLAY_RELATION_TYPES.SPOUSE : 
-      (
-        isRelativeOlder 
-          ? DISPLAY_RELATION_TYPES.PARENT 
-          : DISPLAY_RELATION_TYPES.CHILD
-      );  
+    
+    let displayRelationType = DISPLAY_RELATION_TYPES.CHILD; 
+    if (relation.type === RELATION_TYPES.EX_SPOUSE) { 
+      displayRelationType = DISPLAY_RELATION_TYPES.EX_SPOUSE; 
+    } else if (relation.type === RELATION_TYPES.SPOUSE) { 
+      displayRelationType = DISPLAY_RELATION_TYPES.SPOUSE; 
+    } else { 
+      if (isRelativeOlder) { 
+        displayRelationType = DISPLAY_RELATION_TYPES.PARENT; 
+      }
+    }
     acc[displayRelationType].push(relative);
     return acc; 
   }, {
     [DISPLAY_RELATION_TYPES.PARENT]: [], 
     [DISPLAY_RELATION_TYPES.CHILD]: [], 
     [DISPLAY_RELATION_TYPES.SPOUSE]: [], 
+    [DISPLAY_RELATION_TYPES.EX_SPOUSE]: [], 
   }); 
 
   const relativeOptions = members.filter(m => 
     m.uuid !== selectedMember.uuid && !Object.keys(directRelativesByUuid).includes(m.uuid)
   ); 
+
+  const DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG = {
+    [DISPLAY_RELATION_TYPES.PARENT]: { 
+      sectionLabel: 'PARENTS', 
+      contentLabel: 'parent', 
+      relationType: RELATION_TYPES.PARENT_CHILD, 
+      memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_PARENT, 
+    },
+    [DISPLAY_RELATION_TYPES.CHILD]: { 
+      sectionLabel: 'CHILDREN', 
+      contentLabel: 'child', 
+      relationType: RELATION_TYPES.PARENT_CHILD, 
+      memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_CHILD, 
+    },
+    [DISPLAY_RELATION_TYPES.SPOUSE]: { 
+      sectionLabel: 'SPOUSES', 
+      contentLabel: 'spouse', 
+      relationType: RELATION_TYPES.SPOUSE, 
+      memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE, 
+    },
+    [DISPLAY_RELATION_TYPES.EX_SPOUSE]: { 
+      sectionLabel: 'EX-SPOUSES', 
+      contentLabel: 'ex-spouse', 
+      relationType: RELATION_TYPES.EX_SPOUSE, 
+      memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_EX_SPOUSE, 
+    }, 
+  }; 
 
   function handleRelativeSelect(value) { 
     setRelativeUuid(value); 
@@ -261,26 +324,8 @@ export default function MemberCard({
   }
 
   function SectionRowContent({displayRelationType}) { 
-    const DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG = {
-      [DISPLAY_RELATION_TYPES.PARENT]: { 
-        label: 'parent', 
-        relationType: RELATION_TYPES.PARENT_CHILD, 
-        memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_PARENT, 
-      },
-      [DISPLAY_RELATION_TYPES.CHILD]: { 
-        label: 'child', 
-        relationType: RELATION_TYPES.PARENT_CHILD, 
-        memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_CHILD, 
-      },
-      [DISPLAY_RELATION_TYPES.SPOUSE]: { 
-        label: 'spouse', 
-        relationType: RELATION_TYPES.SPOUSE, 
-        memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE, 
-      },
-    }; 
-
     const { 
-      label, 
+      contentLabel, 
       relationType,
       memberRelationAction, 
     } = DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[displayRelationType]; 
@@ -288,16 +333,43 @@ export default function MemberCard({
     return (
       <>
         { 
-          relativesByType[displayRelationType].map((member) => (
-            <a key={member.uuid} onClick={() => handleMemberSelect(member.uuid)}>
-              <TagValue 
-                color={getRelationColor(relationType)}
-                onDelete={() => handleDeleteRelation(member.uuid)}
-              >
-                {member.first_name} {member.last_name}
-              </TagValue>
-            </a>
-          ))
+          relativesByType[displayRelationType].map((relative) => {
+            const relation = directRelationsByRelativeUuid[relative.uuid]; 
+            const mMarriageStartDate = relation.start_date ? moment(relation.start_date) : moment();
+            const mMarriageEndDate = relation.end_date ? moment(relation.end_date) : moment();             
+            const formattedMarriageStartDate = mMarriageStartDate.format('l');
+            const formattedMarriageEndDate = mMarriageEndDate.format('l');
+            const formattedMarriageDates = relation.end_date 
+              ? `${formattedMarriageStartDate} - ${formattedMarriageEndDate}` 
+              : `Since ${formattedMarriageStartDate}` 
+            const marriageLength = mMarriageEndDate.diff(mMarriageStartDate, 'years'); 
+            const isSpouse = displayRelationType === DISPLAY_RELATION_TYPES.SPOUSE || 
+              displayRelationType === DISPLAY_RELATION_TYPES.EX_SPOUSE; 
+            return (
+              <div key={relative.uuid}>
+                <a onClick={() => handleMemberSelect(relative.uuid)}>
+                  <TagValue
+                    relationType={relationType}
+                    onDelete={() => handleDeleteRelation(relative.uuid)}
+                  >
+                    {relative.first_name} {relative.last_name}
+                  </TagValue>
+                </a>
+                {
+                  isSpouse && (
+                    <div className={css({marginBottom: '5px'})}>
+                      <span className={css({fontStyle: 'italic'})}>{formattedMarriageDates}</span>
+                      <br/>
+                      <span className={css({display: 'flex', alignItems: 'center', fontStyle: 'italic'})}>
+                        <span>({marriageLength} years)</span>
+                        <a onClick={() => onEditRelation(relation)} style={{marginLeft: '5px'}}><EditButton /></a>
+                      </span>
+                    </div>
+                  )
+                }
+              </div>
+            );
+          })
         }
         { 
           editableSection === displayRelationType ? (
@@ -307,12 +379,13 @@ export default function MemberCard({
               alignItems: 'center',
             })}>
               <Select
+                autoFocus={true}
                 showSearch={true}
                 value={relativeUuid}
-                notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${label}`}</a>}
-                style={{ width: 200 }}
+                notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${contentLabel}`}</a>}
+                style={{ width: 150 }}
                 onSelect={handleRelativeSelect}
-                placeholder={`Select ${label}`}
+                placeholder={`Select ${contentLabel}`}
                 filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
               >
                 {
@@ -346,7 +419,7 @@ export default function MemberCard({
                 padding: '3px 6px'
               }}
             >
-              <PlusOutlined /> Add {label}
+              <PlusOutlined /> Add {contentLabel}
             </Tag>
           )
         }
@@ -391,22 +464,32 @@ export default function MemberCard({
         <Divider /> 
 
         <BodySection>
-          {birth_date && <SectionRow label='BORN'>{formattedBirthDate} ({pluralize(age, 'year')})</SectionRow>}
-          {death_date && <SectionRow label='DIED'>{formattedDeathDate} ({pluralize(deadYears, 'year')})</SectionRow>}
+          {
+            dates.map(({label, content}, i) => (
+              <SectionRow 
+                key={label} 
+                label={label}
+                styles={{ marginBottom: i === dates.length-1 ? '0px' : '10px' }}
+              >
+                {content}
+              </SectionRow>
+            ))
+          }
         </BodySection>
 
         <Divider /> 
 
         <BodySection>
-          <SectionRow label='PARENTS'>
-            <SectionRowContent displayRelationType={DISPLAY_RELATION_TYPES.PARENT} />
-          </SectionRow>
-          <SectionRow label='SPOUSES'>
-            <SectionRowContent displayRelationType={DISPLAY_RELATION_TYPES.SPOUSE} />
-          </SectionRow>
-          <SectionRow label='CHILDREN'>
-            <SectionRowContent displayRelationType={DISPLAY_RELATION_TYPES.CHILD} />
-          </SectionRow>
+          {
+            Object.keys(DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG).map((section, i) => (
+              <SectionRow 
+                key={i} 
+                label={DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[section].sectionLabel}
+              >
+                <SectionRowContent displayRelationType={section} />
+              </SectionRow>
+            ))
+          }
         </BodySection>
 
         { 
