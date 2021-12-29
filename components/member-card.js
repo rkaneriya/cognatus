@@ -6,6 +6,7 @@ import { EditOutlined, ApartmentOutlined, DeleteOutlined, PlusOutlined, PlusCirc
 import {pluralize} from '../utils/pluralize'; 
 import { RELATION_TYPES } from '../constants/relation-types';
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
+import {getRelationColor} from '../utils/relations'; 
 
 const DATE_FORMAT = 'll'; 
 
@@ -65,14 +66,14 @@ function SectionRow({label, children}) {
   )
 }
 
-function SectionRowValue({children, onDelete}) { 
+function TagValue({color, children, onDelete}) { 
   const [css] = useStyletron(); 
   return (
     <div className={css({
       overflowWrap: 'break-word',
       marginBottom: '5px'
     })}>
-      <Tag color="blue" closable onClose={onDelete}>
+      <Tag color={color} closable onClose={onDelete}>
         <span style={{ 
           whiteSpace: 'normal',
           fontSize: '14px',   
@@ -289,9 +290,12 @@ export default function MemberCard({
         { 
           relativesByType[displayRelationType].map((member) => (
             <a key={member.uuid} onClick={() => handleMemberSelect(member.uuid)}>
-              <SectionRowValue onDelete={() => handleDeleteRelation(member.uuid)}>
+              <TagValue 
+                color={getRelationColor(relationType)}
+                onDelete={() => handleDeleteRelation(member.uuid)}
+              >
                 {member.first_name} {member.last_name}
-              </SectionRowValue>
+              </TagValue>
             </a>
           ))
         }
@@ -303,7 +307,6 @@ export default function MemberCard({
               alignItems: 'center',
             })}>
               <Select
-                autoFocus={true}
                 showSearch={true}
                 value={relativeUuid}
                 notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${label}`}</a>}
@@ -356,9 +359,10 @@ export default function MemberCard({
       style={{ 
         zIndex: 1, 
         position: 'absolute', 
-        top: 100, 
+        top: 20, 
+        left: 20, 
         margin: '20px', 
-        backgroundColor: 'white',     
+        backgroundColor: 'white',
         width: '350px',
         boxShadow: '-1px 2px 5px 2px rgba(0, 0, 0, 0.2)',
       }}

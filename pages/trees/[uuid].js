@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react';
 import {useStyletron} from 'styletron-react'; 
 import {useRouter} from 'next/router'
-import {Button} from 'antd'; 
-import NavBar from '../../components/nav-bar'; 
 import NewMemberDrawer from '../../components/new-member-drawer'; 
 import MemberCard from '../../components/member-card';
-import { ROUTES } from '../../constants/routes';
 import Graph from '../../components/graph'; 
 import moment from 'moment';
 import {v4 as uuidv4} from 'uuid';
@@ -25,7 +22,6 @@ function Wrapper({children}) {
   const [css] = useStyletron(); 
   return (
     <div className={css({
-      padding: '36px', 
       height: '100vh',
       backgroundColor: '#eee', 
     })}>
@@ -103,7 +99,6 @@ export default function Tree() {
 
   return (
     <Wrapper>
-      <NavBar backRoute={ROUTES.ADMIN} />
       <Graph
         key={uuidv4()}
         members={members}

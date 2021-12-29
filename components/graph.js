@@ -1,6 +1,7 @@
 import React from 'react'; 
 import Graph from 'react-graph-vis';
 import { useStyletron } from 'styletron-react';
+import {getRelationColor} from '../utils/relations'; 
 
 export default function TreeGraph(props) { 
   const [css] = useStyletron(); 
@@ -41,7 +42,7 @@ export default function TreeGraph(props) {
     to: to_member_uuid, 
     title: type, 
     color: { 
-      color: pathEdges.includes(i) ? 'red' : 'gray', 
+      color: pathEdges.includes(i) ? 'red' : getRelationColor(type), 
       inherit: 'false',  
     },
     width: pathEdges.includes(i) ? 1 : undefined, 

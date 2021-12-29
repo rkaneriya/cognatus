@@ -14,21 +14,21 @@ export default function NavBar({backRoute}) {
     router.push(ROUTES.HOME)
   }
 
+  const user = supabase.auth.user(); 
+
   return (
     <div className={css({
       width: '100%', 
       display: 'flex', 
-      justifyContent: 'space-between', 
+      justifyContent: 'flex-end', 
+      alignItems: 'center', 
       marginBottom: '48px', 
     })}>
-      <Button 
-        type="default" 
-        shape="circle" 
-        icon={<ArrowLeftOutlined />} 
-        size="large" 
-        onClick={() => router.push(backRoute)} 
-      /> 
-      <Button type="default" onClick={logout}>Logout</Button>
+      <div className={css({
+        color: 'lightgray',
+        marginRight: '10px', 
+      })}>Logged in as {user?.email}</div>
+        <Button type="default" onClick={logout}>Logout</Button>
     </div>
   );
 } 
