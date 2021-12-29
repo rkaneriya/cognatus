@@ -303,6 +303,7 @@ export default function MemberCard({
               alignItems: 'center',
             })}>
               <Select
+                autoFocus={true}
                 showSearch={true}
                 value={relativeUuid}
                 notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${label}`}</a>}
