@@ -147,7 +147,7 @@ export default function Tree() {
         initialValues={initialMemberEditorValues}
         onClose={() => setIsMemberDrawerOpen(false)}
         onFinish={handleMemberDrawerFinish}
-        visible={isMemberDrawerOpen || isTreeEmpty}
+        visible={isMemberDrawerOpen || (isTreeEmpty && isTreeEditable)}
        /> 
       <RelationDrawer
 

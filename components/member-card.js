@@ -402,44 +402,49 @@ export default function MemberCard({
             />
           ))
         }
+        {
+          !isTreeEditable && relativesByType[displayRelationType].length === 0 && (
+            <span>--</span>
+          )
+        }
         { 
-          editableSection === displayRelationType ? (
-            <div className={css({
-              display: 'flex',
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-            })}>
-              <Select
-                autoFocus={true}
-                showSearch={true}
-                value={relativeUuid}
-                notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${contentLabel}`}</a>}
-                style={{ width: 150 }}
-                onSelect={handleRelativeSelect}
-                placeholder={`Select ${contentLabel}`}
-                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              >
-                {
-                  relativeOptions.map(r => (
-                    <Select.Option
-                      key={r.uuid}
-                      value={r.uuid}
-                    >
-                      {`${r.first_name} ${r.last_name}`}
-                    </Select.Option>
-                  ))
-                }
-              </Select>
-              <a 
-                disabled={!relativeUuid}
-                style={{ marginLeft: '5px' }} 
-                onClick={() => handleAddRelative(relativeUuid, relationType)}
-              >
-                Add
-              </a>
-            </div>
-          ) : ( 
-            isTreeEditable && (
+          isTreeEditable && (
+            editableSection === displayRelationType ? (
+              <div className={css({
+                display: 'flex',
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+              })}>
+                <Select
+                  autoFocus={true}
+                  showSearch={true}
+                  value={relativeUuid}
+                  notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${contentLabel}`}</a>}
+                  style={{ width: 150 }}
+                  onSelect={handleRelativeSelect}
+                  placeholder={`Select ${contentLabel}`}
+                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                >
+                  {
+                    relativeOptions.map(r => (
+                      <Select.Option
+                        key={r.uuid}
+                        value={r.uuid}
+                      >
+                        {`${r.first_name} ${r.last_name}`}
+                      </Select.Option>
+                    ))
+                  }
+                </Select>
+                <a 
+                  disabled={!relativeUuid}
+                  style={{ marginLeft: '5px' }} 
+                  onClick={() => handleAddRelative(relativeUuid, relationType)}
+                >
+                  Add
+                </a>
+              </div>
+            ) : ( 
               <Tag 
                 onClick={() => handleEditableSection(displayRelationType)} 
                 style={{ 
@@ -454,7 +459,7 @@ export default function MemberCard({
                 <PlusOutlined /> Add {contentLabel}
               </Tag>
             )
-          )
+          ) 
         }
       </>
     ); 
