@@ -323,7 +323,56 @@ export default function MemberCard({
     setEditableSection(displayRelationType); 
   }
 
-  function SectionRowContent({displayRelationType}) { 
+  function RelativeTag({relative, displayRelationType}) {     
+    const { 
+      relationType,
+    } = DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[displayRelationType]; 
+
+    const relation = directRelationsByRelativeUuid[relative.uuid]; 
+
+    const mMarriageStartDate = relation.start_date ? moment(relation.start_date) : moment();
+    const mMarriageEndDate = relation.end_date ? moment(relation.end_date) : moment();             
+    const formattedMarriageStartDate = mMarriageStartDate.format('l');
+    const formattedMarriageEndDate = mMarriageEndDate.format('l');
+    const formattedMarriageDates = relation.end_date 
+      ? `${formattedMarriageStartDate} - ${formattedMarriageEndDate}` 
+      : `Since ${formattedMarriageStartDate}` 
+    const marriageLength = mMarriageEndDate.diff(mMarriageStartDate, 'years'); 
+
+    const isSpouse = (
+      displayRelationType === DISPLAY_RELATION_TYPES.SPOUSE || 
+      displayRelationType === DISPLAY_RELATION_TYPES.EX_SPOUSE
+    ); 
+
+    return (
+      <div>
+        <a onClick={() => handleMemberSelect(relative.uuid)}>
+          <TagValue
+            relationType={relationType}
+            onDelete={() => handleDeleteRelation(relative.uuid)}
+          >
+            {relative.first_name} {relative.last_name}
+          </TagValue>
+        </a>
+        {
+          isSpouse && (
+            <div className={css({marginBottom: '5px'})}>
+              <span className={css({fontStyle: 'italic'})}>
+                {formattedMarriageDates}
+              </span>
+              <br/>
+              <span className={css({display: 'flex', alignItems: 'center', fontStyle: 'italic'})}>
+                <span>({marriageLength} years)</span>
+                <a onClick={() => onEditRelation(relation)} style={{marginLeft: '5px'}}><EditButton /></a>
+              </span>
+            </div>
+          )
+        }
+      </div>
+    );
+  }
+
+  function RelativeContent({displayRelationType}) { 
     const { 
       contentLabel, 
       relationType,
@@ -333,43 +382,13 @@ export default function MemberCard({
     return (
       <>
         { 
-          relativesByType[displayRelationType].map((relative) => {
-            const relation = directRelationsByRelativeUuid[relative.uuid]; 
-            const mMarriageStartDate = relation.start_date ? moment(relation.start_date) : moment();
-            const mMarriageEndDate = relation.end_date ? moment(relation.end_date) : moment();             
-            const formattedMarriageStartDate = mMarriageStartDate.format('l');
-            const formattedMarriageEndDate = mMarriageEndDate.format('l');
-            const formattedMarriageDates = relation.end_date 
-              ? `${formattedMarriageStartDate} - ${formattedMarriageEndDate}` 
-              : `Since ${formattedMarriageStartDate}` 
-            const marriageLength = mMarriageEndDate.diff(mMarriageStartDate, 'years'); 
-            const isSpouse = displayRelationType === DISPLAY_RELATION_TYPES.SPOUSE || 
-              displayRelationType === DISPLAY_RELATION_TYPES.EX_SPOUSE; 
-            return (
-              <div key={relative.uuid}>
-                <a onClick={() => handleMemberSelect(relative.uuid)}>
-                  <TagValue
-                    relationType={relationType}
-                    onDelete={() => handleDeleteRelation(relative.uuid)}
-                  >
-                    {relative.first_name} {relative.last_name}
-                  </TagValue>
-                </a>
-                {
-                  isSpouse && (
-                    <div className={css({marginBottom: '5px'})}>
-                      <span className={css({fontStyle: 'italic'})}>{formattedMarriageDates}</span>
-                      <br/>
-                      <span className={css({display: 'flex', alignItems: 'center', fontStyle: 'italic'})}>
-                        <span>({marriageLength} years)</span>
-                        <a onClick={() => onEditRelation(relation)} style={{marginLeft: '5px'}}><EditButton /></a>
-                      </span>
-                    </div>
-                  )
-                }
-              </div>
-            );
-          })
+          relativesByType[displayRelationType].map((relative) => (
+            <RelativeTag 
+              key={relative.uuid} 
+              relative={relative} 
+              displayRelationType={displayRelationType} 
+            />
+          ))
         }
         { 
           editableSection === displayRelationType ? (
@@ -486,7 +505,7 @@ export default function MemberCard({
                 key={i} 
                 label={DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[section].sectionLabel}
               >
-                <SectionRowContent displayRelationType={section} />
+                <RelativeContent displayRelationType={section} />
               </SectionRow>
             ))
           }

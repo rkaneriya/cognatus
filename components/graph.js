@@ -89,9 +89,6 @@ export default function TreeGraph(props) {
       const uuid = nodes[0] || null; 
       setSelectedMemberUuid(uuid); 
     },
-    doubleClick: function(event) { 
-      console.log("DOUBLE CLICKED!"); 
-    },
   };
 
   return (
