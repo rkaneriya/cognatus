@@ -5,6 +5,7 @@ import { supabase } from '../utils/supabase';
 import { styletron } from '../styletron'
 import {useRouter} from 'next/router';
 import {ROUTES} from '../constants/routes'; 
+import './_styles.css'; 
 
 export default function MyApp(props) {
   const router = useRouter(); 

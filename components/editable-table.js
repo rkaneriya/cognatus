@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Table, Input, InputNumber, Popconfirm, Form, Typography } from 'antd';
+import ShareTreeDrawer from './share-tree-drawer';
 
 const EditableCell = ({
   editing,
@@ -39,13 +40,17 @@ const EditableCell = ({
 const EditableTable = ({
   columns, 
   dataSource, 
-  handleRowDelete, 
-  handleRowSave,
+  handleDelete, 
+  handleSave,
+  handleShareAdd,
+  handleShareDelete, 
   loading, 
   pagination, 
 }) => {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
+  const [isShareTreeDrawerOpen, setIsShareTreeDrawerOpen] = useState(false); 
+  const [sharableTreeUuid, setSharableTreeUuid] = useState(null); 
   
   useEffect(() => { 
     setData(dataSource); 
@@ -85,7 +90,7 @@ const EditableTable = ({
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
-        handleRowSave(newData[index]); 
+        handleSave(newData[index]); 
         setData(newData);
         setEditingKey('');
       } else {
@@ -99,7 +104,7 @@ const EditableTable = ({
   };
 
   const deleteRow = (uuid) => { 
-    handleRowDelete(uuid); 
+    handleDelete(uuid); 
   }; 
 
   const modifiedColumns = [
@@ -109,6 +114,10 @@ const EditableTable = ({
       dataIndex: 'action',
       render: (_, record) => {
         const editable = isEditing(record);
+        const handleShare = () => { 
+          setSharableTreeUuid(record.uuid); 
+          setIsShareTreeDrawerOpen(true); 
+        }
         return editable ? (
           <span>
             <Typography.Link
@@ -131,6 +140,9 @@ const EditableTable = ({
             <Popconfirm title="Are you sure?" okText="Yes" onConfirm={() => deleteRow(record.uuid)}>
               <a disabled={editingKey !== ''} >Delete</a>
             </Popconfirm>
+            <Typography.Link disabled={editingKey !== ''} style={{ marginLeft: 8 }}  onClick={handleShare}>
+              <span>Share ({record.sharees.length})</span>
+            </Typography.Link>
           </span>
         );
       },
@@ -153,6 +165,7 @@ const EditableTable = ({
     };
   });
 
+  const tree = data.find(d => d.uuid === sharableTreeUuid); 
   return (
     <Form form={form} component={false}>
       <Table
@@ -169,6 +182,13 @@ const EditableTable = ({
         style={{
           width: '100%'
         }}
+      />
+      <ShareTreeDrawer
+        handleShareAdd={handleShareAdd}
+        handleShareDelete={handleShareDelete}
+        tree={tree}
+        onClose={() => setIsShareTreeDrawerOpen(false)}
+        visible={isShareTreeDrawerOpen}
       />
     </Form>
   );

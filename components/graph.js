@@ -55,6 +55,7 @@ export default function TreeGraph(props) {
   };
 
   const options = {
+    autoResize: true, 
     edges: {
       arrows: { 
         to: {

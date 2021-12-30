@@ -9,6 +9,8 @@ import {v4 as uuidv4} from 'uuid';
 import useMemberRelationAPI from '../../api/member-relation';
 import { MEMBER_RELATION_ACTIONS } from '../../constants/member-relation-actions';
 import RelationDrawer from '../../components/relation-drawer';
+import { Button, Result } from 'antd';
+import { ROUTES } from '../../constants/routes';
 
 const { 
   ADD_FIRST_MEMBER,
@@ -56,6 +58,7 @@ export default function Tree() {
     createMember,
     updateMember,
 
+    isTreeEditable, 
     members,
     relations, 
     loading,
@@ -114,6 +117,17 @@ export default function Tree() {
     handleMemberDrawerFinish = createMember; 
   }
 
+  if (!loading && isTreeEditable === null) { 
+    return (
+      <Result
+        status="403"
+        title="403"
+        subTitle="Sorry, you are not authorized to access this tree."
+        extra={<Button type='primary' onClick={() => router.push(ROUTES.ADMIN)}>Back to trees</Button>}
+      />
+    );
+  }
+
   return (
     <Wrapper>
       <Graph
@@ -149,6 +163,7 @@ export default function Tree() {
             members={members}
             relations={relations}
             loading={loading} 
+            isTreeEditable={isTreeEditable}
             onAddNewMemberAndRelation={handleAddNewMemberAndRelation}
             onAddRelation={createRelation}
             onEditMember={() => handleEditMember(selectedMember)} 

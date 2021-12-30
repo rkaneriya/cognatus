@@ -3,12 +3,15 @@ import { RELATION_TABLE, RELATION_TABLE_ROWS } from './entities/relation';
 import {MEMBER_TABLE, MEMBER_TABLE_ROWS} from './entities/member';
 import { message } from 'antd';
 import { supabase } from '../utils/supabase';
+import { SHARED_TREE_TABLE, SHARED_TREE_TABLE_ROWS } from './entities/shared-tree';
+import { TREE_TABLE, TREE_TABLE_ROWS } from './entities/tree';
 
 const GENERIC_ERROR_MESSAGE = 'Error'; 
 
 export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) { 
   const [members, setMembers] = useState([]); 
   const [relations, setRelations] = useState([]);
+  const [isTreeEditable, setIsTreeEditable] = useState(null); // null = 403, false = read-only, true = read-write
   const [loading, setLoading] = useState(true); 
 
   const fetchMembersAndRelations = useCallback(async () => {
@@ -18,7 +21,35 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     setLoading(true); 
 
-    // fetch members 
+    // 1. determine if tree is accessible and/or editable 
+    const user = supabase.auth.user(); 
+    let isTreeEditable = null; 
+
+    const {data: tree, error: treeError} = await supabase
+      .from(TREE_TABLE)
+      .select(TREE_TABLE_ROWS.UUID)
+      .eq(TREE_TABLE_ROWS.UUID, treeUuid)
+      .eq(TREE_TABLE_ROWS.CREATOR_UUID, user.id)
+
+    if (treeError) { 
+      return; // 403 
+    }
+
+    const {data: sharee, error: shareeError} = await supabase
+      .from(SHARED_TREE_TABLE)
+      .select(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL)
+      .eq(SHARED_TREE_TABLE_ROWS.TREE_UUID, treeUuid)
+      .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user.email)
+    
+    if (shareeError) {
+      return; // 403 
+    }
+ 
+    if (tree.length !== 0 || sharee.length !== 0) {
+      isTreeEditable = tree.length === 1; // editable only if user = creator 
+    }
+
+    // 2. fetch members 
     const { data: members, error: membersError } = await supabase
       .from(MEMBER_TABLE)
       .select("*")
@@ -30,7 +61,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
       return; 
     }
 
-    // fetch relations 
+    // 3. fetch relations 
     const { data: relations, error: relationsError } = await supabase
       .from(RELATION_TABLE)
       .select("*")
@@ -52,8 +83,9 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
       ...relation, 
     })); 
 
+    setIsTreeEditable(isTreeEditable); 
     setMembers(keyedMembers); 
-    setRelations(keyedRelations); 
+    setRelations(keyedRelations);
 
     setLoading(false); 
   }, [treeUuid]); 
@@ -259,6 +291,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     deleteRelation,
 
     // data 
+    isTreeEditable, 
     members, 
     relations, 
     loading,

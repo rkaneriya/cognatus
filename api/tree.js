@@ -3,6 +3,7 @@ import { message } from 'antd';
 import {TREE_TABLE, TREE_TABLE_ROWS} from './entities/tree'; 
 import { MEMBER_TABLE, MEMBER_TABLE_ROWS } from './entities/member';
 import { supabase } from '../utils/supabase';
+import { SHARED_TREE_TABLE, SHARED_TREE_TABLE_ROWS } from './entities/shared-tree';
 
 export const PAGE_SIZE = 5; 
 
@@ -20,18 +21,49 @@ export default function useTreeAPI(columns) {
     const start = (currentPage - 1) * PAGE_SIZE; 
     const end = start + PAGE_SIZE - 1;  
 
-    const { data: trees, count, error } = await supabase
+    const user = supabase.auth.user(); 
+
+    const { data: trees, count, error: treeError } = await supabase
       .from(TREE_TABLE)
       .select("*", { count: "exact" })
+      .eq(TREE_TABLE_ROWS.CREATOR_UUID, user.id)
       .order(TREE_TABLE_ROWS.CREATED_AT, { ascending: true })
       .range(start, end);
-  
-    if (error) {
+
+    if (treeError) { 
       message.error(error?.message || GENERIC_ERROR_MESSAGE);
+      setLoading(false); 
+      return; 
+    }
+
+    const treeUuids = trees.map(t => t.uuid); 
+
+    const {data: sharedTrees, error: sharedTreeError} = await supabase
+      .from(SHARED_TREE_TABLE)
+      .select('*')
+      .eq(SHARED_TREE_TABLE_ROWS.SHARER_EMAIL, user.email)
+      .in(SHARED_TREE_TABLE_ROWS.TREE_UUID, treeUuids); 
+  
+    const sharedTreesByTreeUuid = sharedTrees.reduce((acc, s) => { 
+      const obj = {
+        sharee_email: s.sharee_email,
+        uuid: s.uuid, 
+      }; 
+      if (acc[s.tree_uuid]) { 
+        acc[s.tree_uuid].push(obj); 
+      } else { 
+        acc[s.tree_uuid] = [obj]; 
+      }
+      return acc; 
+    }, {}); 
+
+    if (sharedTreeError) {
+      message.error(sharedTreeError?.message || GENERIC_ERROR_MESSAGE);
     } else {
       const keyedData = trees.map((tree) => ({
         key: tree.uuid, 
         ...tree, 
+        sharees: sharedTreesByTreeUuid[tree.uuid] || [], 
       }))
       setData(keyedData); 
       setTotalCount(count); 

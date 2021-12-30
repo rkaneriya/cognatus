@@ -68,7 +68,12 @@ function SectionRow({label, children, styles}) {
   )
 }
 
-function TagValue({relationType, children, onDelete}) { 
+function TagValue({
+  isTreeEditable,
+  relationType, 
+  onDelete,
+  children, 
+}) { 
   const [css] = useStyletron(); 
   const color = getRelationEdgeColor(relationType); 
   const tagStyle = (
@@ -84,7 +89,7 @@ function TagValue({relationType, children, onDelete}) {
       overflowWrap: 'break-word',
       marginBottom: '5px'
     })}>
-      <Tag color={color} style={tagStyle} closable onClose={onDelete}>
+      <Tag color={color} style={tagStyle} closable={isTreeEditable} onClose={onDelete}>
         <span style={{ 
           whiteSpace: 'normal',
           fontSize: '14px',   
@@ -157,6 +162,7 @@ export default function MemberCard({
   members, 
   relations, 
   loading,
+  isTreeEditable, 
   setSelectedMemberUuid,
 }) {
   const [css] = useStyletron(); 
@@ -323,7 +329,7 @@ export default function MemberCard({
     setEditableSection(displayRelationType); 
   }
 
-  function RelativeTag({relative, displayRelationType}) {     
+  function RelativeTag({isTreeEditable, relative, displayRelationType}) {     
     const { 
       relationType,
     } = DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[displayRelationType]; 
@@ -348,6 +354,7 @@ export default function MemberCard({
       <div>
         <a onClick={() => handleMemberSelect(relative.uuid)}>
           <TagValue
+            isTreeEditable={isTreeEditable}
             relationType={relationType}
             onDelete={() => handleDeleteRelation(relative.uuid)}
           >
@@ -363,7 +370,11 @@ export default function MemberCard({
               <br/>
               <span className={css({display: 'flex', alignItems: 'center', fontStyle: 'italic'})}>
                 <span>({marriageLength} years)</span>
-                <a onClick={() => onEditRelation(relation)} style={{marginLeft: '5px'}}><EditButton /></a>
+                { 
+                  isTreeEditable && (
+                    <a onClick={() => onEditRelation(relation)} style={{marginLeft: '5px'}}><EditButton /></a>
+                  )
+                }
               </span>
             </div>
           )
@@ -372,7 +383,7 @@ export default function MemberCard({
     );
   }
 
-  function RelativeContent({displayRelationType}) { 
+  function RelativeContent({isTreeEditable, displayRelationType}) { 
     const { 
       contentLabel, 
       relationType,
@@ -384,7 +395,8 @@ export default function MemberCard({
         { 
           relativesByType[displayRelationType].map((relative) => (
             <RelativeTag 
-              key={relative.uuid} 
+              key={relative.uuid}
+              isTreeEditable={isTreeEditable} 
               relative={relative} 
               displayRelationType={displayRelationType} 
             />
@@ -426,20 +438,22 @@ export default function MemberCard({
                 Add
               </a>
             </div>
-          ) : (
-            <Tag 
-              onClick={() => handleEditableSection(displayRelationType)} 
-              style={{ 
-                border: '1px dashed lightgrey', 
-                backgroundColor: 'white',
-                color: 'grey', 
-                width: 'fit-content', 
-                fontSize: '14px', 
-                padding: '3px 6px'
-              }}
-            >
-              <PlusOutlined /> Add {contentLabel}
-            </Tag>
+          ) : ( 
+            isTreeEditable && (
+              <Tag 
+                onClick={() => handleEditableSection(displayRelationType)} 
+                style={{ 
+                  border: '1px dashed lightgrey', 
+                  backgroundColor: 'white',
+                  color: 'grey', 
+                  width: 'fit-content', 
+                  fontSize: '14px', 
+                  padding: '3px 6px'
+                }}
+              >
+                <PlusOutlined /> Add {contentLabel}
+              </Tag>
+            )
           )
         }
       </>
@@ -457,11 +471,15 @@ export default function MemberCard({
         backgroundColor: 'white',
         width: '350px',
         boxShadow: '-1px 2px 5px 2px rgba(0, 0, 0, 0.2)',
+        maxHeight: '85vh', 
+        overflow: 'auto',
       }}
-      actions={[
+      actions={isTreeEditable ? [
         <QueryRelationButton key='query_relation' name={first_name} />,
         <EditButton key='edit' onClick={onEditMember} />,
         <DeleteButton key='add_relation' onClick={onDeleteMemberAndRelations} />,
+      ] : [
+        <QueryRelationButton key='query_relation' name={first_name} />,
       ]}
       loading={loading}
     > 
@@ -502,10 +520,10 @@ export default function MemberCard({
           {
             Object.keys(DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG).map((section, i) => (
               <SectionRow 
-                key={i} 
+                key={DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[section].sectionLabel} 
                 label={DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[section].sectionLabel}
               >
-                <RelativeContent displayRelationType={section} />
+                <RelativeContent isTreeEditable={isTreeEditable} displayRelationType={section} />
               </SectionRow>
             ))
           }
