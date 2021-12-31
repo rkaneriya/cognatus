@@ -2,7 +2,7 @@ import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { Card, Button, Select, Avatar, Tooltip, Tag, AutoComplete, Popconfirm, Divider as AntDivider } from 'antd';
 import { useStyletron, styled, autoComposeDeep } from 'styletron-react';
-import { EditOutlined, ApartmentOutlined, DeleteOutlined, PlusOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { UpOutlined, EditOutlined, ApartmentOutlined, DeleteOutlined, PlusOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
 import { RELATION_TYPES } from '../constants/relation-types';
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
@@ -102,15 +102,6 @@ function TagValue({
   ); 
 }
 
-function HeaderSection({children}) { 
-  const [css] = useStyletron(); 
-  return (
-    <div className={css({display: 'flex', alignItems: 'center'})}>
-      {children}
-    </div>
-  ); 
-}
-
 function BodySection({children}) { 
   const [css] = useStyletron(); 
   return (
@@ -143,10 +134,10 @@ function EditButton({onClick}) {
   ); 
 }
 
-function QueryRelationButton({name}) { 
+function QueryRelationButton({name, onClick}) { 
   return (
     <Tooltip placement='bottom' title={`Discover how others are related to ${name}`}>  
-      <ApartmentOutlined key="query_relation" />
+      <ApartmentOutlined key="query_relation" onClick={onClick} />
     </Tooltip>
   ); 
 }
@@ -168,6 +159,7 @@ export default function MemberCard({
   const [css] = useStyletron(); 
   const [relativeUuid, setRelativeUuid] = useState(null); 
   const [editableSection, setEditableSection] = useState(null); 
+  const [isExpanded, setIsExpanded] = useState(true); 
 
   const {
     first_name,
@@ -270,6 +262,14 @@ export default function MemberCard({
   const relativeOptions = members.filter(m => 
     m.uuid !== selectedMember.uuid && !Object.keys(directRelativesByUuid).includes(m.uuid)
   ); 
+  
+  const actions = [
+    <QueryRelationButton key='query_relation' name={first_name} onClick={handleQueryRelation} />,
+    ...(isTreeEditable ? [
+      <EditButton key='edit' onClick={onEditMember} />,
+      <DeleteButton key='add_relation' onClick={onDeleteMemberAndRelations} />,
+    ] : [])
+  ]; 
 
   const DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG = {
     [DISPLAY_RELATION_TYPES.PARENT]: { 
@@ -327,6 +327,10 @@ export default function MemberCard({
   function handleEditableSection(displayRelationType) { 
     setRelativeUuid(null); 
     setEditableSection(displayRelationType); 
+  }
+
+  function handleQueryRelation() {
+    setIsExpanded(false); 
   }
 
   function RelativeTag({isTreeEditable, relative, displayRelationType}) {     
@@ -479,30 +483,49 @@ export default function MemberCard({
         maxHeight: '85vh', 
         overflow: 'auto',
       }}
-      actions={isTreeEditable ? [
-        <QueryRelationButton key='query_relation' name={first_name} />,
-        <EditButton key='edit' onClick={onEditMember} />,
-        <DeleteButton key='add_relation' onClick={onDeleteMemberAndRelations} />,
-      ] : [
-        <QueryRelationButton key='query_relation' name={first_name} />,
-      ]}
+      actions={actions}
       loading={loading}
     > 
-      <div>
-        <HeaderSection>
+      <div className={css({display: 'flex', alignItems: 'center', justifyContent: 'space-between'})}>
+        <div className={css({display: 'flex', alignItems: 'center'})}>
           <Avatar src={is_male ? '/male.jpg' : '/female.jpg'} size={50} />
           <div className={css({
             marginLeft: '20px', 
             display: 'flex', 
             flexDirection: 'column', 
             alignItems: 'flex-start', 
-            width: '75%', 
           })}>
             <Name>{displayName}</Name>
             {nickname && <div className={css({fontStyle: 'italic'})}>&quot;{nickname}&quot;</div>}
           </div>
-        </HeaderSection>
-        
+        </div>
+        <div 
+          className={css({
+            display: 'flex', 
+            color: 'gray', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            width: '30px', 
+            height: '30px',
+            ':hover': { 
+              border: '0.1px solid lightgray',
+              cursor: 'pointer'
+            }
+          })} 
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          <UpOutlined style={{ 
+            transform: `rotate(${isExpanded ? '0' : '180'}deg)`,
+            transition: 'transform 0.3s ease-in-out', 
+          }}/> 
+        </div>
+      </div>
+
+      <div className={css({
+        maxHeight: isExpanded ? '700px' : '0px',
+        overflow: 'hidden',
+        transition: 'max-height 0.3s ease-in-out',
+      })}>
         <Divider /> 
 
         <BodySection>
@@ -511,7 +534,7 @@ export default function MemberCard({
               <SectionRow 
                 key={label} 
                 label={label}
-                styles={{ marginBottom: i === dates.length-1 ? '0px' : '10px' }}
+                styles={{ marginBottom: i === dates.length - 1 ? '0px' : '10px' }}
               >
                 {content}
               </SectionRow>
@@ -525,7 +548,7 @@ export default function MemberCard({
           {
             Object.keys(DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG).map((section, i) => (
               <SectionRow 
-                key={DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[section].sectionLabel} 
+                key={i} 
                 label={DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[section].sectionLabel}
               >
                 <RelativeContent isTreeEditable={isTreeEditable} displayRelationType={section} />
