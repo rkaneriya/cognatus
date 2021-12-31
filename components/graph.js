@@ -1,20 +1,24 @@
-import React from 'react'; 
+import {useContext} from 'react'; 
 import Graph from 'react-graph-vis';
 import { useStyletron } from 'styletron-react';
 import {getRelationEdgeColor, getIsRelationEdgeDashed} from '../utils/relations'; 
+import { MemberRelationContext } from '../data/contexts/member-relation';
 
 export default function TreeGraph(props) { 
   const [css] = useStyletron(); 
-  const { 
+  const {
     members, 
     relations, 
     selectedMemberUuid, 
+    setSelectedMemberUuid,
+  } = useContext(MemberRelationContext); 
+
+  const { 
     sourceMemberUuid,
     targetMemberUuid, 
     pathNodes,
     pathEdges,
-    setSelectedMemberUuid,
-  } = props; 
+  } = props;  
 
   const getNodeColor = (id) => { 
     if (

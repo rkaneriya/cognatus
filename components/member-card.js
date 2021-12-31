@@ -1,21 +1,14 @@
 import moment from 'moment'; 
-import { useEffect, useState } from 'react';
-import { Card, Button, Select, Avatar, Tooltip, Tag, AutoComplete, Popconfirm, Divider as AntDivider } from 'antd';
-import { useStyletron, styled, autoComposeDeep } from 'styletron-react';
-import { UpOutlined, EditOutlined, ApartmentOutlined, DeleteOutlined, PlusOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { useState, useContext } from 'react';
+import { Card, Avatar, Tooltip, Popconfirm, Divider as AntDivider } from 'antd';
+import { useStyletron } from 'styletron-react';
+import { UpOutlined, EditOutlined, ApartmentOutlined, DeleteOutlined} from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
-import { RELATION_TYPES } from '../constants/relation-types';
-import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
-import {getRelationEdgeColor} from '../utils/relations'; 
+import { MemberRelationContext } from '../data/contexts/member-relation';
+import { RelativeContent } from './relative-content';
+import {DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG} from '../constants/display-relation-types'; 
 
 const DATE_FORMAT = 'll'; 
-
-const DISPLAY_RELATION_TYPES = { 
-  PARENT: 'parent', 
-  CHILD: 'child', 
-  SPOUSE: 'spouse',
-  EX_SPOUSE: 'ex_spouse', 
-}; 
 
 function Name({children}) { 
   const [css] = useStyletron(); 
@@ -68,40 +61,6 @@ function SectionRow({label, children, styles}) {
   )
 }
 
-function TagValue({
-  isTreeEditable,
-  relationType, 
-  onDelete,
-  children, 
-}) { 
-  const [css] = useStyletron(); 
-  const color = getRelationEdgeColor(relationType); 
-  const tagStyle = (
-    relationType === RELATION_TYPES.EX_SPOUSE 
-    ? {
-      background: 'unset', 
-      backgroundImage: 'linear-gradient(30deg, #f9f0ff 25%, transparent 25%, transparent 50%, #f9f0ff 50%, #f9f0ff 75%, transparent 75%, #fff)'
-    } 
-    : {}
-  ); 
-  return (
-    <div className={css({
-      overflowWrap: 'break-word',
-      marginBottom: '5px'
-    })}>
-      <Tag color={color} style={tagStyle} closable={isTreeEditable} onClose={onDelete}>
-        <span style={{ 
-          whiteSpace: 'normal',
-          fontSize: '14px',   
-          padding: '10px 0px', 
-        }}>
-          {children}
-        </span>
-      </Tag>
-    </div>
-  ); 
-}
-
 function BodySection({children}) { 
   const [css] = useStyletron(); 
   return (
@@ -144,22 +103,19 @@ function QueryRelationButton({name, onClick}) {
 
 export default function MemberCard({
   onAddNewMemberAndRelation, 
-  onAddRelation, 
   onEditMember, 
-  onDeleteMemberAndRelations, 
-  selectedMember, 
-  onDeleteRelation,
   onEditRelation, 
-  members, 
-  relations, 
-  loading,
-  isTreeEditable, 
-  setSelectedMemberUuid,
 }) {
   const [css] = useStyletron(); 
-  const [relativeUuid, setRelativeUuid] = useState(null); 
-  const [editableSection, setEditableSection] = useState(null); 
   const [isExpanded, setIsExpanded] = useState(true); 
+
+  const {
+    deleteMemberAndRelations,
+    selectedMemberUuid,
+    isTreeEditable, 
+    membersByUuid,
+    loading,
+  } = useContext(MemberRelationContext); 
 
   const {
     first_name,
@@ -170,13 +126,7 @@ export default function MemberCard({
     birth_date,
     death_date, 
     notes, 
-  } = selectedMember; 
-
-  // member data 
-  const membersByUuid = members.reduce((acc, member) => ({
-    ...acc, 
-    [member.uuid]: member, 
-  }), {});
+  } = membersByUuid[selectedMemberUuid] || {}; 
 
   const mBirthDate = moment(birth_date); 
   const mDeathDate = moment(death_date); 
@@ -187,288 +137,32 @@ export default function MemberCard({
     : moment().diff(mBirthDate, 'years'); 
   const deadYears = moment().diff(mDeathDate, 'years'); 
   const displayName = `${first_name} ${last_name}` + (maiden_name ? ` (${maiden_name})` : ''); 
-  const dates = [
-    birth_date ? { 
+  const dates = []; 
+  if (birth_date) { 
+    dates.push({
       label: 'BORN', 
       content: <>{formattedBirthDate} ({pluralize(age, 'year')})</>,
-    } : {}, 
-    death_date ? { 
+    }); 
+  }
+  if (death_date) { 
+    dates.push({
       label: 'DIED', 
       content: <>{formattedDeathDate} ({pluralize(deadYears, 'year')} ago)</>,
-    } : {}
-  ]; 
+    });
+  }
 
-  // relation data 
-  const relationsByMemberUuid = relations.reduce((acc, relation) => {
-    if (acc[relation.from_member_uuid]) { 
-      acc[relation.from_member_uuid].push(relation); 
-    } else {
-      acc[relation.from_member_uuid] = [relation]; 
-    }
-
-    if (acc[relation.to_member_uuid]) { 
-      acc[relation.to_member_uuid].push(relation); 
-    } else {
-      acc[relation.to_member_uuid] = [relation]; 
-    }
-    return acc;
-  }, {}); 
-
-  const directRelations = relationsByMemberUuid[selectedMember.uuid] || []; 
-  const directRelationsByRelativeUuid = directRelations.reduce((acc, relation) => { 
-    const relative = relation.from_member_uuid === selectedMember.uuid 
-      ? membersByUuid[relation.to_member_uuid] 
-      : membersByUuid[relation.from_member_uuid]; 
-    return {
-      ...acc,
-      [relative.uuid]: relation, 
-    }; 
-  }, {}); 
-    const directRelativesByUuid = directRelations.reduce((acc, relation) => {
-    const relative = relation.from_member_uuid === selectedMember.uuid 
-      ? membersByUuid[relation.to_member_uuid] 
-      : membersByUuid[relation.from_member_uuid]; 
-    return { 
-      ...acc,
-      [relative.uuid]: relative, 
-    }
-  }, {}); 
-  const relativesByType = directRelations.reduce((acc, relation) => { 
-    const relativeUuid = relation.from_member_uuid === selectedMember.uuid 
-      ? relation.to_member_uuid 
-      : relation.from_member_uuid;  
-    const relative = directRelativesByUuid[relativeUuid]; 
-    const isRelativeOlder = moment(selectedMember.birth_date).isAfter(moment(relative.birth_date));
-    
-    let displayRelationType = DISPLAY_RELATION_TYPES.CHILD; 
-    if (relation.type === RELATION_TYPES.EX_SPOUSE) { 
-      displayRelationType = DISPLAY_RELATION_TYPES.EX_SPOUSE; 
-    } else if (relation.type === RELATION_TYPES.SPOUSE) { 
-      displayRelationType = DISPLAY_RELATION_TYPES.SPOUSE; 
-    } else { 
-      if (isRelativeOlder) { 
-        displayRelationType = DISPLAY_RELATION_TYPES.PARENT; 
-      }
-    }
-    acc[displayRelationType].push(relative);
-    return acc; 
-  }, {
-    [DISPLAY_RELATION_TYPES.PARENT]: [], 
-    [DISPLAY_RELATION_TYPES.CHILD]: [], 
-    [DISPLAY_RELATION_TYPES.SPOUSE]: [], 
-    [DISPLAY_RELATION_TYPES.EX_SPOUSE]: [], 
-  }); 
-
-  const relativeOptions = members.filter(m => 
-    m.uuid !== selectedMember.uuid && !Object.keys(directRelativesByUuid).includes(m.uuid)
-  ); 
-  
   const actions = [
     <QueryRelationButton key='query_relation' name={first_name} onClick={handleQueryRelation} />,
     ...(isTreeEditable ? [
       <EditButton key='edit' onClick={onEditMember} />,
-      <DeleteButton key='add_relation' onClick={onDeleteMemberAndRelations} />,
+      <DeleteButton key='add_relation' onClick={() => deleteMemberAndRelations(selectedMemberUuid)} />,
     ] : [])
   ]; 
-
-  const DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG = {
-    [DISPLAY_RELATION_TYPES.PARENT]: { 
-      sectionLabel: 'PARENTS', 
-      contentLabel: 'parent', 
-      relationType: RELATION_TYPES.PARENT_CHILD, 
-      memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_PARENT, 
-    },
-    [DISPLAY_RELATION_TYPES.CHILD]: { 
-      sectionLabel: 'CHILDREN', 
-      contentLabel: 'child', 
-      relationType: RELATION_TYPES.PARENT_CHILD, 
-      memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_CHILD, 
-    },
-    [DISPLAY_RELATION_TYPES.SPOUSE]: { 
-      sectionLabel: 'SPOUSES', 
-      contentLabel: 'spouse', 
-      relationType: RELATION_TYPES.SPOUSE, 
-      memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE, 
-    },
-    [DISPLAY_RELATION_TYPES.EX_SPOUSE]: { 
-      sectionLabel: 'EX-SPOUSES', 
-      contentLabel: 'ex-spouse', 
-      relationType: RELATION_TYPES.EX_SPOUSE, 
-      memberRelationAction: MEMBER_RELATION_ACTIONS.ADD_NEW_EX_SPOUSE, 
-    }, 
-  }; 
-
-  function handleRelativeSelect(value) { 
-    setRelativeUuid(value); 
-  }
-
-  function handleAddRelative(relativeUuid, relationType) {
-    if (relativeUuid) { 
-      onAddRelation(relativeUuid, relationType); 
-    }
-    setRelativeUuid(null);
-    setEditableSection(null); 
-  }
-
-  function handleMemberSelect(uuid) { 
-    setRelativeUuid(null); 
-    setSelectedMemberUuid(uuid); 
-  }
-
-  function handleDeleteRelation(relativeUuid) { 
-    const relations = relationsByMemberUuid[relativeUuid];
-    const relationToDelete = relations.find((relation) => (
-      (relation.from_member_uuid === relativeUuid && relation.to_member_uuid === selectedMember.uuid) || 
-      (relation.from_member_uuid === selectedMember.uuid && relation.to_member_uuid === relativeUuid)
-    )); 
-    onDeleteRelation(relationToDelete.uuid)
-  } 
-
-  function handleEditableSection(displayRelationType) { 
-    setRelativeUuid(null); 
-    setEditableSection(displayRelationType); 
-  }
 
   function handleQueryRelation() {
     setIsExpanded(false); 
   }
-
-  function RelativeTag({isTreeEditable, relative, displayRelationType}) {     
-    const { 
-      relationType,
-    } = DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[displayRelationType]; 
-
-    const relation = directRelationsByRelativeUuid[relative.uuid]; 
-
-    const mMarriageStartDate = relation.start_date ? moment(relation.start_date) : moment();
-    const mMarriageEndDate = relation.end_date ? moment(relation.end_date) : moment();             
-    const formattedMarriageStartDate = mMarriageStartDate.format('l');
-    const formattedMarriageEndDate = mMarriageEndDate.format('l');
-    const formattedMarriageDates = relation.end_date 
-      ? `${formattedMarriageStartDate} - ${formattedMarriageEndDate}` 
-      : `Since ${formattedMarriageStartDate}` 
-    const marriageLength = mMarriageEndDate.diff(mMarriageStartDate, 'years'); 
-
-    const isSpouse = (
-      displayRelationType === DISPLAY_RELATION_TYPES.SPOUSE || 
-      displayRelationType === DISPLAY_RELATION_TYPES.EX_SPOUSE
-    ); 
-
-    return (
-      <div>
-        <a onClick={() => handleMemberSelect(relative.uuid)}>
-          <TagValue
-            isTreeEditable={isTreeEditable}
-            relationType={relationType}
-            onDelete={() => handleDeleteRelation(relative.uuid)}
-          >
-            {relative.first_name} {relative.last_name}
-          </TagValue>
-        </a>
-        {
-          isSpouse && (
-            <div className={css({marginBottom: '5px'})}>
-              <span className={css({fontStyle: 'italic'})}>
-                {formattedMarriageDates}
-              </span>
-              <br/>
-              <span className={css({display: 'flex', alignItems: 'center', fontStyle: 'italic'})}>
-                <span>({marriageLength} years)</span>
-                { 
-                  isTreeEditable && (
-                    <a onClick={() => onEditRelation(relation)} style={{marginLeft: '5px'}}><EditButton /></a>
-                  )
-                }
-              </span>
-            </div>
-          )
-        }
-      </div>
-    );
-  }
-
-  function RelativeContent({isTreeEditable, displayRelationType}) { 
-    const { 
-      contentLabel, 
-      relationType,
-      memberRelationAction, 
-    } = DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[displayRelationType]; 
-
-    return (
-      <>
-        { 
-          relativesByType[displayRelationType].map((relative) => (
-            <RelativeTag 
-              key={relative.uuid}
-              isTreeEditable={isTreeEditable} 
-              relative={relative} 
-              displayRelationType={displayRelationType} 
-            />
-          ))
-        }
-        {
-          !isTreeEditable && relativesByType[displayRelationType].length === 0 && (
-            <span>--</span>
-          )
-        }
-        { 
-          isTreeEditable && (
-            editableSection === displayRelationType ? (
-              <div className={css({
-                display: 'flex',
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-              })}>
-                <Select
-                  autoFocus={true}
-                  showSearch={true}
-                  value={relativeUuid}
-                  notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${contentLabel}`}</a>}
-                  style={{ width: 150 }}
-                  onSelect={handleRelativeSelect}
-                  placeholder={`Select ${contentLabel}`}
-                  filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                >
-                  {
-                    relativeOptions.map(r => (
-                      <Select.Option
-                        key={r.uuid}
-                        value={r.uuid}
-                      >
-                        {`${r.first_name} ${r.last_name}`}
-                      </Select.Option>
-                    ))
-                  }
-                </Select>
-                <a 
-                  disabled={!relativeUuid}
-                  style={{ marginLeft: '5px' }} 
-                  onClick={() => handleAddRelative(relativeUuid, relationType)}
-                >
-                  Add
-                </a>
-              </div>
-            ) : ( 
-              <Tag 
-                onClick={() => handleEditableSection(displayRelationType)} 
-                style={{ 
-                  border: '1px dashed lightgrey', 
-                  backgroundColor: 'white',
-                  color: 'grey', 
-                  width: 'fit-content', 
-                  fontSize: '14px', 
-                  padding: '3px 6px'
-                }}
-              >
-                <PlusOutlined /> Add {contentLabel}
-              </Tag>
-            )
-          ) 
-        }
-      </>
-    ); 
-  }
-
+  
   return (
     <Card
       style={{ 
@@ -534,7 +228,7 @@ export default function MemberCard({
               <SectionRow 
                 key={label} 
                 label={label}
-                styles={{ marginBottom: i === dates.length - 1 ? '0px' : '10px' }}
+                styles={{ marginBottom: i === dates.length-1 ? '0px' : '10px' }}
               >
                 {content}
               </SectionRow>
@@ -551,7 +245,11 @@ export default function MemberCard({
                 key={i} 
                 label={DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[section].sectionLabel}
               >
-                <RelativeContent isTreeEditable={isTreeEditable} displayRelationType={section} />
+                <RelativeContent 
+                  displayRelationType={section} 
+                  onAddNewMemberAndRelation={onAddNewMemberAndRelation}
+                  onEditRelation={onEditRelation}
+                />
               </SectionRow>
             ))
           }

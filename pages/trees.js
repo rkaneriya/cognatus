@@ -8,8 +8,8 @@ import Link from 'next/link';
 import EditableTable from '../components/editable-table'; 
 import NewTreeDrawer from '../components/new-tree-drawer';
 import NavBar from '../components/nav-bar'; 
-import useTreeAPI, {PAGE_SIZE} from '../api/tree';
-import useSharedTreeAPI from '../api/shared-tree';
+import useTreeAPI, {PAGE_SIZE} from '../data/hooks/tree';
+import useSharedTreeAPI from '../data/hooks/shared-tree';
 
 const {Title} = Typography; 
 

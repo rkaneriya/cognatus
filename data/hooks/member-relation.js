@@ -1,10 +1,10 @@
 import {useCallback, useState} from 'react'; 
-import { RELATION_TABLE, RELATION_TABLE_ROWS } from './entities/relation';
-import {MEMBER_TABLE, MEMBER_TABLE_ROWS} from './entities/member';
+import { RELATION_TABLE, RELATION_TABLE_ROWS } from '../entities/relation';
+import {MEMBER_TABLE, MEMBER_TABLE_ROWS} from '../entities/member';
 import { message } from 'antd';
-import { supabase } from '../utils/supabase';
-import { SHARED_TREE_TABLE, SHARED_TREE_TABLE_ROWS } from './entities/shared-tree';
-import { TREE_TABLE, TREE_TABLE_ROWS } from './entities/tree';
+import { supabase } from '../../utils/supabase';
+import { SHARED_TREE_TABLE, SHARED_TREE_TABLE_ROWS } from '../entities/shared-tree';
+import { TREE_TABLE, TREE_TABLE_ROWS } from '../entities/tree';
 
 const GENERIC_ERROR_MESSAGE = 'Error'; 
 
@@ -21,7 +21,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     setLoading(true); 
 
-    // 1. determine if tree is accessible and/or editable 
+    // 1. determine if tree is accessible and/or editable by user
     const user = supabase.auth.user(); 
     let isTreeEditable = null; 
 
