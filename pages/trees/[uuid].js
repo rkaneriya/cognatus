@@ -1,5 +1,5 @@
 import { MemberRelationContextProvider } from '../../data/contexts/member-relation';
-import Tree from '../tree'; 
+import Tree from '../../components/tree'; 
 
 export default function TreeWrapper() {
   return (

@@ -1,12 +1,12 @@
 import { useContext, useState } from 'react';
 import {useStyletron} from 'styletron-react'; 
-import MemberDrawer from '../components/member-drawer'; 
-import MemberCard from '../components/member-card';
-import Graph from '../components/graph'; 
+import MemberDrawer from './member-drawer'; 
+import MemberCard from './member-card';
+import Graph from './graph'; 
 import moment from 'moment';
 import {v4 as uuidv4} from 'uuid';
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
-import RelationDrawer from '../components/relation-drawer';
+import RelationDrawer from './relation-drawer';
 import { Button, Result } from 'antd';
 import { ROUTES } from '../constants/routes';
 import { MemberRelationContext } from '../data/contexts/member-relation';
@@ -92,34 +92,34 @@ export default function Tree() {
   }
 
   return (
-      <Wrapper>
-        <Graph
-          key={uuidv4()}
-          sourceMemberUuid={null}
-          targetMemberUuid={null}
-          pathNodes={[]}
-          pathEdges={[]}
-        />       
-        <MemberDrawer
-          drawerConfig={memberDrawerConfig}
-          initialValues={initialMemberEditorValues}
-          onClose={() => setIsMemberDrawerOpen(false)}
-          visible={isMemberDrawerOpen || (isTreeEmpty && isTreeEditable)}
-        /> 
-        <RelationDrawer
-          initialValues={initialRelationEditorValues}
-          onClose={() => setIsRelationDrawerOpen(false)}
-          visible={isRelationDrawerOpen}
-        /> 
-        { 
-          selectedMember && (
-            <MemberCard 
-              onAddNewMemberAndRelation={handleAddNewMemberAndRelation}
-              onEditMember={handleEditMember} 
-              onEditRelation={handleEditRelation}
-            />
-          )
-        }
-      </Wrapper>
+    <Wrapper>
+      <Graph
+        key={uuidv4()}
+        sourceMemberUuid={null}
+        targetMemberUuid={null}
+        pathNodes={[]}
+        pathEdges={[]}
+      />       
+      <MemberDrawer
+        drawerConfig={memberDrawerConfig}
+        initialValues={initialMemberEditorValues}
+        onClose={() => setIsMemberDrawerOpen(false)}
+        visible={isMemberDrawerOpen || (isTreeEmpty && isTreeEditable)}
+      /> 
+      <RelationDrawer
+        initialValues={initialRelationEditorValues}
+        onClose={() => setIsRelationDrawerOpen(false)}
+        visible={isRelationDrawerOpen}
+      /> 
+      { 
+        selectedMember && (
+          <MemberCard 
+            onAddNewMemberAndRelation={handleAddNewMemberAndRelation}
+            onEditMember={handleEditMember} 
+            onEditRelation={handleEditRelation}
+          />
+        )
+      }
+    </Wrapper>
   ); 
 }
