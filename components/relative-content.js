@@ -63,7 +63,6 @@ function RelativeTag({
     directRelationsByRelativeUuid,
   } = useContext(MemberRelationContext); 
 
-  console.log("@@@ RELATIVE CONTENT", directRelationsByRelativeUuid, relative)
   const { 
     relationType,
   } = DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[displayRelationType]; 
