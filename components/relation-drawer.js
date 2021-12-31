@@ -1,23 +1,24 @@
 import {Button, DatePicker, Drawer, Form, Input, Radio} from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
+import { MemberRelationContext } from '../data/contexts/member-relation';
 
 const layout = {
   labelCol: { span: 9 },
   wrapperCol: { span: 16 },
 };
 
-export default function RelationDrawer(props) {
+export default function RelationDrawer({
+  initialValues, 
+  onClose, 
+  visible, 
+}) {
   const [form] = Form.useForm(); 
-  const { 
-    initialValues, 
-    onClose, 
-    onFinish,
-    visible, 
-  } = props; 
 
   useEffect(() => { 
     form.setFieldsValue(initialValues); 
   }); 
+
+  const {updateRelation} = useContext(MemberRelationContext); 
 
   function handleClose() { 
     form.resetFields(); 
@@ -27,10 +28,10 @@ export default function RelationDrawer(props) {
   function handleFinish(values) { 
     form.resetFields(); 
     onClose(); 
-    onFinish({
+    updateRelation({
       uuid: initialValues.uuid, 
       ...values,
-    }); // updateRelation 
+    });
   }
 
   return (

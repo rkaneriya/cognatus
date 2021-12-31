@@ -1,9 +1,9 @@
 import {useState, useCallback} from 'react'; 
 import { message } from 'antd';
-import {TREE_TABLE, TREE_TABLE_ROWS} from './entities/tree'; 
-import { MEMBER_TABLE, MEMBER_TABLE_ROWS } from './entities/member';
-import { supabase } from '../utils/supabase';
-import { SHARED_TREE_TABLE, SHARED_TREE_TABLE_ROWS } from './entities/shared-tree';
+import {TREE_TABLE, TREE_TABLE_ROWS} from '../entities/tree'; 
+import { MEMBER_TABLE, MEMBER_TABLE_ROWS } from '../entities/member';
+import { supabase } from '../../utils/supabase';
+import { SHARED_TREE_TABLE, SHARED_TREE_TABLE_ROWS } from '../entities/shared-tree';
 
 export const PAGE_SIZE = 5; 
 

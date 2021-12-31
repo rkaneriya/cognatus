@@ -1,27 +1,35 @@
 import {Button, DatePicker, Drawer, Form, Input, Radio} from 'antd';
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import {RELATION_TYPES} from '../constants/relation-types'; 
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
+import { MemberRelationContext } from '../data/contexts/member-relation';
 
 const layout = {
   labelCol: { span: 9 },
   wrapperCol: { span: 16 },
 };
 
-export default function MemberDrawer(props) {
+export default function MemberDrawer({
+  drawerConfig, 
+  initialValues, 
+  onClose, 
+  visible, 
+}) {
   const [form] = Form.useForm(); 
-  const { 
-    selectedMemberName, 
-    drawerConfig, 
-    initialValues, 
-    onClose, 
-    onFinish,
-    visible, 
-  } = props; 
 
   useEffect(() => { 
     form.setFieldsValue(initialValues); 
   }); 
+
+  const {
+    createMember,
+    createMemberAndRelation,
+    updateMember,
+    selectedMemberUuid,
+    membersByUuid,
+  } = useContext(MemberRelationContext); 
+  
+  const selectedMemberName = membersByUuid[selectedMemberUuid]?.first_name; 
 
   function handleClose() { 
     form.resetFields(); 
@@ -33,21 +41,23 @@ export default function MemberDrawer(props) {
     onClose(); 
 
     if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_PARENT || drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_CHILD) {
-      onFinish(values, {
+      createMemberAndRelation(values, {
         type: RELATION_TYPES.PARENT_CHILD,
-      }); // createMemberAndRelation
+      }); 
     } else if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE) { 
-      onFinish(values, {
+      createMemberAndRelation(values, {
         type: RELATION_TYPES.SPOUSE,
-      }); // createMemberAndRelation 
+      });  
     } else if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_EX_SPOUSE) { 
-      onFinish(values, { 
+      createMemberAndRelation(values, { 
         type: RELATION_TYPES.EX_SPOUSE, 
         start_date: values.start_date, 
         end_date: values.end_date, 
-      }); // createMemberAndRelation
+      }); 
+    } else if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_FIRST_MEMBER) {
+      createMember(values); 
     } else { 
-      onFinish(values); // updateMember
+      updateMember(values); 
     }
   }
 
