@@ -4,29 +4,21 @@ import { useStyletron } from 'styletron-react';
 import {getRelationEdgeColor, getIsRelationEdgeDashed} from '../utils/relations'; 
 import { MemberRelationContext } from '../data/contexts/member-relation';
 
-export default function TreeGraph(props) { 
+export default function TreeGraph() { 
   const [css] = useStyletron(); 
   const {
     members, 
     relations, 
-    selectedMemberUuid, 
+    pathNodes,
+    pathEdges,  
+    selectedMemberUuid,
     setSelectedMemberUuid,
+    setTargetRelativeUuid,
   } = useContext(MemberRelationContext); 
 
-  const { 
-    sourceMemberUuid,
-    targetMemberUuid, 
-    pathNodes,
-    pathEdges,
-  } = props;  
-
   const getNodeColor = (id) => { 
-    if (
-      id === sourceMemberUuid || 
-      id === targetMemberUuid || 
-      pathNodes.includes(id)
-    ) return 'red'; 
     if (id === selectedMemberUuid) return 'yellow'; 
+    if (pathNodes.includes(id)) return 'red'; 
     return 'gray'; 
   }
 
@@ -41,15 +33,15 @@ export default function TreeGraph(props) {
     label: first_name, 
   }));
 
-  const edges = relations.map(({from_member_uuid, to_member_uuid, type}, i) => ({
+  const edges = relations.map(({uuid, from_member_uuid, to_member_uuid, type}) => ({
     from: from_member_uuid,
     to: to_member_uuid, 
     title: type, 
     color: { 
-      color: pathEdges.includes(i) ? 'red' : getRelationEdgeColor(type), 
+      color: pathEdges.includes(uuid) ? 'red' : getRelationEdgeColor(type), 
       inherit: 'false',  
     },
-    width: pathEdges.includes(i) ? 1 : undefined, 
+    width: pathEdges.includes(uuid) ? 1 : undefined, 
     dashes: getIsRelationEdgeDashed(type), 
   })); 
 
@@ -93,6 +85,7 @@ export default function TreeGraph(props) {
       const {nodes} = event;
       const uuid = nodes[0] || null; 
       setSelectedMemberUuid(uuid); 
+      setTargetRelativeUuid(null); 
     },
   };
 

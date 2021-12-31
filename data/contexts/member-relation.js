@@ -1,44 +1,24 @@
+import cytoscape from "cytoscape";  
 import { createContext, useEffect, useState } from "react"; 
 import { useRouter } from "next/router";
 import useMemberRelationAPI from '../hooks/member-relation';
+import { findPath } from "../../utils/relations";
 
 export const MemberRelationContext = createContext(); 
 
-export function MemberRelationContextProvider({children}) { 
-  const router = useRouter(); 
-  const treeUuid = router?.query?.uuid; 
-  const [selectedMemberUuid, setSelectedMemberUuid] = useState(null);
-
-  const {
-    fetchMembersAndRelations, 
-    createMemberAndRelation,
-    deleteMemberAndRelations,
-
-    createRelation, 
-    deleteRelation, 
-    updateRelation, 
-
-    createMember,
-    updateMember,
-
-    isTreeEditable, 
-    members,
-    relations, 
-    loading,
-  } = useMemberRelationAPI(treeUuid, selectedMemberUuid); 
-
-  useEffect(() => { 
-    fetchMembersAndRelations(); 
-  }, [fetchMembersAndRelations]); 
-
+function computeMembersAndRelations(selectedMemberUuid, members, relations) { 
   // member data 
   const membersByUuid = members.reduce((acc, member) => ({
     ...acc, 
     [member.uuid]: member, 
   }), {});
 
-
   // relation data 
+  const relationsByUuid = relations.reduce((acc, relation) => ({
+    ...acc,
+    [relation.uuid]: relation,
+  }), {}); 
+
   const relationsByMemberUuid = relations.reduce((acc, relation) => {
     if (acc[relation.from_member_uuid]) { 
       acc[relation.from_member_uuid].push(relation); 
@@ -64,7 +44,73 @@ export function MemberRelationContextProvider({children}) {
       ...acc,
       [relative.uuid]: relation, 
     }; 
-  }, {}); 
+  }, {});  
+  
+  return {
+    membersByUuid,
+    relationsByUuid,
+    directRelationsByRelativeUuid,
+  }
+}
+
+export function MemberRelationContextProvider({children}) { 
+  const router = useRouter(); 
+  const treeUuid = router?.query?.uuid; 
+  const [selectedMemberUuid, setSelectedMemberUuid] = useState(null);
+  const [targetRelativeUuid, setTargetRelativeUuid] = useState(null); 
+
+  const {
+    fetchMembersAndRelations, 
+    createMemberAndRelation,
+    deleteMemberAndRelations,
+
+    createRelation, 
+    deleteRelation, 
+    updateRelation, 
+
+    createMember,
+    updateMember,
+
+    isTreeEditable, 
+    members,
+    relations, 
+    loading,
+  } = useMemberRelationAPI(treeUuid, selectedMemberUuid); 
+
+  useEffect(() => { 
+    fetchMembersAndRelations(); 
+  }, [fetchMembersAndRelations]); 
+
+  const { 
+    membersByUuid,
+    relationsByUuid,
+    directRelationsByRelativeUuid, 
+  } = computeMembersAndRelations(selectedMemberUuid, members, relations); 
+
+  const nodes = members.map(({uuid, first_name}) => ({
+    data: { 
+      id: uuid,
+      firstName: first_name, 
+    }
+  })); 
+  
+  const edges = relations.map(({uuid, from_member_uuid, to_member_uuid, type}) => ({
+    data: { 
+      id: uuid, 
+      source: from_member_uuid,
+      target: to_member_uuid,
+      type
+    }
+  }));
+  
+  const cy = cytoscape({
+    elements: [...nodes, ...edges] 
+  });
+
+  const {
+    pathNodes,
+    pathEdges, 
+  } = findPath(selectedMemberUuid, targetRelativeUuid, cy); 
 
   const value = { 
     // crud 
@@ -82,7 +128,14 @@ export function MemberRelationContextProvider({children}) {
     selectedMemberUuid, 
     setSelectedMemberUuid,
 
+    targetRelativeUuid,
+    setTargetRelativeUuid,
+
+    pathNodes,
+    pathEdges, 
+
     membersByUuid,
+    relationsByUuid,
     directRelationsByRelativeUuid,
 
     isTreeEditable, 

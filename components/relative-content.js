@@ -138,6 +138,7 @@ export function RelativeContent({
     membersByUuid,
     selectedMemberUuid,
     setSelectedMemberUuid,
+    setTargetRelativeUuid,
     directRelationsByRelativeUuid,
   } = useContext(MemberRelationContext); 
 
@@ -190,6 +191,7 @@ export function RelativeContent({
   function handleMemberSelect(uuid) { 
     setRelativeUuid(null); 
     setSelectedMemberUuid(uuid); 
+    setTargetRelativeUuid(null); 
   }
 
   function handleEditableSection(displayRelationType) { 

@@ -7,6 +7,8 @@ import {pluralize} from '../utils/pluralize';
 import { MemberRelationContext } from '../data/contexts/member-relation';
 import { RelativeContent } from './relative-content';
 import {DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG} from '../constants/display-relation-types'; 
+import QueryRelationTab from '../components/query-relation-tab'; 
+import StatsTab from './stats-tab';
 
 const DATE_FORMAT = 'll'; 
 
@@ -93,7 +95,7 @@ function EditButton({onClick}) {
   ); 
 }
 
-function QueryRelationTab() { 
+function QueryRelationTabLabel() { 
   return (
     <Tooltip placement='top' title={`Discover how others are related to this person}`}>  
       <ApartmentOutlined /> Relations
@@ -296,11 +298,11 @@ export default function MemberCard({
             </BodySection>
             <NotesSection />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={<QueryRelationTab />} key="2">
-            Content of Tab Pane 2
+          <Tabs.TabPane tab={<QueryRelationTabLabel />} key="2">
+            <QueryRelationTab />
           </Tabs.TabPane>
           <Tabs.TabPane tab={<span><PieChartOutlined /> Stats</span>} key="3">
-            Stats coming soon...
+            <StatsTab /> 
           </Tabs.TabPane>
         </Tabs>
 
