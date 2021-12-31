@@ -1,8 +1,8 @@
 import moment from 'moment'; 
-import { useEffect, useState, useContext } from 'react';
-import { Card, Button, Select, Avatar, Tooltip, Tag, AutoComplete, Popconfirm, Divider as AntDivider } from 'antd';
-import { useStyletron, styled, autoComposeDeep } from 'styletron-react';
-import { UpOutlined, EditOutlined, ApartmentOutlined, DeleteOutlined, PlusOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import { useState, useContext } from 'react';
+import { Select, Tooltip, Tag } from 'antd';
+import { useStyletron } from 'styletron-react';
+import { EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { RELATION_TYPES } from '../constants/relation-types';
 import {getRelationEdgeColor} from '../utils/relations'; 
 import { MemberRelationContext } from '../data/contexts/member-relation';
@@ -122,13 +122,14 @@ function RelativeTag({
 }
 
 export function RelativeContent({
+  isEditable, 
   displayRelationType,
   onAddNewMemberAndRelation,
   onEditRelation,
+  setEditableSection,
 }) { 
   const [css] = useStyletron(); 
   const [relativeUuid, setRelativeUuid] = useState(null); 
-  const [editableSection, setEditableSection] = useState(null); 
 
   const {
     createRelation,
@@ -196,6 +197,63 @@ export function RelativeContent({
     setEditableSection(displayRelationType); 
   }
 
+  function RelativeSelect() { 
+    return (
+      <div className={css({
+        display: 'flex',
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+      })}>
+        <Select
+          autoFocus={true}
+          showSearch={true}
+          value={relativeUuid}
+          notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${contentLabel}`}</a>}
+          style={{ width: 175 }}
+          onSelect={setRelativeUuid}
+          placeholder={`Select ${contentLabel}`}
+          filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+        >
+          {
+            relativeOptions.map(r => (
+              <Select.Option
+                key={r.uuid}
+                value={r.uuid}
+              >
+                {`${r.first_name} ${r.last_name}`}
+              </Select.Option>
+            ))
+          }
+        </Select>
+        <a 
+          disabled={!relativeUuid}
+          style={{ marginLeft: '5px' }} 
+          onClick={() => handleAddRelative(relativeUuid, relationType)}
+        >
+          Add
+        </a>
+      </div>
+    ); 
+  }
+
+  function RelativeSelectPlaceholder() {
+    return (
+      <Tag 
+        onClick={() => handleEditableSection(displayRelationType)} 
+        style={{ 
+          border: '1px dashed lightgrey', 
+          backgroundColor: 'white',
+          color: 'grey', 
+          width: 'fit-content', 
+          fontSize: '14px', 
+          padding: '3px 6px'
+        }}
+      >
+        <PlusOutlined /> Add {contentLabel}
+      </Tag>
+    ); 
+  }
+
   return (
     <>
       { 
@@ -209,64 +267,18 @@ export function RelativeContent({
           />
         ))
       }
-      {
-        !isTreeEditable && relativesByType[displayRelationType].length === 0 && (
-          <span>--</span>
-        )
-      }
       { 
         isTreeEditable && (
-          editableSection === displayRelationType ? (
-            <div className={css({
-              display: 'flex',
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-            })}>
-              <Select
-                autoFocus={true}
-                showSearch={true}
-                value={relativeUuid}
-                notFoundContent={<a onClick={() => onAddNewMemberAndRelation(memberRelationAction)}>{`Create new ${contentLabel}`}</a>}
-                style={{ width: 150 }}
-                onSelect={setRelativeUuid}
-                placeholder={`Select ${contentLabel}`}
-                filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-              >
-                {
-                  relativeOptions.map(r => (
-                    <Select.Option
-                      key={r.uuid}
-                      value={r.uuid}
-                    >
-                      {`${r.first_name} ${r.last_name}`}
-                    </Select.Option>
-                  ))
-                }
-              </Select>
-              <a 
-                disabled={!relativeUuid}
-                style={{ marginLeft: '5px' }} 
-                onClick={() => handleAddRelative(relativeUuid, relationType)}
-              >
-                Add
-              </a>
-            </div>
-          ) : ( 
-            <Tag 
-              onClick={() => handleEditableSection(displayRelationType)} 
-              style={{ 
-                border: '1px dashed lightgrey', 
-                backgroundColor: 'white',
-                color: 'grey', 
-                width: 'fit-content', 
-                fontSize: '14px', 
-                padding: '3px 6px'
-              }}
-            >
-              <PlusOutlined /> Add {contentLabel}
-            </Tag>
-          )
-        ) 
+          isEditable 
+            ? <RelativeSelect /> 
+            : <RelativeSelectPlaceholder />
+        )
+      }
+      {
+        !isTreeEditable && 
+          relativesByType[displayRelationType].length === 0 && (
+          <span>--</span>
+        )
       }
     </>
   ); 
