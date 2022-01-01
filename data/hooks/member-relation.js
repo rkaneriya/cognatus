@@ -142,17 +142,8 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
   async function deleteMemberAndRelations(uuid) { 
     setLoading(true); 
 
-    const { error: deleteRelationError } = await supabase
-      .from(RELATION_TABLE)
-      .delete()
-      .or(`${RELATION_TABLE_ROWS.FROM_MEMBER_UUID}.eq.${uuid},${RELATION_TABLE_ROWS.TO_MEMBER_UUID}.eq.${uuid}`)
-    
-    if (deleteRelationError) {
-      message.error(deleteRelationError?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false); 
-      return; // error deleting relations 
-    } 
-
+    // note: due to "on cascade", deleting a member will delete all rows referencing the member
+    // (related relations will automatically be deleted)
     const { error: deleteMemberError } = await supabase
       .from(MEMBER_TABLE)
       .delete()

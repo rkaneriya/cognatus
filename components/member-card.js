@@ -95,9 +95,9 @@ function EditButton({onClick}) {
   ); 
 }
 
-function QueryRelationTabLabel() { 
+function QueryRelationTabLabel({name}) { 
   return (
-    <Tooltip placement='top' title={`Discover how others are related to this person}`}>  
+    <Tooltip placement='top' title={`Discover how others are related to ${name}`}>  
       <ApartmentOutlined /> Relations
     </Tooltip>
   ); 
@@ -298,7 +298,7 @@ export default function MemberCard({
             </BodySection>
             <NotesSection />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={<QueryRelationTabLabel />} key="2">
+          <Tabs.TabPane tab={<QueryRelationTabLabel name={first_name} />} key="2">
             <QueryRelationTab />
           </Tabs.TabPane>
           <Tabs.TabPane tab={<span><PieChartOutlined /> Stats</span>} key="3">

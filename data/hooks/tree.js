@@ -125,26 +125,15 @@ export default function useTreeAPI(columns) {
   async function deleteTree(uuid) { 
     setLoading(true); 
 
-    // 1. delete any/all members belonging to the table 
-    const { error: memberError } = await supabase
-      .from(MEMBER_TABLE)
-      .delete()
-      .eq(MEMBER_TABLE_ROWS.TREE_UUID, uuid); 
-
-    if (memberError) { 
-      message.error(memberError?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false); 
-      return; 
-    }
-
-    // 2. delete the tree itself 
-    const { error: treeError } = await supabase
+    // note: due to "on cascade", deleting a tree will delete all rows referencing the tree
+    // (related members, relations, and shared_trees will be automatically deleted)
+    const { error } = await supabase
       .from(TREE_TABLE)
       .delete()
       .eq(TREE_TABLE_ROWS.UUID, uuid);
     
-    if (treeError) {
-      message.error(treeError?.message || GENERIC_ERROR_MESSAGE)
+    if (error) {
+      message.error(error?.message || GENERIC_ERROR_MESSAGE)
       setLoading(false); 
     } else { 
       fetchTrees(); 
@@ -156,7 +145,7 @@ export default function useTreeAPI(columns) {
     fetchTrees,
     createTree,
     updateTree,
-    deleteTree, // TODO: also delete all members and relations associated w tree  
+    deleteTree, 
 
     // data 
     data,
