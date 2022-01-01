@@ -7,6 +7,7 @@ import { Alert } from 'antd';
 import {useRouter} from 'next/router';
 import {ROUTES} from '../constants/routes'; 
 import './_styles.css'; 
+import Script from 'next/script';
 
 export default function MyApp(props) {
   const router = useRouter(); 
@@ -40,8 +41,22 @@ export default function MyApp(props) {
         )}
         banner
         closable
+      /> 
+      <Script
+        strategy='lazyOnload'
+        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_KEY}`}
       />
+      <Script id='google-analytics' strategy='lazyOnload'>
+        {
+          `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
 
+            gtag('config', ${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_KEY});
+          `
+        }        
+      </Script>
       <Component {...pageProps} />
     </StyletronProvider>
   ); 

@@ -65,7 +65,13 @@ export default function TreeGraph() {
     },
     layout: { 
       randomSeed: 1000, 
-      improvedLayout: false, 
+      improvedLayout: true, 
+      // hierarchical: { 
+      //   enabled: true, 
+      //   direction: 'UD',
+      //   sortMethod: 'directed',
+      //   shakeTowards: 'roots', 
+      // }
     },
     physics: { 
       enabled: true, 

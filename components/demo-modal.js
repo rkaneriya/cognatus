@@ -1,4 +1,4 @@
-import { Button, Modal, Steps} from "antd";
+import { Button, Modal } from "antd";
 import Image from 'next/image'; 
 import { useStyletron } from "styletron-react";
 
@@ -18,11 +18,15 @@ export function DemoModal({visible, onCancel}) {
       height: 300,
       width: Math.round(300 * 1.09), 
     },
+    { 
+      label: '[Coming Soon] Click on the "Stats" tab on the profile card to view a histogram of family members\' ages, the ratio of males to females in a tree, etc.',
+      imagePath: null,
+    },
   ]; 
 
   return (
     <Modal 
-      title='Welcome to Cognatus!' 
+      title='How to use Cognatus' 
       visible={visible} 
       onCancel={onCancel}
       footer={[
@@ -35,24 +39,31 @@ export function DemoModal({visible, onCancel}) {
         maxHeight: '500px', 
         overflow: 'auto', 
       })}>
-        <Steps direction="vertical" size="small">
-          { 
-            steps.map(({label, imagePath, width, height}, i) => (
-              <Steps.Step 
-                key={i}
-                title={label} 
-                description={
-                  <Image 
-                    src={imagePath}
-                    alt='demo-step'
-                    width={width}
-                    height={height}
-                  />       
-                }
-              />
-            ))
-          }
-        </Steps>
+        { 
+          steps.map(({label, imagePath, width, height}, i) => (
+            <div key={i} className={css({ 
+              display: 'flex', 
+              flexDirection: 'column', 
+              width: '100%', 
+              marginBottom: '20px', 
+            })}>
+              <div className={css({marginBottom: '10px'})}>{i+1}) {label}</div>
+              { 
+                imagePath && (
+                  <div className={css({display: 'flex', justifyContent: 'center'})}>
+                    <Image 
+                      src={imagePath}
+                      alt='demo-step'
+                      layout="fixed"
+                      width={width}
+                      height={height}
+                    />       
+                  </div>
+                )
+              }
+            </div>
+          ))
+        }
       </div>
     </Modal>
   )

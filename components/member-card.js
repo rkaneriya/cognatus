@@ -2,7 +2,7 @@ import moment from 'moment';
 import { useState, useContext } from 'react';
 import { Card, Avatar, Tooltip, Tabs, Popconfirm, Divider as AntDivider } from 'antd';
 import { useStyletron } from 'styletron-react';
-import { UpOutlined, UserOutlined, EditOutlined, ApartmentOutlined, PieChartOutlined, DeleteOutlined} from '@ant-design/icons';
+import { UpOutlined, CalendarOutlined, UserOutlined, EditOutlined, ApartmentOutlined, PieChartOutlined, DeleteOutlined} from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
 import { MemberRelationContext } from '../data/contexts/member-relation';
 import { RelativeContent } from './relative-content';
@@ -304,8 +304,10 @@ export default function MemberCard({
           <Tabs.TabPane tab={<span><PieChartOutlined /> Stats</span>} key="3">
             <StatsTab /> 
           </Tabs.TabPane>
+          {/* <Tabs.TabPane tab={<span><CalendarOutlined /> Events</span>} key="4">
+            <StatsTab /> 
+          </Tabs.TabPane> */}
         </Tabs>
-
       </div>
     </Card>
   )     
