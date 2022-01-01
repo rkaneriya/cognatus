@@ -1,6 +1,6 @@
 import {useState} from 'react'; 
 import {useStyletron} from 'styletron-react'; 
-import {message, Button, Input, Tooltip} from 'antd'; 
+import {message, Button, Input, Tooltip, Divider} from 'antd'; 
 import {ArrowRightOutlined, QuestionCircleOutlined} from '@ant-design/icons'; 
 import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
@@ -8,6 +8,7 @@ import {ROUTES} from '../constants/routes';
 import {SITE_URLS} from '../constants/site-urls'; 
 import Link from 'next/link'; 
 import Image from 'next/image'
+import Demos from '../components/demos'; 
 
 const {Search} = Input; 
 
@@ -86,6 +87,7 @@ function Login() {
   return (
     <div className={css({marginTop: '20px', display: 'flex', alignItems: 'center'})}>
       <Search
+        size='large'
         allowClear
         placeholder="Enter e-mail address"
         loading={loading} 
@@ -107,7 +109,9 @@ function HoverEffectText({text}) {
       {
         chars.map((c, i) => (
           <div key={i} className={css({
-            textTransform: 'uppercase',
+            textTransform: 'lowercase',
+            textDecoration: 'underline', 
+            textDecorationThickness: '15px', 
             ':hover': { 
               color: '#40a9ff', 
             }, 
@@ -129,7 +133,7 @@ export default function Home({user}) {
       <Wrapper>
         <Content>
           <div className={css({
-            fontWeight: '100', 
+            fontWeight: '500', 
             fontSize: '120px', 
             display: 'flex', 
           })}>
@@ -162,6 +166,11 @@ export default function Home({user}) {
                 </>
               : <Login />
           }
+          <Divider />
+          <div className={css({fontStyle: 'italic', fontWeight: 300, fontSize: '18px'})}>
+            Or, check out one of these demo trees:
+          </div>
+          <Demos />
         </Content>
       </Wrapper>
       <Footer /> 

@@ -7,10 +7,16 @@ import moment from 'moment';
 import {v4 as uuidv4} from 'uuid';
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
 import RelationDrawer from './relation-drawer';
-import { Button, Result } from 'antd';
+import { Button, Spin, Result } from 'antd';
 import { ROUTES } from '../constants/routes';
 import { MemberRelationContext } from '../data/contexts/member-relation';
 import { useRouter } from 'next/router';
+import { DemoModal } from './demo-modal';
+
+const DEMO_ROUTES = [ 
+  ROUTES.DEMO_VANDERBILTS,
+  ROUTES.DEMO_BRITISH_ROYALS,
+]; 
 
 const { 
   ADD_FIRST_MEMBER,
@@ -35,6 +41,11 @@ function Wrapper({children}) {
 
 export default function Tree() {  
   const router = useRouter(); 
+  const [css] = useStyletron(); 
+
+  const isDemo = DEMO_ROUTES.includes(router?.asPath);
+  const [isDemoModalVisible, setIsDemoModalVisible] = useState(isDemo); 
+
   const [isMemberDrawerOpen, setIsMemberDrawerOpen] = useState(false);
   const [initialMemberEditorValues, setInitialMemberEditorValues] = useState(DEFAULT_MEMBER_FORM_VALUES); 
   const [memberDrawerConfig, setMemberDrawerConfig] = useState(ADD_FIRST_MEMBER);  
@@ -82,6 +93,22 @@ export default function Tree() {
   const selectedMember = membersByUuid[selectedMemberUuid];
   const isTreeEmpty = !loading && members.length === 0; 
 
+  // First load (to avoid flicker)
+  if (loading && members.length === 0) { 
+    return (
+      <div className={css({
+        display: 'flex',
+        justifyContent: 'center', 
+        alignItems: 'center',
+        width: '100vw', 
+        height: '100vh', 
+      })}>
+        <Spin size='large' />
+      </div>
+    ); 
+  }
+
+  // Unauthorized 
   if (!loading && isTreeEditable === null) { 
     return (
       <Result
@@ -122,6 +149,7 @@ export default function Tree() {
           />
         )
       }
+      <DemoModal visible={isDemoModalVisible} onCancel={() => setIsDemoModalVisible(false)} />
     </Wrapper>
   ); 
 }
