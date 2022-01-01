@@ -3,6 +3,7 @@ import { Provider as StyletronProvider } from 'styletron-react'
 import 'antd/dist/antd.css';
 import { supabase } from '../utils/supabase';
 import { styletron } from '../styletron'
+import { Alert } from 'antd';
 import {useRouter} from 'next/router';
 import {ROUTES} from '../constants/routes'; 
 import './_styles.css'; 
@@ -31,6 +32,12 @@ export default function MyApp(props) {
   const { Component, pageProps } = props
   return (
     <StyletronProvider value={styletron}>
+      <Alert
+        message="Please note: Cognatus is still in open beta. You can create, view, and delete trees, but there may still be some bugs and finishing touches left unaddressed. Thank you for trying it out!"
+        banner
+        closable
+      />
+
       <Component {...pageProps} />
     </StyletronProvider>
   ); 
