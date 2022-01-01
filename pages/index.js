@@ -1,7 +1,7 @@
 import {useState} from 'react'; 
 import {useStyletron} from 'styletron-react'; 
 import {message, Button, Input, Tooltip} from 'antd'; 
-import {ArrowRightOutlined, UserAddOutlined, QuestionCircleOutlined} from '@ant-design/icons'; 
+import {ArrowRightOutlined, QuestionCircleOutlined} from '@ant-design/icons'; 
 import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
@@ -58,8 +58,8 @@ function Footer() {
         <Image 
           src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png"
           alt="Buy Me A Coffee" 
-          height={60}
-          width={217}
+          height={40}
+          width={145}
         />
       </a>
       © 2021 Rishi Kaneriya 
@@ -115,6 +115,27 @@ function Login() {
   )
 }
 
+function HoverEffectText({text}) { 
+  const [css] = useStyletron(); 
+  const chars = text.split(''); 
+  return (
+    <>
+      {
+        chars.map((c, i) => (
+          <div key={i} className={css({
+            textTransform: 'uppercase',
+            ':hover': { 
+              color: '#40a9ff', 
+            }, 
+          })}>
+            {c}
+          </div>
+        ))
+      }
+    </>
+  )
+}
+
 export default function Home({user}) {
   const [css] = useStyletron(); 
   const router = useRouter(); 
@@ -129,14 +150,7 @@ export default function Home({user}) {
             fontSize: '120px', 
             display: 'flex', 
           })}>
-            <div className={css({':hover': {color: 'red'}})}>c</div>
-            <div className={css({':hover': {color: 'red'}})}>o</div>
-            <div className={css({':hover': {color: 'red'}})}>g</div>
-            <div className={css({':hover': {color: 'red'}})}>n</div>
-            <div className={css({':hover': {color: 'red'}})}>a</div>
-            <div className={css({':hover': {color: 'red'}})}>t</div>
-            <div className={css({':hover': {color: 'red'}})}>u</div>
-            <div className={css({':hover': {color: 'red'}})}>s</div>
+            <HoverEffectText text='cognatus' />
           </div>
 
           <div className={css({fontStyle: 'italic', fontSize: '24px'})}>
@@ -150,13 +164,19 @@ export default function Home({user}) {
           </div>
           {
             user 
-              ? <Button 
-                  style={{ marginTop: '20px' }}
-                  type="primary" 
-                  onClick={() => router.push(ROUTES.ADMIN)}
-                >
-                  View your family trees <ArrowRightOutlined />
-                </Button>
+              ? <>
+                  <Button 
+                    size='large'
+                    style={{ margin: '20px 0px' }}
+                    type="primary" 
+                    onClick={() => router.push(ROUTES.ADMIN)}
+                  >
+                    View your family trees <ArrowRightOutlined />
+                  </Button>
+                  <div className={css({color: 'gray'})}>
+                    Logged in as {user?.email}
+                  </div>
+                </>
               : <Login />
           }
         </Content>
