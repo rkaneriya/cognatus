@@ -72,7 +72,6 @@ export function getRelation(people, relations) {
     }
   });
 
-  console.log("@@@ COUNTS (P, C, S)", parentCount, childCount, spouseCount); 
   // same generation, no spouses 
   if (parentCount === childCount && spouseCount === 0) { 
     if (parentCount === 1) { 

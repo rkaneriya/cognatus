@@ -36,10 +36,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     if (user) { 
       const {data: tree, error: treeError} = await supabase
         .from(TREE_TABLE)
-        .select(TREE_TABLE_ROWS.UUID)
+        .select(TREE_TABLE_ROWS.CREATOR_UUID, TREE_TABLE_ROWS.IS_PUBLIC)
         .eq(TREE_TABLE_ROWS.UUID, treeUuid)
-        .eq(TREE_TABLE_ROWS.CREATOR_UUID, user?.id);
-  
+        .or(`${TREE_TABLE_ROWS.CREATOR_UUID}.eq.${user?.id},${TREE_TABLE_ROWS.IS_PUBLIC}.eq.true`);
+        
       if (treeError) { 
         setData(d => ({
           ...d, 
@@ -63,7 +63,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
       }
    
       if (tree.length !== 0 || sharee.length !== 0) {
-        isTreeEditable = tree.length === 1; // editable only if user = creator 
+        isTreeEditable = tree.length === 1 && tree[0].creator_uuid === user?.id; // editable only if user = creator 
       }
     } else { 
       const {data: tree, error: treeError} = await supabase
@@ -72,7 +72,6 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
         .eq(TREE_TABLE_ROWS.UUID, treeUuid);
 
       if (treeError || tree.length === 0) { 
-        console.log("@@@ DATA", tree, treeError, isTreeEditable); 
         setData(d => ({
           ...d, 
           loading: false,
