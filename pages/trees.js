@@ -215,6 +215,7 @@ export default function Trees({user}) {
           justifyContent: 'space-between',
           alignItems: 'center', 
           width: '100%', 
+          marginTop: totalCount === 0 ? '40px' : '0px',
         })}>
           <Title level={2}>
             Trees shared with you ({sharedTreeCount})

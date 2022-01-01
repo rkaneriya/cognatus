@@ -47,6 +47,8 @@ export default function MemberDrawer({
     } else if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_SPOUSE) { 
       createMemberAndRelation(values, {
         type: RELATION_TYPES.SPOUSE,
+        start_date: values.start_date, 
+        end_date: values.end_date, 
       });  
     } else if (drawerConfig === MEMBER_RELATION_ACTIONS.ADD_NEW_EX_SPOUSE) { 
       createMemberAndRelation(values, { 
