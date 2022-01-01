@@ -28,32 +28,59 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
       loading: true
     })); 
 
-    // 1. determine if tree is accessible and/or editable by user
-    const user = supabase.auth.user(); 
     let isTreeEditable = null; 
 
-    const {data: tree, error: treeError} = await supabase
-      .from(TREE_TABLE)
-      .select(TREE_TABLE_ROWS.UUID)
-      .eq(TREE_TABLE_ROWS.UUID, treeUuid)
-      .eq(TREE_TABLE_ROWS.CREATOR_UUID, user.id)
+    // 1. determine if tree is accessible and/or editable by user
+    const user = supabase.auth.user(); 
 
-    if (treeError) { 
-      return; // 403 
-    }
+    if (user) { 
+      const {data: tree, error: treeError} = await supabase
+        .from(TREE_TABLE)
+        .select(TREE_TABLE_ROWS.UUID)
+        .eq(TREE_TABLE_ROWS.UUID, treeUuid)
+        .eq(TREE_TABLE_ROWS.CREATOR_UUID, user?.id);
+  
+      if (treeError) { 
+        setData(d => ({
+          ...d, 
+          loading: false,
+        }));     
+        return; // 403 
+      }
+  
+      const {data: sharee, error: shareeError} = await supabase
+        .from(SHARED_TREE_TABLE)
+        .select(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL)
+        .eq(SHARED_TREE_TABLE_ROWS.TREE_UUID, treeUuid)
+        .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user?.email);
+      
+      if (shareeError) {
+        setData(d => ({
+          ...d, 
+          loading: false,
+        }));     
+        return; // 403 
+      }
+   
+      if (tree.length !== 0 || sharee.length !== 0) {
+        isTreeEditable = tree.length === 1; // editable only if user = creator 
+      }
+    } else { 
+      const {data: tree, error: treeError} = await supabase
+        .from(TREE_TABLE)
+        .select(TREE_TABLE_ROWS.IS_PUBLIC)
+        .eq(TREE_TABLE_ROWS.UUID, treeUuid);
 
-    const {data: sharee, error: shareeError} = await supabase
-      .from(SHARED_TREE_TABLE)
-      .select(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL)
-      .eq(SHARED_TREE_TABLE_ROWS.TREE_UUID, treeUuid)
-      .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user.email)
-    
-    if (shareeError) {
-      return; // 403 
-    }
- 
-    if (tree.length !== 0 || sharee.length !== 0) {
-      isTreeEditable = tree.length === 1; // editable only if user = creator 
+      if (treeError || tree.length === 0) { 
+        console.log("@@@ DATA", tree, treeError, isTreeEditable); 
+        setData(d => ({
+          ...d, 
+          loading: false,
+        }));     
+        return; // 403 
+      }
+
+      isTreeEditable = tree[0].is_public ? false : null; // tree is public 
     }
 
     // 2. fetch members 

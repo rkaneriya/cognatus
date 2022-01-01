@@ -6,4 +6,5 @@ export const TREE_TABLE_ROWS = {
   NAME: 'name', 
   DESCRIPTION: 'description', 
   CREATOR_UUID: 'creator_uuid', 
+  IS_PUBLIC: 'is_public', 
 }; 

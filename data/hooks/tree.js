@@ -9,7 +9,7 @@ export const PAGE_SIZE = 5;
 
 const GENERIC_ERROR_MESSAGE = 'Failed to operate on trees'; 
 
-export default function useTreeAPI(columns) { 
+export default function useTreeAPI() { 
   const [data, setData] = useState([]); 
   const [loading, setLoading] = useState(false); 
   const [currentPage, setCurrentPage] = useState(1); 
@@ -95,10 +95,8 @@ export default function useTreeAPI(columns) {
 
   async function updateTree(tree) { 
     setLoading(true); 
-    const editableFields = columns
-      .filter(({editable}) => editable)
-      .map(({dataIndex}) => dataIndex); 
-    const editableFieldsSet = new Set(editableFields);  
+    const EDITABLE_FIELDS = ['name', 'description', 'is_public'];
+    const editableFieldsSet = new Set(EDITABLE_FIELDS);  
 
     const payload = Object.keys(tree).reduce((acc, field) => { 
       if (editableFieldsSet.has(field)) { 

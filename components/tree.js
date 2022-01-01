@@ -10,6 +10,7 @@ import RelationDrawer from './relation-drawer';
 import { Button, Result } from 'antd';
 import { ROUTES } from '../constants/routes';
 import { MemberRelationContext } from '../data/contexts/member-relation';
+import { useRouter } from 'next/router';
 
 const { 
   ADD_FIRST_MEMBER,
@@ -33,6 +34,7 @@ function Wrapper({children}) {
 }
 
 export default function Tree() {  
+  const router = useRouter(); 
   const [isMemberDrawerOpen, setIsMemberDrawerOpen] = useState(false);
   const [initialMemberEditorValues, setInitialMemberEditorValues] = useState(DEFAULT_MEMBER_FORM_VALUES); 
   const [memberDrawerConfig, setMemberDrawerConfig] = useState(ADD_FIRST_MEMBER);  

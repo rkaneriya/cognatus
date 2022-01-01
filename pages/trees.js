@@ -1,7 +1,8 @@
 import {useEffect, useState} from 'react';
 import {useStyletron} from 'styletron-react';  
 import moment from 'moment'; 
-import {Button, Table, Typography} from 'antd';
+import {Button, Checkbox, Table, Tooltip, Typography} from 'antd';
+import {QuestionCircleOutlined} from '@ant-design/icons'; 
 import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
 import Link from 'next/link'; 
@@ -37,15 +38,72 @@ function Section({children}) {
   ); 
 }
 
+function IsPublicCheckbox({checked, onChange}) {
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({
+      display: 'flex', 
+      justifyContent: 'center', 
+    })}>
+      <Checkbox checked={checked} onChange={onChange} />
+    </div>
+  )
+}
+
+function IsPublicColumnHeader() { 
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({
+      display: 'flex', 
+      alignItems: 'center', 
+    })}>
+      Is Public?
+      <Tooltip placement="top" title={'Share a read-only version of your tree with anyone who has a link to it.'}>
+        <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
+      </Tooltip>
+    </div>
+  )
+}
+
 export default function Trees({user}) {
   const [css] = useStyletron(); 
   const [isCreateTreeDrawerOpen, setIsCreateTreeDrawerOpen] = useState(false); 
 
-  const EDITABLE_COLUMNS = [
+  const { 
+    // crud
+    fetchTrees,
+    createTree,
+    updateTree,
+    deleteTree,
+
+    // data 
+    data,
+    totalCount, 
+    loading,
+    setCurrentPage,
+  } = useTreeAPI(); 
+
+  const {
+    fetchSharedTrees,
+    createSharedTree,
+    deleteSharedTree,
+    
+    data: sharedTreeData, 
+    totalCount: sharedTreeCount, 
+    loading: sharedTreeLoading,
+    setCurrentPage: sharedTreeSetCurrentPage, 
+  } = useSharedTreeAPI(fetchTrees); 
+
+  useEffect(() => {
+    fetchTrees();
+    fetchSharedTrees(); 
+  }, [fetchTrees, fetchSharedTrees]);
+
+  const TREE_COLUMNS = [
     {
       title: 'Name',
       dataIndex: 'name',
-      width: '20%',
+      width: '25%',
       editable: true, 
       key: 'name',
       render: (text, record) => <Link href={`/trees/${record.uuid}`}>{text}</Link>,
@@ -53,18 +111,34 @@ export default function Trees({user}) {
     {
       title: 'Description', 
       dataIndex: 'description', 
-      width: '45%', 
+      width: '35%', 
       editable: true, 
       key: 'description', 
     }, 
     { 
       title: 'Created At', 
       dataIndex: 'created_at', 
-      width: '20%', 
+      width: '15%', 
       editable: false, 
       key: 'created_at', 
       render: (text) => moment(text).format('ll LT'), 
     },
+    {
+      title: <IsPublicColumnHeader />, 
+      dataIndex: 'created_at', 
+      width: '10%', 
+      editable: false, 
+      key: 'created_at', 
+      render: (_, record) => (
+        <IsPublicCheckbox 
+          checked={record?.is_public} 
+          onChange={() => updateTree({
+            uuid: record?.uuid,
+            is_public: !record?.is_public,
+          })} 
+        />
+      )
+    }
   ];
 
   const SHARED_TREE_COLUMNS = [
@@ -84,47 +158,17 @@ export default function Trees({user}) {
     { 
       title: 'Created At', 
       dataIndex: 'created_at', 
-      width: '25%', 
+      width: '15%', 
       key: 'created_at', 
       render: (text) => moment(text).format('ll LT'), 
     },
     { 
       title: 'Shared By', 
       dataIndex: 'sharer_email', 
-      width: '25%', 
+      width: '10%', 
       key: 'sharer_email', 
     },
-  ]
-
-  const { 
-    // crud
-    fetchTrees,
-    createTree,
-    updateTree,
-    deleteTree,
-
-    // data 
-    data,
-    totalCount, 
-    loading,
-    setCurrentPage,
-  } = useTreeAPI(EDITABLE_COLUMNS); 
-
-  const {
-    fetchSharedTrees,
-    createSharedTree,
-    deleteSharedTree,
-    
-    data: sharedTreeData, 
-    totalCount: sharedTreeCount, 
-    loading: sharedTreeLoading,
-    setCurrentPage: sharedTreeSetCurrentPage, 
-  } = useSharedTreeAPI(fetchTrees); 
-
-  useEffect(() => {
-    fetchTrees();
-    fetchSharedTrees(); 
-  }, [fetchTrees, fetchSharedTrees])
+  ]; 
 
   return (
     <Wrapper>
@@ -149,7 +193,7 @@ export default function Trees({user}) {
           </Button>
         </div>
         <EditableTable
-          columns={EDITABLE_COLUMNS}
+          columns={TREE_COLUMNS}
           dataSource={data}
           loading={loading}
           pagination={{ 
