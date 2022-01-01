@@ -8,18 +8,25 @@ import { TREE_TABLE, TREE_TABLE_ROWS } from '../entities/tree';
 
 const GENERIC_ERROR_MESSAGE = 'Error'; 
 
+const DEFAULT_VALUES = { 
+  members: [], 
+  relations: [], 
+  isTreeEditable: null, 
+  loading: true, 
+}; 
+
 export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) { 
-  const [members, setMembers] = useState([]); 
-  const [relations, setRelations] = useState([]);
-  const [isTreeEditable, setIsTreeEditable] = useState(null); // null = 403, false = read-only, true = read-write
-  const [loading, setLoading] = useState(true); 
+  const [data, setData] = useState(DEFAULT_VALUES); 
 
   const fetchMembersAndRelations = useCallback(async () => {
     if (!treeUuid) {
       return;
     }
 
-    setLoading(true); 
+    setData(d => ({
+      ...d, 
+      loading: true
+    })); 
 
     // 1. determine if tree is accessible and/or editable by user
     const user = supabase.auth.user(); 
@@ -83,15 +90,19 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
       ...relation, 
     })); 
 
-    setIsTreeEditable(isTreeEditable); 
-    setMembers(keyedMembers); 
-    setRelations(keyedRelations);
-
-    setLoading(false); 
+    setData({
+      isTreeEditable,
+      members: keyedMembers,
+      relations: keyedRelations,
+      loading: false, 
+    });  
   }, [treeUuid]); 
 
   async function createMemberAndRelation(member, relation) { 
-    setLoading(true); 
+    setData(d => ({ 
+      ...d,
+      loading: true, 
+    })); 
 
     // remove relation-related fields
     const memberCopy = {...member}; 
@@ -112,7 +123,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     
     if (memberError) {
       message.error(memberError?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false);
+      setData(d => ({
+        ...d,
+        loading: false,
+      })); 
       return; // error making new member
     } 
     
@@ -132,7 +146,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     if (relationError) {
       message.error(relationError?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false);   
+      setData(d => ({
+        ...d,
+        loading: false,
+      })); 
       return;  // error making new relation; user can manually retry adding relation btwn existing members 
     } 
     
@@ -140,7 +157,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
   }
 
   async function deleteMemberAndRelations(uuid) { 
-    setLoading(true); 
+    setData(d => ({ 
+      ...d,
+      loading: true, 
+    })); 
 
     // note: due to "on cascade", deleting a member will delete all rows referencing the member
     // (related relations will automatically be deleted)
@@ -151,7 +171,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     
     if (deleteMemberError) {
       message.error(deleteMemberError?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false); 
+      setData(d => ({
+        ...d,
+        loading: false,
+      })); 
       return // error deleting member 
     } 
 
@@ -159,7 +182,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
   }
 
   async function createMember(member) { 
-    setLoading(true); 
+    setData(d => ({ 
+      ...d,
+      loading: true, 
+    })); 
 
     const payload = { 
       ...member, 
@@ -174,7 +200,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false);   
+      setData(d => ({
+        ...d,
+        loading: false,
+      })); 
     } else { 
       fetchMembersAndRelations();
       return data; 
@@ -182,7 +211,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
   }
 
   async function updateMember(member) { 
-    setLoading(true); 
+    setData(d => ({ 
+      ...d,
+      loading: true, 
+    })); 
 
     const payload = { 
       ...member, 
@@ -198,7 +230,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false);   
+      setData(d => ({
+        ...d,
+        loading: false,
+      })); 
     } else { 
       fetchMembersAndRelations();
       return data; 
@@ -206,7 +241,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
   }
 
   async function createRelation(toMemberUuid, type) { 
-    setLoading(true); 
+    setData(d => ({ 
+      ...d,
+      loading: true, 
+    })); 
 
     const payload = { 
       [RELATION_TABLE_ROWS.FROM_MEMBER_UUID]: selectedMemberUuid, 
@@ -221,7 +259,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false);   
+      setData(d => ({
+        ...d,
+        loading: false,
+      })); 
     } else { 
       fetchMembersAndRelations();
       return data; 
@@ -229,7 +270,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
   }
 
   async function updateRelation(relation) { 
-    setLoading(true); 
+    setData(d => ({ 
+      ...d,
+      loading: true, 
+    })); 
 
     const payload = { 
       ...relation, 
@@ -245,7 +289,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false);   
+      setData(d => ({
+        ...d,
+        loading: false,
+      })); 
     } else { 
       fetchMembersAndRelations();
       return data; 
@@ -253,7 +300,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
   }
 
   async function deleteRelation(uuid) { 
-    setLoading(true); 
+    setData(d => ({ 
+      ...d,
+      loading: true, 
+    })); 
 
     const { error } = await supabase
       .from(RELATION_TABLE)
@@ -262,7 +312,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE)
-      setLoading(false); 
+      setData(d => ({
+        ...d,
+        loading: false,
+      })); 
     } else { 
       fetchMembersAndRelations(); 
     }
@@ -282,9 +335,6 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     deleteRelation,
 
     // data 
-    isTreeEditable, 
-    members, 
-    relations, 
-    loading,
+    ...data,
   }; 
 }

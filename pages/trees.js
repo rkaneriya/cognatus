@@ -137,7 +137,7 @@ export default function Trees({user}) {
           alignItems: 'center', 
           width: '100%', 
         })}>
-          <Title>
+          <Title level={2}>
             Your trees ({totalCount})
           </Title>
           <Button 
@@ -172,7 +172,7 @@ export default function Trees({user}) {
           alignItems: 'center', 
           width: '100%', 
         })}>
-          <Title>
+          <Title level={2}>
             Trees shared with you ({sharedTreeCount})
           </Title>
         </div>

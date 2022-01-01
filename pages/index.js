@@ -7,6 +7,7 @@ import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
 import {SITE_URLS} from '../constants/site-urls'; 
 import Link from 'next/link'; 
+import Image from 'next/image'
 
 const {Search} = Input; 
 
@@ -50,7 +51,17 @@ function Footer() {
       bottom: '10px', 
       width: '100%', 
       textAlign: 'center', 
+      display: 'flex',
+      flexDirection: 'column',  
     })}>
+      <a href="https://www.buymeacoffee.com/rkaneriya" target="_blank" rel="noreferrer">
+        <Image 
+          src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png"
+          alt="Buy Me A Coffee" 
+          height={60}
+          width={217}
+        />
+      </a>
       © 2021 Rishi Kaneriya 
     </div>
   ); 
@@ -113,14 +124,21 @@ export default function Home({user}) {
       {user && <Header email={user?.email} />}
       <Wrapper>
         <Content>
-          <div className={css({fontFamily: 'Vujahday Script', fontSize: '120px'})}>
-            Cognat
-            <span className={css({
-              color: 'red', 
-            })}>
-              us
-            </span>
+          <div className={css({
+            fontWeight: '100', 
+            fontSize: '120px', 
+            display: 'flex', 
+          })}>
+            <div className={css({':hover': {color: 'red'}})}>c</div>
+            <div className={css({':hover': {color: 'red'}})}>o</div>
+            <div className={css({':hover': {color: 'red'}})}>g</div>
+            <div className={css({':hover': {color: 'red'}})}>n</div>
+            <div className={css({':hover': {color: 'red'}})}>a</div>
+            <div className={css({':hover': {color: 'red'}})}>t</div>
+            <div className={css({':hover': {color: 'red'}})}>u</div>
+            <div className={css({':hover': {color: 'red'}})}>s</div>
           </div>
+
           <div className={css({fontStyle: 'italic', fontSize: '24px'})}>
             Stay
             {' '}
