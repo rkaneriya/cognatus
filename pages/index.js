@@ -26,22 +26,6 @@ function Wrapper({children}) {
   ); 
 }
 
-function Header({email}) {
-  const [css] = useStyletron(); 
-  return (
-    <div className={css({
-      color: 'lightgray',
-      position: 'absolute', 
-      top: '10px', 
-      right: '20px', 
-      width: '100%', 
-      textAlign: 'right', 
-    })}>
-      Logged in as {email}
-    </div>
-  ); 
-}
-
 function Footer() {
   const [css] = useStyletron(); 
   return (
@@ -142,7 +126,6 @@ export default function Home({user}) {
 
   return (
     <>
-      {user && <Header email={user?.email} />}
       <Wrapper>
         <Content>
           <div className={css({
