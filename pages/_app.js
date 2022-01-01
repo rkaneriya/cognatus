@@ -33,7 +33,11 @@ export default function MyApp(props) {
   return (
     <StyletronProvider value={styletron}>
       <Alert
-        message="Please note: Cognatus is still in open beta. You can create, view, and delete trees, but there may still be some bugs and finishing touches left unaddressed. Thank you for trying it out!"
+        message={(
+          <>
+            Please note: Cognatus is still in open beta. You can create & edit trees, but there may still be some bugs and finishing touches left unaddressed. Thank you for trying it out! Please considering submitting feedback <a href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>here</a>.
+          </>
+        )}
         banner
         closable
       />
