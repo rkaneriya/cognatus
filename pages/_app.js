@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Provider as StyletronProvider } from 'styletron-react'
 import 'antd/dist/antd.css';
 import { supabase } from '../utils/supabase';
@@ -8,10 +8,18 @@ import {useRouter} from 'next/router';
 import {ROUTES} from '../constants/routes'; 
 import './_styles.css'; 
 import Script from 'next/script';
+import { isMobile } from 'react-device-detect';
+import MobileWarningModal from '../components/mobile-warning-modal'; 
 
 export default function MyApp(props) {
   const router = useRouter(); 
+  const [isMobileWarningModalVisible, setIsMobileWarningModalVisible] = useState(false); 
+
   useEffect(() => {
+    if (isMobile) { 
+      setIsMobileWarningModalVisible(true); 
+    }
+  
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => { 
       if (event === 'SIGNED_IN') { 
         router.push(ROUTES.ADMIN); 
@@ -28,7 +36,7 @@ export default function MyApp(props) {
     return () => { 
       authListener.unsubscribe()
     }; 
-  }); 
+  }, [router]); 
 
   const { Component, pageProps } = props
   return (
@@ -58,6 +66,7 @@ export default function MyApp(props) {
         }        
       </Script>
       <Component {...pageProps} />
+      <MobileWarningModal visible={isMobileWarningModalVisible} onCancel={() => setIsMobileWarningModalVisible(false)} />
     </StyletronProvider>
   ); 
 }
