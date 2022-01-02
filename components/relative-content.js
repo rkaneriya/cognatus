@@ -177,7 +177,7 @@ export function RelativeContent({
   } = DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[displayRelationType]; 
 
   const relativeOptions = members.filter(m => 
-    m.uuid !== selectedMemberUuid && !Object.values(directRelationsByRelativeUuid).includes(m.uuid)
+    m.uuid !== selectedMemberUuid && !Object.keys(directRelationsByRelativeUuid).includes(m.uuid)
   ); 
 
   function handleAddRelative(relativeUuid, relationType) {
