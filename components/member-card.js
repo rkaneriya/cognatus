@@ -133,7 +133,7 @@ function DateSection() {
   }
   if (death_date) { 
     dates.push({
-      label: 'DIED', 
+      label: 'DECEASED', 
       content: <>{formattedDeathDate} ({pluralize(deadYears, 'year')} ago)</>,
     });
   }
