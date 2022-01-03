@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Table, Input, InputNumber, Popconfirm, Form, Typography } from 'antd';
 import ShareTreeDrawer from './share-tree-drawer';
+import { TreeContext } from '../data/contexts/tree';
 
 const EditableCell = ({
   editing,
@@ -39,22 +40,26 @@ const EditableCell = ({
 
 const EditableTable = ({
   columns, 
-  dataSource, 
-  handleDelete, 
-  handleSave,
-  handleShareAdd,
-  handleShareDelete, 
-  loading, 
-  pagination, 
 }) => {
   const [form] = Form.useForm();
   const [data, setData] = useState([]);
   const [isShareTreeDrawerOpen, setIsShareTreeDrawerOpen] = useState(false); 
   const [sharableTreeUuid, setSharableTreeUuid] = useState(null); 
+
+  const { 
+    treeData,
+    treeCount, 
+    treeLoading,
+    treeSetCurrentPage,
+    TREE_PAGE_SIZE,
+
+    updateTree,
+    deleteTree,
+  } = useContext(TreeContext); 
   
   useEffect(() => { 
-    setData(dataSource); 
-  }, [dataSource]); 
+    setData(treeData); 
+  }, [treeData]); 
   
   const [editingKey, setEditingKey] = useState('');
 
@@ -90,7 +95,7 @@ const EditableTable = ({
       if (index > -1) {
         const item = newData[index];
         newData.splice(index, 1, { ...item, ...row });
-        handleSave(newData[index]); 
+        updateTree(newData[index]); 
         setData(newData);
         setEditingKey('');
       } else {
@@ -104,7 +109,7 @@ const EditableTable = ({
   };
 
   const deleteRow = (uuid) => { 
-    handleDelete(uuid); 
+    deleteTree(uuid); 
   }; 
 
   const modifiedColumns = [
@@ -177,15 +182,18 @@ const EditableTable = ({
         bordered
         columns={mergedColumns}
         dataSource={data}
-        loading={loading}
-        pagination={pagination}
+        loading={treeLoading}
+        pagination={{ 
+          defaultPageSize: TREE_PAGE_SIZE, 
+          total: treeCount, 
+          simple: true,
+          onChange: (page) => treeSetCurrentPage(page), 
+        }}
         style={{
           width: '100%'
         }}
       />
       <ShareTreeDrawer
-        handleShareAdd={handleShareAdd}
-        handleShareDelete={handleShareDelete}
         tree={tree}
         onClose={() => setIsShareTreeDrawerOpen(false)}
         visible={isShareTreeDrawerOpen}

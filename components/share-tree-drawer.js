@@ -1,27 +1,27 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import {Button, Drawer, Divider, Input, Tag} from 'antd';
 import { useStyletron } from 'styletron-react';
+import { TreeContext } from '../data/contexts/tree';
 
 const layout = {
   labelCol: { span: 9 },
   wrapperCol: { span: 16 },
 };
 
-export default function ShareTreeDrawer(props) {
+export default function ShareTreeDrawer({
+  tree,
+  onClose, 
+  visible, 
+}) {
   const [email, setEmail] = useState(''); 
   const [css] = useStyletron(); 
-
   const { 
-    handleShareAdd,
-    handleShareDelete, 
-    tree,
-    sharees, 
-    onClose, 
-    visible, 
-  } = props; 
-
+    createSharedTree,
+    deleteSharedTree,
+  } = useContext(TreeContext); 
+  
   function handleAdd() { 
-    handleShareAdd(tree?.uuid, email); 
+    createSharedTree(tree?.uuid, email); 
   }
 
   function handleChange(e) { 
@@ -53,7 +53,7 @@ export default function ShareTreeDrawer(props) {
             key={s.uuid} 
             color='blue'
             closable 
-            onClose={() => handleShareDelete(s.uuid)}
+            onClose={() => deleteSharedTree(s.uuid)}
             style={{ marginBottom: '8px' }}
           >
             {s.sharee_email}   

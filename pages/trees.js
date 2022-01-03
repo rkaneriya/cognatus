@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useState, useContext} from 'react';
 import {useStyletron} from 'styletron-react';  
 import moment from 'moment'; 
 import {Button, Checkbox, Table, Tooltip, Typography} from 'antd';
@@ -9,8 +9,7 @@ import Link from 'next/link';
 import EditableTable from '../components/editable-table'; 
 import NewTreeDrawer from '../components/new-tree-drawer';
 import NavBar from '../components/nav-bar'; 
-import useTreeAPI, {PAGE_SIZE} from '../data/hooks/tree';
-import useSharedTreeAPI from '../data/hooks/shared-tree';
+import { TreeContext } from '../data/contexts/tree';
 
 const {Title} = Typography; 
 
@@ -68,36 +67,19 @@ function IsPublicColumnHeader() {
 export default function Trees({user}) {
   const [css] = useStyletron(); 
   const [isCreateTreeDrawerOpen, setIsCreateTreeDrawerOpen] = useState(false); 
-
-  const { 
-    // crud
-    fetchTrees,
+  const {
+    // trees
     createTree,
     updateTree,
-    deleteTree,
-
-    // data 
-    data,
-    totalCount, 
-    loading,
-    setCurrentPage,
-  } = useTreeAPI(); 
-
-  const {
-    fetchSharedTrees,
-    createSharedTree,
-    deleteSharedTree,
+    treeCount, 
     
-    data: sharedTreeData, 
-    totalCount: sharedTreeCount, 
-    loading: sharedTreeLoading,
-    setCurrentPage: sharedTreeSetCurrentPage, 
-  } = useSharedTreeAPI(fetchTrees); 
-
-  useEffect(() => {
-    fetchTrees();
-    fetchSharedTrees(); 
-  }, [fetchTrees, fetchSharedTrees]);
+    // shared trees
+    sharedTreeData, 
+    sharedTreeCount, 
+    sharedTreeLoading,
+    sharedTreeSetCurrentPage, 
+    SHARED_TREE_PAGE_SIZE, 
+  } = useContext(TreeContext); 
 
   const TREE_COLUMNS = [
     {
@@ -182,7 +164,7 @@ export default function Trees({user}) {
           width: '100%', 
         })}>
           <Title level={2}>
-            Your trees ({totalCount})
+            Your trees ({treeCount})
           </Title>
           <Button 
             onClick={() => setIsCreateTreeDrawerOpen(true)}
@@ -194,18 +176,6 @@ export default function Trees({user}) {
         </div>
         <EditableTable
           columns={TREE_COLUMNS}
-          dataSource={data}
-          loading={loading}
-          pagination={{ 
-            defaultPageSize: PAGE_SIZE, 
-            total: totalCount, 
-            simple: true,
-            onChange: (page) => setCurrentPage(page), 
-          }}
-          handleDelete={deleteTree}
-          handleSave={updateTree}
-          handleShareAdd={createSharedTree}
-          handleShareDelete={deleteSharedTree}
         />
       </Section>
 
@@ -215,7 +185,7 @@ export default function Trees({user}) {
           justifyContent: 'space-between',
           alignItems: 'center', 
           width: '100%', 
-          marginTop: totalCount === 0 ? '40px' : '0px',
+          marginTop: treeCount === 0 ? '40px' : '0px',
         })}>
           <Title level={2}>
             Trees shared with you ({sharedTreeCount})
@@ -227,7 +197,7 @@ export default function Trees({user}) {
           dataSource={sharedTreeData}
           loading={sharedTreeLoading}
           pagination={{
-            defaultPageSize: PAGE_SIZE,
+            defaultPageSize: SHARED_TREE_PAGE_SIZE,
             total: sharedTreeCount,
             simple: true, 
             onChange: (page) => sharedTreeSetCurrentPage(page), 

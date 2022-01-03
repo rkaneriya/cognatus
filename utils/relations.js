@@ -58,7 +58,6 @@ export function getRelation(people, relations) {
   relations.forEach(({type}, i) => { 
     const a = people[i]; 
     const b = people[i+1]; 
-    console.log(`A: ${a.first_name}, B: ${b.first_name}, type: ${type}`); 
     const isOlder = moment(b.birth_date).isBefore(moment(a.birth_date));
     
     if (type === RELATION_TYPES.PARENT_CHILD) { 

@@ -81,6 +81,7 @@ export default function useSharedTreeAPI(fetchTrees) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE)
     } else { 
       fetchTrees(); 
+      fetchSharedTrees(); 
     }
 
     setLoading(false);   
@@ -98,6 +99,7 @@ export default function useSharedTreeAPI(fetchTrees) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE)
     } else { 
       fetchTrees(); 
+      fetchSharedTrees(); 
     }
 
     setLoading(false); 
