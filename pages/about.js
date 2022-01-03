@@ -59,7 +59,7 @@ export default function About() {
           No. Your data is never used for any purpose other than for enabling the core experience of creating, editing, and viewing trees. Your data is never analyzed, sold, or otherwise leveraged. You can fully delete your trees (along with all related family member and relation information) at any time.
         </p>
         <p>
-          I created Cognatus to visualize my own family tree. I created it from scratch specifically because I didn&apos;t want to use a third party service that might use my data for other purposes.  
+          I created Cognatus as a non-commercial hobby project to visualize my own family tree. I built it myself specifically because I didn&apos;t want to use a third party service that might use my data for other purposes.  
         </p>
       </Answer>
 
