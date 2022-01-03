@@ -18,7 +18,11 @@ export default function RelationDrawer({
     form.setFieldsValue(initialValues); 
   }); 
 
-  const {updateRelation} = useContext(MemberRelationContext); 
+  const {
+    selectedMemberUuid,
+    membersByUuid, 
+    updateRelation,
+  } = useContext(MemberRelationContext); 
 
   function handleClose() { 
     form.resetFields(); 
@@ -34,6 +38,8 @@ export default function RelationDrawer({
     });
   }
 
+  const useYearOnly = membersByUuid[selectedMemberUuid]?.use_year_only; 
+  
   return (
     <Drawer 
       title='Edit relationship details'
@@ -43,10 +49,10 @@ export default function RelationDrawer({
     >
       <Form {...layout} form={form} name="nest-messages" onFinish={handleFinish}>
         <Form.Item name='start_date' label="Marriage Start" rules={[{ required: true }]}>
-          <DatePicker /> 
+          <DatePicker picker={useYearOnly ? 'year' : 'undefined'} /> 
         </Form.Item>
         <Form.Item name='end_date' label="Marriage End">
-          <DatePicker /> 
+          <DatePicker picker={useYearOnly ? 'year' : 'undefined'} /> 
         </Form.Item>
         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 9 }}>
           <Button type="primary" htmlType="submit">

@@ -8,6 +8,9 @@ import {getRelationEdgeColor} from '../utils/relations';
 import { MemberRelationContext } from '../data/contexts/member-relation';
 import {DISPLAY_RELATION_TYPES, DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG} from '../constants/display-relation-types'; 
 
+const FULL_DATE_FORMAT = 'L'; 
+const YEAR_DATE_FORMAT = 'y'; 
+
 function TagValue({
   isTreeEditable,
   relationType, 
@@ -58,6 +61,8 @@ function RelativeTag({
 }) {     
   const [css] = useStyletron(); 
   const {
+    selectedMemberUuid, 
+    membersByUuid,
     deleteRelation,
     isTreeEditable, 
     directRelationsByRelativeUuid,
@@ -67,12 +72,13 @@ function RelativeTag({
     relationType,
   } = DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[displayRelationType]; 
 
+  const selectedMember = membersByUuid[selectedMemberUuid]; 
   const relation = directRelationsByRelativeUuid[relative.uuid]; 
 
   const mMarriageStartDate = relation.start_date ? moment(relation.start_date) : moment();
   const mMarriageEndDate = relation.end_date ? moment(relation.end_date) : moment();             
-  const formattedMarriageStartDate = mMarriageStartDate.format('l');
-  const formattedMarriageEndDate = mMarriageEndDate.format('l');
+  const formattedMarriageStartDate = mMarriageStartDate.format(selectedMember?.use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT);
+  const formattedMarriageEndDate = mMarriageEndDate.format(selectedMember?.use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT);
   const formattedMarriageDates = relation.end_date 
     ? `${formattedMarriageStartDate} - ${formattedMarriageEndDate}` 
     : `Since ${formattedMarriageStartDate}` 

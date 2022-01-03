@@ -14,4 +14,5 @@ export const MEMBER_TABLE_ROWS = {
   NOTES: 'notes', 
   PHOTO_PATH: 'photo_path', 
   MAIDEN_NAME: 'maiden_name',
+  USE_YEAR_ONLY: 'use_year_only', 
 }; 

@@ -25,6 +25,7 @@ const {
 
 const DEFAULT_MEMBER_FORM_VALUES = {
   is_male: 'false', 
+  use_year_only: 'false', 
 }; 
 
 function Wrapper({children}) { 
@@ -71,7 +72,8 @@ export default function Tree() {
     const selectedMember = membersByUuid[selectedMemberUuid]; 
     const initialValues = { 
       ...selectedMember, 
-      is_male: String(selectedMember.is_male), 
+      is_male: String(Boolean(selectedMember.is_male)), 
+      use_year_only: String(Boolean(selectedMember.use_year_only)), 
       birth_date: selectedMember.birth_date ? moment(selectedMember.birth_date) : undefined, // birth_date should always be defined
       death_date: selectedMember.death_date ? moment(selectedMember.death_date) : undefined, 
     }

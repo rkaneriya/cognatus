@@ -1,4 +1,4 @@
-import {Button, DatePicker, Drawer, Form, Input, Radio} from 'antd';
+import {Button, DatePicker, Divider, Drawer, Form, Input, Radio} from 'antd';
 import { useEffect, useContext } from 'react';
 import {RELATION_TYPES} from '../constants/relation-types'; 
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
@@ -19,6 +19,9 @@ export default function MemberDrawer({
 
   useEffect(() => { 
     form.setFieldsValue(initialValues); 
+    return () => { 
+      form.resetFields(); 
+    }
   }); 
 
   const {
@@ -32,7 +35,6 @@ export default function MemberDrawer({
   const selectedMemberName = membersByUuid[selectedMemberUuid]?.first_name; 
 
   function handleClose() { 
-    form.resetFields(); 
     onClose(); 
   }
 
@@ -104,28 +106,58 @@ export default function MemberDrawer({
           <Input />
         </Form.Item>
         <Form.Item name='is_male' label="Sex" rules={[{ required: true }]}>
-          <Radio.Group>
+          <Radio.Group buttonStyle='solid'>
             <Radio.Button value="true">Male</Radio.Button>
             <Radio.Button value="false">Female</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Divider />
+        <Form.Item name='use_year_only' noStyle>
+          <Radio.Group
+            buttonStyle='solid' 
+            style={{
+              marginBottom: '20px', 
+              display: 'flex', 
+              justifyContent: 'center', 
+            }}
+          >
+            <Radio.Button value="false">Use Full Dates</Radio.Button>
+            <Radio.Button value="true">Use Years Only</Radio.Button>
           </Radio.Group>
         </Form.Item>
         { 
           isSpouseConfig && (
             <>
-              <Form.Item name='start_date' label="Marriage Start" rules={[{ required: true }]}>
-                <DatePicker /> 
+              <Form.Item noStyle shouldUpdate={(prev, curr) => prev.use_year_only !== curr.use_year_only}>
+                {({ getFieldValue }) => (
+                  <Form.Item name='start_date' label="Marriage Start" rules={[{ required: true }]}>
+                    <DatePicker picker={getFieldValue('use_year_only') === 'true' ? 'year' : 'undefined'} /> 
+                  </Form.Item>
+                )}
               </Form.Item>
-              <Form.Item name='end_date' label="Marriage End">
-                <DatePicker /> 
+              <Form.Item noStyle shouldUpdate={(prev, curr) => prev.use_year_only !== curr.use_year_only}>
+                {({ getFieldValue }) => (
+                  <Form.Item name='end_date' label="Marriage End">
+                    <DatePicker picker={getFieldValue('use_year_only') === 'true' ? 'year' : 'undefined'} /> 
+                  </Form.Item>
+                )}
               </Form.Item>
             </>
           )
         }
-        <Form.Item name='birth_date' label="Birth Date" rules={[{ required: true }]}>
-          <DatePicker /> 
+        <Form.Item noStyle shouldUpdate={(prev, curr) => prev.use_year_only !== curr.use_year_only}>
+          {({ getFieldValue }) => (
+            <Form.Item name='birth_date' label="Birth Date" rules={[{ required: true }]}>
+              <DatePicker picker={getFieldValue('use_year_only') === 'true' ? 'year' : 'undefined'} /> 
+            </Form.Item>
+          )}
         </Form.Item>
-        <Form.Item name='death_date' label="Death Date">
-          <DatePicker />
+        <Form.Item noStyle shouldUpdate={(prev, curr) => prev.use_year_only !== curr.use_year_only}>
+          {({ getFieldValue }) => (
+            <Form.Item name='death_date' label="Death Date">
+              <DatePicker picker={getFieldValue('use_year_only') === 'true' ? 'year' : 'undefined'} /> 
+            </Form.Item>
+          )}
         </Form.Item>
         <Form.Item name='notes' label="Notes">
           <Input.TextArea />

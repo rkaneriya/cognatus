@@ -10,7 +10,8 @@ import {DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG} from '../constants/display-
 import QueryRelationTab from '../components/query-relation-tab'; 
 import StatsTab from './stats-tab';
 
-const DATE_FORMAT = 'll'; 
+const FULL_DATE_FORMAT = 'll'; 
+const YEAR_DATE_FORMAT = 'y'; 
 
 function Name({children}) { 
   const [css] = useStyletron(); 
@@ -112,12 +113,13 @@ function DateSection() {
   const {
     birth_date,
     death_date, 
+    use_year_only, 
   } = membersByUuid[selectedMemberUuid] || {}; 
 
   const mBirthDate = moment(birth_date); 
   const mDeathDate = moment(death_date); 
-  const formattedBirthDate = mBirthDate.format(DATE_FORMAT);
-  const formattedDeathDate = mDeathDate.format(DATE_FORMAT); 
+  const formattedBirthDate = mBirthDate.format(use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT);
+  const formattedDeathDate = mDeathDate.format(use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT); 
   const age = death_date
     ? mDeathDate.diff(mBirthDate, 'years')
     : moment().diff(mBirthDate, 'years'); 

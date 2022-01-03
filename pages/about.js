@@ -1,14 +1,6 @@
-import {useState} from 'react'; 
 import {useStyletron} from 'styletron-react'; 
-import {message, Button, Input, Tooltip, Divider, Typography} from 'antd'; 
-import {ArrowRightOutlined, QuestionCircleOutlined, UserSwitchOutlined} from '@ant-design/icons'; 
+import {Typography} from 'antd'; 
 import {useRouter} from 'next/router'
-import {supabase} from '../utils/supabase'
-import {ROUTES} from '../constants/routes'; 
-import {SITE_URLS} from '../constants/site-urls'; 
-import Link from 'next/link'; 
-import Image from 'next/image'
-import Demos from '../components/demos'; 
 
 function Wrapper({children}) { 
   const [css] = useStyletron(); 
@@ -61,34 +53,33 @@ export default function About() {
         </p>
       </Answer>
 
-    {/* <Typography.Title level={2}>Data & Privacy</Typography.Title> */}
       <Question>Is my data used for any outside purpose?</Question>
       <Answer>  
         <p>
-          No. Your data is never used for any purpose other than for enabling the core experience of creating, editing, and viewing trees. Your data is never analyzed, sold, or otherwise leveraged. You can fully delete your trees (along with all related family member and relation information), as well as download all your data in CSV format, at any time. 
+          No. Your data is never used for any purpose other than for enabling the core experience of creating, editing, and viewing trees. Your data is never analyzed, sold, or otherwise leveraged. You can fully delete your trees (along with all related family member and relation information) at any time.
         </p>
         <p>
-          I created Cognatus to meet my own need of visualizing my family tree. I created it from scratch specifically because I didn&apos;t want to use a third party service that might use my data for other purposes.  
+          I created Cognatus to visualize my own family tree. I created it from scratch specifically because I didn&apos;t want to use a third party service that might use my data for other purposes.  
         </p>
       </Answer>
 
-      <Question>How does sharing of trees work?</Question>
+      <Question>How does tree sharing work?</Question>
       <Answer>
         <p>
-          Trees you create are private by default and can only be accessed and edited by you. If you choose, you can share trees with other people. There are two ways to share a tree: (1) with specific people who use Cognatus (via e-mail address), or (2) with anyone who has a link to the tree, regardless of whether they&apos;ve ever signed into Cognatus.  
+          Trees you create are private by default and can only be accessed and edited by you. If you choose, you can share trees with other people. There are two ways to share a tree: (1) with specific people who use Cognatus (via e-mail address), or (2) with anyone who has a link to the tree, regardless of whether they&apos;ve ever signed into Cognatus. Shared trees are always read-only for those you share them with. 
         </p> 
       </Answer>
 
-      <Question>Do I <i>have</i> to provide full birth dates?</Question>
+      <Question>Do I <i>have</i> to use full birth dates?</Question>
       <Answer>
         <p>
-          No. The only reason birth dates are required is so that the app can differentiate between a parent and a child in a &quot;parent/child&quot; relationship (using birthdate to discern who&apos;s older). 
+          No. The only reason birth dates are required at all is so that the app can differentiate between a parent and a child in a &quot;parent/child&quot; relationship (using birth date to discern who&apos;s older). 
         </p>
         <p>
-          If you don&apos;t want to use full birth dates (or full dates for other events such as marriages), you can configure your tree to only use <i>years</i>. This will still enable the core functionality of Cognatus (visualizing and understanding the relations between family members); you just won&apos;t be able to view upcoming birth dates, wedding anniversaries, etc. 
+          If you don&apos;t want to use full dates, you can select the &quot;Use Years Only&quot; option when adding/editing a family member. This will only store years for all dates for that individual. This will still enable the core functionality of Cognatus (visualizing and understanding the relations between family members); you just won&apos;t be able to view upcoming birthdays, wedding anniversaries, etc.
         </p> 
         <p>
-          You can switch back and forth between using dates or years at any time. Just note that switching to dates from years will (naturally) require you to go back and add months/days to all dates in order to store complete information. If you don&apos;t, the month/day will be assumed to be January 1st, by default For example, if family member X was previously configured to be born in 2021 (when a tree was in &quot;year&quot; mode), after you switch the tree to &quot;date&quot; mode, X&apos;s birth date will display as January 1, 2021 unless you edit it). 
+          You can switch back and forth between using full dates or years at any time. Just note that switching to full dates from years will (naturally) require you to supply a month/day for the first time in order for the date to be accurate. If you don&apos;t, the month/day will be assumed to be the current month/day.
         </p>
       </Answer>
 
@@ -101,7 +92,7 @@ export default function About() {
 
       <Question>How can I contact you?</Question>
       <Answer>
-        Use <a href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>this form</a> to get in touch with me. Bug reports, feature requests, and general feedback are all welcome! 
+        Use <a href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>this form</a> to get in touch with me. Bug reports, feature requests, and general feedback are all welcome and appreciated!
       </Answer>
     </Wrapper>
   ); 
