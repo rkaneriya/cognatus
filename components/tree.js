@@ -14,7 +14,7 @@ import { useRouter } from 'next/router';
 import { DemoModal } from './demo-modal';
 
 const DEMO_ROUTES = [ 
-  ROUTES.DEMO_VANDERBILTS,
+  ROUTES.DEMO_ROOSEVELTS,
   ROUTES.DEMO_BRITISH_ROYALS,
 ]; 
 
