@@ -8,9 +8,9 @@ export default function Demos() {
 
   const demos = [
     { 
-      file: '/vanderbilt.jpg', 
-      path: ROUTES.DEMO_VANDERBILTS,
-      label: 'The Vanderbilts', 
+      file: '/fdr.jpeg', 
+      path: ROUTES.DEMO_ROOSEVELTS,
+      label: 'The Roosevelts', 
     }, 
     { 
       file: '/queen.jpg', 

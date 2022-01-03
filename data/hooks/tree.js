@@ -22,15 +22,20 @@ export default function useTreeAPI() {
 
     const user = supabase.auth.user(); 
 
+    if (!user) { 
+      setLoading(false); 
+      return; 
+    }
+
     const { data: trees, count, error: treeError } = await supabase
       .from(TREE_TABLE)
       .select("*", { count: "exact" })
-      .eq(TREE_TABLE_ROWS.CREATOR_UUID, user.id)
+      .eq(TREE_TABLE_ROWS.CREATOR_UUID, user?.id)
       .order(TREE_TABLE_ROWS.CREATED_AT, { ascending: true })
       .range(start, end);
 
     if (treeError) { 
-      message.error(error?.message || GENERIC_ERROR_MESSAGE);
+      message.error(treeError?.message || GENERIC_ERROR_MESSAGE);
       setLoading(false); 
       return; 
     }
@@ -77,7 +82,7 @@ export default function useTreeAPI() {
 
     const payload = { 
       ...tree, 
-      [TREE_TABLE_ROWS.CREATOR_UUID]: user.id,
+      [TREE_TABLE_ROWS.CREATOR_UUID]: user?.id,
     }; 
 
     const { error } = await supabase

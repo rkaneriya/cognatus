@@ -26,7 +26,7 @@ export default function useSharedTreeAPI(fetchTrees) {
     const {data: sharedTrees, count, error: sharedTreeError} = await supabase
       .from(SHARED_TREE_TABLE)
       .select('*', {count: 'exact'})
-      .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user.email)
+      .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user?.email)
       .order(SHARED_TREE_TABLE_ROWS.CREATED_AT, { ascending: true })
       .range(start, end);
 
@@ -69,7 +69,7 @@ export default function useSharedTreeAPI(fetchTrees) {
 
     const payload = { 
       [SHARED_TREE_TABLE_ROWS.TREE_UUID]: treeUuid,
-      [SHARED_TREE_TABLE_ROWS.SHARER_EMAIL]: user.email, 
+      [SHARED_TREE_TABLE_ROWS.SHARER_EMAIL]: user?.email, 
       [SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL]: shareeEmail, 
     }; 
 
