@@ -1,6 +1,6 @@
 import {useState} from 'react'; 
 import {useStyletron} from 'styletron-react'; 
-import {message, Button, Input, Tooltip, Divider} from 'antd'; 
+import {message, Button, Input, Tooltip, Divider, Menu} from 'antd'; 
 import {ArrowRightOutlined, QuestionCircleOutlined} from '@ant-design/icons'; 
 import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
@@ -20,7 +20,8 @@ function Wrapper({children}) {
       height: '100vh', 
       display: 'flex', 
       justifyContent: 'center', 
-      alignItems: 'center'
+      alignItems: 'center',
+      flexDirection: 'column', 
     })}>
       {children}
     </div>
@@ -32,10 +33,8 @@ function Footer() {
   return (
     <div className={css({
       color: 'lightgray',
-      position: 'absolute', 
-      bottom: '10px', 
       width: '100%', 
-      textAlign: 'center', 
+      alignItems: 'center', 
       display: 'flex',
       flexDirection: 'column',  
     })}>
@@ -166,14 +165,22 @@ export default function Home({user}) {
                 </>
               : <Login />
           }
+          <Button 
+            size='large'
+            style={{ marginTop: '20px'}}
+            type='default'
+            onClick={() => router.push(ROUTES.ABOUT)}
+          >
+            Learn more
+          </Button>
           <Divider />
           <div className={css({fontStyle: 'italic', fontWeight: 300, fontSize: '18px'})}>
             Or, check out one of these demo trees:
           </div>
           <Demos />
         </Content>
+        <Footer /> 
       </Wrapper>
-      <Footer /> 
     </>
   ); 
 }

@@ -37,10 +37,13 @@ export default function ShareTreeDrawer(props) {
     >
       <div className={css({marginBottom: '20px'})}>
         <p>
-          Instead of making a tree public to all, you can share it with specific people by adding their e-mail addresses below. 
+          Instead of making a tree public to all, you can share it with specific people by adding their e-mail addresses below.
         </p>
         <p>
-          People you share your tree with can only view (not edit) your tree. You can stop sharing with specific people at any time.
+          They don&apos;t have to already be using Cognatus. If they sign in at any point in time with their e-mail address, they will be able to see the tree you shared.  
+        </p>
+        <p>
+          People you share your tree with can only view (not edit) your tree. You can stop sharing with specific people at any time by removing them from the list below.
         </p>
       </div>
       <Divider />
