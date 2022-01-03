@@ -53,9 +53,21 @@ export default function QueryRelationTab() {
         <span className={css({fontStyle: 'italic', marginLeft: '5px'})}>?</span>
       </div>
       { 
-        pathNodes && (
+        pathNodes.length > 0 && (
           <Alert message={relationStr} type="error" />
         )
+      }
+      { 
+        pathNodes.length > 0 && (
+          <div className={css({
+            marginTop: '5px', 
+            fontStyle: 'italic',
+            fontSize: '12px', 
+            color: 'gray', 
+          })}>
+            ^ Incorrect relation? Let me know <a href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>here</a>.
+          </div>
+        ) 
       }
     </>
   ); 
