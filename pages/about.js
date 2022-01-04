@@ -1,6 +1,7 @@
 import {useStyletron} from 'styletron-react'; 
 import {Typography} from 'antd'; 
 import {useRouter} from 'next/router'
+import Head from 'next/head'; 
 
 function Wrapper({children}) { 
   const [css] = useStyletron(); 
@@ -42,6 +43,9 @@ export default function About() {
 
   return (
     <Wrapper>
+      <Head>
+        <title>Cogantus | About</title>
+      </Head>
       <Typography.Title level={1}>
         About
       </Typography.Title>

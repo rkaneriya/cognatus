@@ -9,6 +9,7 @@ import {SITE_URLS} from '../constants/site-urls';
 import Link from 'next/link'; 
 import Image from 'next/image'
 import Demos from '../components/demos'; 
+import Head from 'next/head'; 
 
 const {Search} = Input; 
 
@@ -129,6 +130,9 @@ export default function Home({user}) {
 
   return (
     <>
+      <Head>
+        <title>Cognatus</title>
+      </Head>
       <Wrapper>
         <Content>
           <div className={css({

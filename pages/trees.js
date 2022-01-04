@@ -10,6 +10,7 @@ import EditableTable from '../components/editable-table';
 import NewTreeDrawer from '../components/new-tree-drawer';
 import NavBar from '../components/nav-bar'; 
 import { TreeContext } from '../data/contexts/tree';
+import Head from 'next/head'; 
 
 const {Title} = Typography; 
 
@@ -154,6 +155,9 @@ export default function Trees({user}) {
 
   return (
     <Wrapper>
+      <Head>
+        <title>Cogantus | Trees</title>
+      </Head>
       <NavBar backRoute={ROUTES.HOME}/>
 
       <Section>
