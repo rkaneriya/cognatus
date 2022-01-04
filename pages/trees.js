@@ -156,7 +156,7 @@ export default function Trees({user}) {
   return (
     <Wrapper>
       <Head>
-        <title>Cogantus | Trees</title>
+        <title>Cognatus | Trees</title>
       </Head>
       <NavBar backRoute={ROUTES.HOME}/>
 

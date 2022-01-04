@@ -44,7 +44,7 @@ export default function About() {
   return (
     <Wrapper>
       <Head>
-        <title>Cogantus | About</title>
+        <title>Cognatus | About</title>
       </Head>
       <Typography.Title level={1}>
         About
