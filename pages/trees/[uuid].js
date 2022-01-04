@@ -13,11 +13,12 @@ export default function TreeWrapper() {
   const router = useRouter(); 
   const treeUuid = router?.query?.uuid; 
   const tree = treeData.find(d => d.uuid === treeUuid) || sharedTreeData.find(d => d.uuid === treeUuid); 
+  const name = tree?.name || 'Demo' 
 
   return (
     <MemberRelationContextProvider>
       <Head>
-        <title>Cognatus | {tree?.name}</title>
+        <title>Cognatus | {name}</title>
       </Head>
       <Tree />
     </MemberRelationContextProvider>
