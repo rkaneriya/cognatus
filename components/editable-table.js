@@ -5,6 +5,7 @@ import { TreeContext } from '../data/contexts/tree';
 
 const EditableCell = ({
   editing,
+  required, 
   dataIndex,
   title,
   inputType,
@@ -24,7 +25,7 @@ const EditableCell = ({
           }}
           rules={[
             {
-              required: true,
+              required: Boolean(required), 
               message: `${title} is required`,
             },
           ]}
@@ -166,6 +167,7 @@ const EditableTable = ({
         dataIndex: col.dataIndex,
         title: col.title,
         editing: isEditing(record),
+        required: col.required, 
       }),
     };
   });

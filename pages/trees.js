@@ -88,6 +88,7 @@ export default function Trees({user}) {
       dataIndex: 'name',
       width: '25%',
       editable: true, 
+      required: true, 
       key: 'name',
       render: (text, record) => <Link href={`/trees/${record.uuid}`}>{text}</Link>,
     },
@@ -96,6 +97,7 @@ export default function Trees({user}) {
       dataIndex: 'description', 
       width: '35%', 
       editable: true, 
+      required: false, 
       key: 'description', 
     }, 
     { 
