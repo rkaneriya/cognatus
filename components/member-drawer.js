@@ -125,6 +125,20 @@ export default function MemberDrawer({
             <Radio.Button value="true">Use Years Only</Radio.Button>
           </Radio.Group>
         </Form.Item>
+        <Form.Item noStyle shouldUpdate={(prev, curr) => prev.use_year_only !== curr.use_year_only}>
+          {({ getFieldValue }) => (
+            <Form.Item name='birth_date' label="Birth Date" rules={[{ required: true }]}>
+              <DatePicker picker={getFieldValue('use_year_only') === 'true' ? 'year' : 'undefined'} /> 
+            </Form.Item>
+          )}
+        </Form.Item>
+        <Form.Item noStyle shouldUpdate={(prev, curr) => prev.use_year_only !== curr.use_year_only}>
+          {({ getFieldValue }) => (
+            <Form.Item name='death_date' label="Death Date">
+              <DatePicker picker={getFieldValue('use_year_only') === 'true' ? 'year' : 'undefined'} /> 
+            </Form.Item>
+          )}
+        </Form.Item>
         { 
           isSpouseConfig && (
             <>
@@ -145,20 +159,6 @@ export default function MemberDrawer({
             </>
           )
         }
-        <Form.Item noStyle shouldUpdate={(prev, curr) => prev.use_year_only !== curr.use_year_only}>
-          {({ getFieldValue }) => (
-            <Form.Item name='birth_date' label="Birth Date" rules={[{ required: true }]}>
-              <DatePicker picker={getFieldValue('use_year_only') === 'true' ? 'year' : 'undefined'} /> 
-            </Form.Item>
-          )}
-        </Form.Item>
-        <Form.Item noStyle shouldUpdate={(prev, curr) => prev.use_year_only !== curr.use_year_only}>
-          {({ getFieldValue }) => (
-            <Form.Item name='death_date' label="Death Date">
-              <DatePicker picker={getFieldValue('use_year_only') === 'true' ? 'year' : 'undefined'} /> 
-            </Form.Item>
-          )}
-        </Form.Item>
         <Form.Item name='notes' label="Notes">
           <Input.TextArea />
         </Form.Item>
