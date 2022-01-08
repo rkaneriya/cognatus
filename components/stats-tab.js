@@ -65,6 +65,9 @@ export default function StatsTab() {
         textAlign: 'center',
       },
     },
+    legend: {
+      position: 'top',
+    }
   };
 
   const decadeData = Object.keys(numMembersByDecade).map(decade => { 
