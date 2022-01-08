@@ -27,7 +27,7 @@ export default function useSharedTreeAPI(fetchTrees) {
       .from(SHARED_TREE_TABLE)
       .select('*', {count: 'exact'})
       .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user?.email)
-      .order(SHARED_TREE_TABLE_ROWS.CREATED_AT, { ascending: true })
+      .order(SHARED_TREE_TABLE_ROWS.CREATED_AT, { ascending: false })
       .range(start, end);
 
     if (sharedTreeError) { 

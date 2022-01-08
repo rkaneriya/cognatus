@@ -28,7 +28,7 @@ export default function NewTreeDrawer(props) {
         <Form.Item name='name' label="Name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name='description' label="Description" rules={[{ required: true }]}>
+        <Form.Item name='description' label="Description">
           <Input.TextArea />
         </Form.Item>
         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>

@@ -31,7 +31,7 @@ export default function useTreeAPI() {
       .from(TREE_TABLE)
       .select("*", { count: "exact" })
       .eq(TREE_TABLE_ROWS.CREATOR_UUID, user?.id)
-      .order(TREE_TABLE_ROWS.CREATED_AT, { ascending: true })
+      .order(TREE_TABLE_ROWS.CREATED_AT, { ascending: false })
       .range(start, end);
 
     if (treeError) { 
