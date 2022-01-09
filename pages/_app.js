@@ -11,10 +11,12 @@ import Script from 'next/script';
 import { isMobile } from 'react-device-detect';
 import MobileWarningModal from '../components/mobile-warning-modal'; 
 import { TreeContextProvider } from '../data/contexts/tree';
+import { UserContext } from '../data/contexts/user';
 
 export default function MyApp(props) {
   const router = useRouter(); 
   const [isMobileWarningModalVisible, setIsMobileWarningModalVisible] = useState(false); 
+  const [user, setUser] = useState(); 
 
   useEffect(() => {
     if (isMobile) { 
@@ -22,8 +24,15 @@ export default function MyApp(props) {
     }
   
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => { 
+      const user = supabase.auth.user();
+      setUser(user); 
+
       if (event === 'SIGNED_IN') { 
         router.push(ROUTES.ADMIN); 
+      }
+
+      if (event === 'SIGNED_OUT') { 
+        router.push(ROUTES.HOME); 
       }
             
       fetch('/api/auth', {
@@ -67,9 +76,11 @@ export default function MyApp(props) {
           `
         }        
       </Script>
-      <TreeContextProvider>
-        <Component {...pageProps} />
-      </TreeContextProvider>
+      <UserContext.Provider value={{user}}>
+        <TreeContextProvider>
+          <Component {...pageProps} />
+        </TreeContextProvider>
+      </UserContext.Provider>
     </StyletronProvider>
   ); 
 }

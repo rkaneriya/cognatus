@@ -65,7 +65,7 @@ function IsPublicColumnHeader() {
   )
 }
 
-export default function Trees({user}) {
+export default function Trees() {
   const [css] = useStyletron(); 
   const [isCreateTreeDrawerOpen, setIsCreateTreeDrawerOpen] = useState(false); 
   const {

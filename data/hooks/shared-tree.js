@@ -1,14 +1,16 @@
-import {useState, useCallback} from 'react'; 
+import {useState, useCallback, useContext} from 'react'; 
 import { message } from 'antd';
 import {SHARED_TREE_TABLE, SHARED_TREE_TABLE_ROWS} from '../entities/shared-tree'; 
 import {TREE_TABLE, TREE_TABLE_ROWS} from '../entities/tree'; 
 import { supabase } from '../../utils/supabase';
+import { UserContext } from '../contexts/user';
 
 export const PAGE_SIZE = 5; 
 
 const GENERIC_ERROR_MESSAGE = 'Failed to operate on trees'; 
 
 export default function useSharedTreeAPI(fetchTrees) { 
+  const {user} = useContext(UserContext); 
   const [data, setData] = useState([]); 
   const [loading, setLoading] = useState(false); 
   const [currentPage, setCurrentPage] = useState(1); 
@@ -19,8 +21,6 @@ export default function useSharedTreeAPI(fetchTrees) {
 
     const start = (currentPage - 1) * PAGE_SIZE; 
     const end = start + PAGE_SIZE - 1;  
-
-    const user = supabase.auth.user(); 
 
     // 1. get page of uuids of trees shared with user 
     const {data: sharedTrees, count, error: sharedTreeError} = await supabase
@@ -61,10 +61,9 @@ export default function useSharedTreeAPI(fetchTrees) {
     }
 
     setLoading(false);  
-  }, [currentPage])
+  }, [currentPage, user?.email])
 
   async function createSharedTree(treeUuid, shareeEmail) { 
-    const user = supabase.auth.user(); 
     setLoading(true); 
 
     const payload = { 

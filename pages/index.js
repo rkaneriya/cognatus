@@ -1,4 +1,4 @@
-import {useState} from 'react'; 
+import {useContext, useState} from 'react'; 
 import {useStyletron} from 'styletron-react'; 
 import {message, Button, Input, Tooltip, Divider, Menu} from 'antd'; 
 import {ArrowRightOutlined, QuestionCircleOutlined} from '@ant-design/icons'; 
@@ -10,6 +10,7 @@ import Link from 'next/link';
 import Image from 'next/image'
 import Demos from '../components/demos'; 
 import Head from 'next/head'; 
+import { UserContext } from '../data/contexts/user';
 
 const {Search} = Input; 
 
@@ -124,9 +125,10 @@ function HoverEffectText({text}) {
   )
 }
 
-export default function Home({user}) {
+export default function Home() {
   const [css] = useStyletron(); 
-  const router = useRouter(); 
+  const router = useRouter();
+  const {user} = useContext(UserContext);  
 
   return (
     <>
