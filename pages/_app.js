@@ -22,6 +22,8 @@ export default function MyApp(props) {
     if (isMobile) { 
       setIsMobileWarningModalVisible(true); 
     }
+
+    setUser(supabase.auth.user()); 
   
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => { 
       const user = supabase.auth.user();
