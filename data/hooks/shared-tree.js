@@ -22,6 +22,11 @@ export default function useSharedTreeAPI(fetchTrees) {
     const start = (currentPage - 1) * PAGE_SIZE; 
     const end = start + PAGE_SIZE - 1;  
 
+    if (!user) { 
+      setLoading(false); 
+      return; 
+    }
+
     // 1. get page of uuids of trees shared with user 
     const {data: sharedTrees, count, error: sharedTreeError} = await supabase
       .from(SHARED_TREE_TABLE)
