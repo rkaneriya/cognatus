@@ -113,10 +113,9 @@ const VisGraph = forwardRef(({ graph, events, getNetwork, options: propOptions, 
       return; // No change!
     }
     const { added, removed, updated } = diff(prevNodes.current, graph.nodes);
-    console.log("@@@ DIFF NODES", nodes, added, removed, updated); 
 
-    nodes.add(added);
     nodes.remove(removed);
+    nodes.add(added);
     nodes.update(updated);
     prevNodes.current = graph.nodes;
   }, [graph.nodes, nodes]);
@@ -126,7 +125,6 @@ const VisGraph = forwardRef(({ graph, events, getNetwork, options: propOptions, 
       return; // No change!
     }
     const { added, removed, updated } = diff(prevEdges.current, graph.edges);
-    console.log("@@@ DIFF EDGES", added, removed, updated)
 
     edges.remove(removed);
     edges.add(added);
