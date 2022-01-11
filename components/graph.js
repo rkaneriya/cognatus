@@ -1,9 +1,8 @@
-import {useContext} from 'react'; 
-import Graph from 'react-graph-vis';
+import {useContext, useRef} from 'react'; 
 import { useStyletron } from 'styletron-react';
-import {v4 as uuidv4} from 'uuid';
 import {getRelationEdgeColor, getIsRelationEdgeDashed} from '../utils/relations'; 
 import { MemberRelationContext } from '../data/contexts/member-relation';
+import VisGraph from './vis-graph'; 
 
 export default function TreeGraph() { 
   const [css] = useStyletron(); 
@@ -37,7 +36,6 @@ export default function TreeGraph() {
   const edges = relations.map(({uuid, from_member_uuid, to_member_uuid, type}) => ({
     from: from_member_uuid,
     to: to_member_uuid, 
-    title: type, 
     color: { 
       color: pathEdges.includes(uuid) ? 'red' : getRelationEdgeColor(type), 
       inherit: 'false',  
@@ -70,16 +68,17 @@ export default function TreeGraph() {
       // hierarchical: { 
       //   enabled: true, 
       //   direction: 'UD',
-      //   sortMethod: 'directed',
-      //   shakeTowards: 'roots', 
-      // }
+      //   sortMethod: 'hubsize',
+      //   shakeTowards: 'leaves', 
+      // },
     },
     physics: { 
       enabled: true, 
       repulsion: { 
-        nodeDistance: 1000,
-        centralGravity: 1, 
+        nodeDistance: 2000,
+        centralGravity: 0, 
       },
+      timestep: 0.7, 
       adaptiveTimestep: true, 
     },
     interaction: { 
@@ -96,13 +95,15 @@ export default function TreeGraph() {
     },
   };
 
+  const ref = useRef(); 
+
   return (
     <div className={css({
       height: '100%', 
       margin: '0 -36px',
     })}>
-      <Graph
-        key={uuidv4()}
+      <VisGraph
+        ref={ref}
         graph={graph}
         options={options}
         events={events}
