@@ -66,15 +66,16 @@ export default function useSharedTreeAPI(fetchTrees) {
     }
 
     setLoading(false);  
-  }, [currentPage, user?.email])
+  }, [currentPage, user])
 
-  async function createSharedTree(treeUuid, shareeEmail) { 
+  async function createSharedTree(treeUuid, shareeEmail, isEditable) { 
     setLoading(true); 
 
     const payload = { 
       [SHARED_TREE_TABLE_ROWS.TREE_UUID]: treeUuid,
       [SHARED_TREE_TABLE_ROWS.SHARER_EMAIL]: user?.email, 
       [SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL]: shareeEmail, 
+      [SHARED_TREE_TABLE_ROWS.IS_EDITABLE]: Boolean(isEditable), 
     }; 
 
     const { error } = await supabase

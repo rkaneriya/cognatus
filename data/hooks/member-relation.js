@@ -30,13 +30,13 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
       loading: true
     })); 
 
-    let isTreeEditable = null; 
+    let isTreeEditable = null; // null = 403, false = read-only, true = read-write
 
     // 1. determine if tree is accessible and/or editable by user
     if (user) { 
       const {data: tree, error: treeError} = await supabase
         .from(TREE_TABLE)
-        .select(TREE_TABLE_ROWS.CREATOR_UUID, TREE_TABLE_ROWS.IS_PUBLIC)
+        .select(`${TREE_TABLE_ROWS.CREATOR_UUID},${TREE_TABLE_ROWS.IS_PUBLIC}`)
         .eq(TREE_TABLE_ROWS.UUID, treeUuid)
         .or(`${TREE_TABLE_ROWS.CREATOR_UUID}.eq.${user?.id},${TREE_TABLE_ROWS.IS_PUBLIC}.eq.true`);
         
@@ -50,7 +50,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
   
       const {data: sharee, error: shareeError} = await supabase
         .from(SHARED_TREE_TABLE)
-        .select(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL)
+        .select(`${SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL},${SHARED_TREE_TABLE_ROWS.IS_EDITABLE}`)
         .eq(SHARED_TREE_TABLE_ROWS.TREE_UUID, treeUuid)
         .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user?.email);
       
@@ -61,9 +61,21 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
         }));     
         return; // 403 
       }
-   
-      if (tree.length !== 0 || sharee.length !== 0) {
-        isTreeEditable = tree.length === 1 && tree[0].creator_uuid === user?.id; // editable only if user = creator 
+      
+      // didn't create, is not public, and weren't shared it 
+      if (tree.length === 0 && sharee.length === 0) { 
+        isTreeEditable = null; // 403 
+      }
+
+      // didn't create, is not public, but WERE shared it 
+      if (tree.length === 0 && sharee.length > 0) { 
+        isTreeEditable = sharee[0]?.is_editable; 
+      }
+
+      // created it or is public, may/may not have been shared it 
+      // (either creator shared w self or public tree shared for some reason)
+      if (tree.length > 0) { 
+        isTreeEditable = tree[0].creator_uuid === user?.id; // editable only if you created it 
       }
     } else { 
       const {data: tree, error: treeError} = await supabase

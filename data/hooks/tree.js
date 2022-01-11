@@ -51,6 +51,7 @@ export default function useTreeAPI() {
     const sharedTreesByTreeUuid = sharedTrees.reduce((acc, s) => { 
       const obj = {
         sharee_email: s.sharee_email,
+        is_editable: s.is_editable, 
         uuid: s.uuid, 
       }; 
       if (acc[s.tree_uuid]) { 
