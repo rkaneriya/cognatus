@@ -4,7 +4,6 @@ import MemberDrawer from './member-drawer';
 import MemberCard from './member-card';
 import Graph from './graph'; 
 import moment from 'moment';
-import {v4 as uuidv4} from 'uuid';
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
 import RelationDrawer from './relation-drawer';
 import { Button, Spin, Result } from 'antd';
@@ -124,13 +123,7 @@ export default function Tree() {
 
   return (
     <Wrapper>
-      <Graph
-        key={uuidv4()}
-        sourceMemberUuid={null}
-        targetMemberUuid={null}
-        pathNodes={[]}
-        pathEdges={[]}
-      />       
+      <Graph />       
       <MemberDrawer
         drawerConfig={memberDrawerConfig}
         initialValues={initialMemberEditorValues}

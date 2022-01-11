@@ -1,6 +1,7 @@
 import {useContext} from 'react'; 
 import Graph from 'react-graph-vis';
 import { useStyletron } from 'styletron-react';
+import {v4 as uuidv4} from 'uuid';
 import {getRelationEdgeColor, getIsRelationEdgeDashed} from '../utils/relations'; 
 import { MemberRelationContext } from '../data/contexts/member-relation';
 
@@ -65,7 +66,7 @@ export default function TreeGraph() {
     },
     layout: { 
       randomSeed: 1000, 
-      improvedLayout: true, 
+      improvedLayout: false,  
       // hierarchical: { 
       //   enabled: true, 
       //   direction: 'UD',
@@ -79,7 +80,7 @@ export default function TreeGraph() {
         nodeDistance: 1000,
         centralGravity: 1, 
       },
-      adaptiveTimestep: true
+      adaptiveTimestep: true, 
     },
     interaction: { 
       hideEdgesOnDrag: true, 
@@ -101,6 +102,7 @@ export default function TreeGraph() {
       margin: '0 -36px',
     })}>
       <Graph
+        key={uuidv4()}
         graph={graph}
         options={options}
         events={events}
