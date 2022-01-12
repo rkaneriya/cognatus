@@ -71,6 +71,9 @@ export function MemberRelationContextProvider({children}) {
     createMember,
     updateMember,
 
+    uploadAvatar, 
+    deleteAvatar,
+
     isTreeEditable, 
     members,
     relations, 
@@ -123,6 +126,9 @@ export function MemberRelationContextProvider({children}) {
 
     createMember,
     updateMember,
+
+    uploadAvatar, 
+    deleteAvatar,
 
     // data 
     selectedMemberUuid, 

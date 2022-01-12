@@ -1,6 +1,6 @@
 import moment from 'moment'; 
 import { useState, useContext } from 'react';
-import { Card, Avatar, Tooltip, Tabs, Popconfirm, Divider as AntDivider } from 'antd';
+import { Card, Avatar, Tooltip, Tabs, Popconfirm, Upload, Divider as AntDivider } from 'antd';
 import { useStyletron } from 'styletron-react';
 import { UpOutlined, CalendarOutlined, UserOutlined, EditOutlined, ApartmentOutlined, PieChartOutlined, DeleteOutlined} from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
@@ -199,6 +199,8 @@ export default function MemberCard({
     isTreeEditable, 
     membersByUuid,
     loading,
+    uploadAvatar, 
+    deleteAvatar, 
   } = useContext(MemberRelationContext); 
 
   const {
@@ -207,6 +209,7 @@ export default function MemberCard({
     maiden_name,  
     nickname,
     is_male,
+    photo_path, 
   } = membersByUuid[selectedMemberUuid] || {}; 
 
   const displayName = `${first_name} ${last_name}` + (maiden_name ? ` (${maiden_name})` : ''); 
@@ -215,7 +218,23 @@ export default function MemberCard({
     <EditButton key='edit' onClick={onEditMember} />,
     <DeleteButton key='add_relation' onClick={() => deleteMemberAndRelations(selectedMemberUuid)} />,
   ]; 
-  
+
+  async function handleUploadFile({file}) { 
+    // TODO: add check for file size and type 
+    if (file?.status === 'done') { 
+      uploadAvatar(file?.originFileObj);
+    } 
+  }
+
+  async function handleRemoveAvatar() { 
+    deleteAvatar(photo_path); 
+  }
+
+  let filename = is_male ? '/male.jpg' : '/female.jpg'; 
+  if (photo_path) { 
+    filename = photo_path; 
+  }
+
   return (
     <Card
       style={{ 
@@ -235,7 +254,27 @@ export default function MemberCard({
     > 
       <div className={css({display: 'flex', alignItems: 'center', justifyContent: 'space-between'})}>
         <div className={css({display: 'flex', alignItems: 'center'})}>
-          <Avatar src={is_male ? '/male.jpg' : '/female.jpg'} size={50} />
+          { 
+            isTreeEditable ? (
+              <div className={css({display: 'flex', flexDirection: 'column', alignItems: 'center'})}>
+                <Tooltip title='Click to upload new photo'>
+                  <Upload
+                    showUploadList={false}
+                    onChange={handleUploadFile}
+                  >
+                    <Avatar src={filename} size={50} style={{ cursor: 'pointer' }} />
+                  </Upload>
+                </Tooltip>
+                { 
+                  Boolean(photo_path) && (
+                    <a onClick={handleRemoveAvatar}>Remove</a>
+                  )
+                }
+              </div>
+            ) : (
+              <Avatar src={filename} size={50} />
+            )
+          }
           <div className={css({
             marginLeft: '20px', 
             display: 'flex', 
