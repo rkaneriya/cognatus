@@ -3,7 +3,6 @@ import { Provider as StyletronProvider } from 'styletron-react'
 import 'antd/dist/antd.css';
 import { supabase } from '../utils/supabase';
 import { styletron } from '../styletron'
-import { Alert } from 'antd';
 import {useRouter} from 'next/router';
 import {ROUTES} from '../constants/routes'; 
 import './_styles.css'; 
@@ -54,15 +53,6 @@ export default function MyApp(props) {
   return (
     <StyletronProvider value={styletron}>
       <MobileWarningModal visible={isMobileWarningModalVisible} onCancel={() => setIsMobileWarningModalVisible(false)} />
-      <Alert
-        message={(
-          <>
-            Please note: Cognatus is still in open beta. You can create & edit trees, but there may still be some bugs and finishing touches left unaddressed. Thank you for trying it out! Please considering submitting feedback <a href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>here</a>.
-          </>
-        )}
-        banner
-        closable
-      /> 
       <Script
         strategy='lazyOnload'
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_KEY}`}
