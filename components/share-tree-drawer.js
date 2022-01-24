@@ -34,7 +34,7 @@ export default function ShareTreeDrawer({
   }
 
   function handleChange(e) { 
-    setEmail(e.target.value);  
+    setEmail((e.target.value || '').trim());  
   }
 
   const [viewers, collaborators] = (tree?.sharees || []).reduce((acc, s) => { 
