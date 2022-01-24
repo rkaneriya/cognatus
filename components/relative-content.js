@@ -75,8 +75,8 @@ function RelativeTag({
   const selectedMember = membersByUuid[selectedMemberUuid]; 
   const relation = directRelationsByRelativeUuid[relative.uuid]; 
 
-  const mMarriageStartDate = relation.start_date ? moment(relation.start_date) : moment();
-  const mMarriageEndDate = relation.end_date ? moment(relation.end_date) : moment();             
+  const mMarriageStartDate = relation.start_date ? moment.utc(relation.start_date) : moment();
+  const mMarriageEndDate = relation.end_date ? moment.utc(relation.end_date) : moment();        
   const formattedMarriageStartDate = mMarriageStartDate.format(selectedMember?.use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT);
   const formattedMarriageEndDate = mMarriageEndDate.format(selectedMember?.use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT);
   const formattedMarriageDates = relation.end_date 
