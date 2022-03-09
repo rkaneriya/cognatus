@@ -96,10 +96,26 @@ function EditButton({onClick}) {
   ); 
 }
 
+function ProfileTabLabel({name}) { 
+  return ( 
+    <Tooltip placement='top' title={`View information about ${name}`}>
+      <UserOutlined /> Profile
+    </Tooltip>
+  )
+}
+
 function QueryRelationTabLabel({name}) { 
   return (
     <Tooltip placement='top' title={`Discover how others are related to ${name}`}>  
       <ApartmentOutlined /> Relations
+    </Tooltip>
+  ); 
+}
+
+function StatsTabLabel() { 
+  return (
+    <Tooltip placement='top' title='View interesting stats about the people in your tree'>  
+      <PieChartOutlined /> Stats
     </Tooltip>
   ); 
 }
@@ -277,7 +293,7 @@ export default function MemberCard({
         <Divider /> 
         
         <Tabs defaultActiveKey="1" type='card' size='small'>
-          <Tabs.TabPane tab={<span><UserOutlined /> Profile</span>} key="1">
+          <Tabs.TabPane tab={<ProfileTabLabel name={first_name} />} key="1">
             <DateSection />
             <Divider /> 
             <BodySection>
@@ -303,7 +319,7 @@ export default function MemberCard({
           <Tabs.TabPane tab={<QueryRelationTabLabel name={first_name} />} key="2">
             <QueryRelationTab />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={<span><PieChartOutlined /> Stats</span>} key="3">
+          <Tabs.TabPane tab={<StatsTabLabel />} key="3">
             <StatsTab /> 
           </Tabs.TabPane>
           {/* <Tabs.TabPane tab={<span><CalendarOutlined /> Events</span>} key="4">
