@@ -42,7 +42,7 @@ function Footer() {
     })}>
       <a href="https://www.buymeacoffee.com/rkaneriya" target="_blank" rel="noreferrer">
         <Image 
-          src="https://cdn.buymeacoffee.com/buttons/v2/default-red.png"
+          src="/default-red-button.jpg"
           alt="Buy Me A Coffee" 
           height={40}
           width={145}
