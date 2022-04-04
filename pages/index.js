@@ -48,7 +48,7 @@ function Footer() {
           width={145}
         />
       </a>
-      © 2021 Rishi Kaneriya 
+      © 2022 Rishi Kaneriya 
     </div>
   ); 
 }

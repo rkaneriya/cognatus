@@ -7,7 +7,7 @@ export function DemoModal({visible, onCancel}) {
 
   const steps = [
     { 
-      label: 'Click on an individual after exploring the tree (scroll to zoom).',
+      label: 'Explore the tree by clicking-and-dragging and scrolling to zoom. Click on an individual to view their profile. Connections between individuals represent either parent/child (blue) or spousal (purple) relations.',
       imagePath: '/step-one.png', 
       height: 300,
       width: Math.round(300 * 1.02), 
@@ -19,7 +19,7 @@ export function DemoModal({visible, onCancel}) {
       width: Math.round(300 * 1.09), 
     },
     { 
-      label: '[Coming Soon] Click on the "Stats" tab on the profile card to view a histogram of family members\' ages, the ratio of males to females in a tree, etc.',
+      label: 'Click on the "Stats" tab on the profile card to view a histogram of family members\' ages, the ratio of males to females in a tree, etc.',
       imagePath: null,
     },
   ]; 
