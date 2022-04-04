@@ -84,6 +84,8 @@ export function getRelation(people, relations) {
   if (parentCount === childCount && spouseCount === 1) { 
     if (parentCount === 0) { 
       relationStr = isLastMale ? "husband" : "wife"; 
+    } else if (parentCount === 1) { 
+      relationStr = isLastMale ? "brother-in-law" : "sister-in-law"; 
     } else { 
       relationStr = `${converter.toWordsOrdinal(parentCount-1)} cousin-in-law`; 
     }
