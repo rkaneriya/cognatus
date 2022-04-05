@@ -24,12 +24,14 @@ export default function TreeGraph() {
     return 'gray'; 
   }
 
-  const nodes = members.map(({uuid, first_name, is_male}) => ({ 
+  const nodes = members.map(({uuid, first_name, photo_path, is_male}) => ({ 
     id: uuid,
     shape: 'circularImage',
-    image: is_male
-      ? '/male.jpg' 
-      : '/female.jpg', 
+    image: photo_path ? photo_path : ( 
+      is_male
+        ? '/male.jpg' 
+        : '/female.jpg'
+    ), 
     color: getNodeColor(uuid), 
     borderWidth: 3,
     label: first_name, 

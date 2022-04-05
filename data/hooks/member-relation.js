@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import {useCallback, useContext, useState} from 'react'; 
 import { RELATION_TABLE, RELATION_TABLE_ROWS } from '../entities/relation';
 import {MEMBER_TABLE, MEMBER_TABLE_ROWS} from '../entities/member';
@@ -359,6 +360,83 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     }
   }
 
+  async function uploadAvatar(file) { 
+    const path = uuidv4();  
+
+    // 1. upload avatar 
+    const { error: uploadError } = await supabase
+      .storage
+      .from('avatars')
+      .upload(path, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
+    
+    if (uploadError) { 
+      message.error(uploadError?.message || GENERIC_ERROR_MESSAGE); 
+      return; 
+    }
+
+    // 2. get public URL for avatar
+    const { publicURL, error: getError } = supabase
+      .storage
+      .from('avatars')
+      .getPublicUrl(path)
+
+    if (getError) { 
+      message.error(getError?.message || GENERIC_ERROR_MESSAGE); 
+      return; 
+    }
+    
+    // 3. update member with filename
+    const payload = { 
+      [MEMBER_TABLE_ROWS.UUID]: selectedMemberUuid,
+      [MEMBER_TABLE_ROWS.PHOTO_PATH]: publicURL, 
+    }; 
+
+    const { data: memberData, error: updateError } = await supabase
+      .from(MEMBER_TABLE)
+      .update(payload)
+      .eq(MEMBER_TABLE_ROWS.UUID, selectedMemberUuid); 
+
+    if (updateError) {
+      message.error(updateError?.message || GENERIC_ERROR_MESSAGE)
+    } else { 
+      fetchMembersAndRelations();
+      return memberData; 
+    }
+  }
+
+  async function deleteAvatar(photoPath) {
+    const path = photoPath.split('/public/avatars/')[1] || ''; 
+
+    const { error } = await supabase
+      .storage
+      .from('avatars')
+      .remove([path]); 
+
+    if (error) { 
+      message.error(error?.message || GENERIC_ERROR_MESSAGE)
+    }
+ 
+    const payload = { 
+      [MEMBER_TABLE_ROWS.UUID]: selectedMemberUuid,
+      [MEMBER_TABLE_ROWS.PHOTO_PATH]: null, 
+    }; 
+
+    const { data: memberData, error: updateError } = await supabase
+      .from(MEMBER_TABLE)
+      .update(payload)
+      .eq(MEMBER_TABLE_ROWS.UUID, selectedMemberUuid); 
+
+    if (updateError) {
+      message.error(updateError?.message || GENERIC_ERROR_MESSAGE)
+    } else { 
+      fetchMembersAndRelations();
+      return memberData; 
+    }
+  }
+
   return {
     // crud
     fetchMembersAndRelations, 
@@ -371,6 +449,9 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     createRelation,
     updateRelation,
     deleteRelation,
+
+    uploadAvatar, 
+    deleteAvatar, 
 
     // data 
     ...data,
