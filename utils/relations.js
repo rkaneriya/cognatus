@@ -43,6 +43,9 @@ export function getRelation(people, relations) {
     return '--';
   }
 
+  people.reverse(); 
+  relations.reverse(); 
+  
   const source = people[0]; 
   const target = people[people.length-1];   
 
