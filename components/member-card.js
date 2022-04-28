@@ -227,6 +227,7 @@ export default function MemberCard({
   const {
     first_name,
     last_name,
+    birth_date,
     maiden_name,  
     nickname,
     is_male,
@@ -234,6 +235,8 @@ export default function MemberCard({
   } = membersByUuid[selectedMemberUuid] || {}; 
 
   const displayName = `${first_name} ${last_name}` + (maiden_name ? ` (${maiden_name})` : ''); 
+  const mBirthDate = moment(birth_date); 
+  const isBirthday = moment().date() === mBirthDate.date() && moment().month() === mBirthDate.month(); 
 
   const actions = [
     <EditButton key='edit' onClick={onEditMember} />,
@@ -312,7 +315,7 @@ export default function MemberCard({
             alignItems: 'flex-start',
             width: '225px',  
           })}>
-            <Name>{displayName}</Name>
+            <Name>{displayName}{isBirthday ? ' 🎂' : ''}</Name>
             {nickname && <div className={css({fontStyle: 'italic'})}>&quot;{nickname}&quot;</div>}
           </div>
         </div>
