@@ -7,4 +7,5 @@ export const TREE_TABLE_ROWS = {
   DESCRIPTION: 'description', 
   CREATOR_UUID: 'creator_uuid', 
   IS_PUBLIC: 'is_public', 
+  IS_EMAIL_SUBSCRIBED: 'is_email_subscribed', 
 }; 
