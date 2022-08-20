@@ -50,6 +50,18 @@ function IsPublicCheckbox({checked, onChange}) {
   )
 }
 
+function IsEmailSubscribedCheckbox({checked, onChange}) {
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({
+      display: 'flex', 
+      justifyContent: 'center', 
+    })}>
+      <Checkbox checked={checked} onChange={onChange} />
+    </div>
+  )
+}
+
 function IsPublicColumnHeader() { 
   const [css] = useStyletron(); 
   return (
@@ -59,6 +71,21 @@ function IsPublicColumnHeader() {
     })}>
       Is Public?
       <Tooltip placement="top" title={'Share a read-only version of your tree with anyone who has a link to it.'}>
+        <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
+      </Tooltip>
+    </div>
+  )
+}
+
+function IsEmailSubscribedColumnHeader() { 
+  const [css] = useStyletron(); 
+  return (
+    <div className={css({
+      display: 'flex', 
+      alignItems: 'center', 
+    })}>
+      Subscribe to E-mail? 
+      <Tooltip placement="top" title={'If checked, you will receive an e-mail on the first of every month reminding you of upcoming birthdays and anniversaries of members of this tree. You can un-check this box to stop receiving e-mails at any time.'}>
         <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
       </Tooltip>
     </div>
@@ -86,7 +113,7 @@ export default function Trees() {
     {
       title: 'Name',
       dataIndex: 'name',
-      width: '25%',
+      width: '20%',
       editable: true, 
       required: true, 
       key: 'name',
@@ -120,6 +147,22 @@ export default function Trees() {
           onChange={() => updateTree({
             uuid: record?.uuid,
             is_public: !record?.is_public,
+          })} 
+        />
+      )
+    },
+    {
+      title: <IsEmailSubscribedColumnHeader />, 
+      dataIndex: 'created_at', 
+      width: '10%', 
+      editable: false, 
+      key: 'created_at', 
+      render: (_, record) => (
+        <IsEmailSubscribedCheckbox 
+          checked={record?.is_email_subscribed} 
+          onChange={() => updateTree({
+            uuid: record?.uuid,
+            is_email_subscribed: !record.is_email_subscribed, 
           })} 
         />
       )
