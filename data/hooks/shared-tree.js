@@ -1,6 +1,7 @@
 import {useState, useCallback, useContext} from 'react'; 
 import { message } from 'antd';
 import {SHARED_TREE_TABLE, SHARED_TREE_TABLE_ROWS} from '../entities/shared-tree'; 
+import {SHAREE_TREE_EXT_TABLE, SHAREE_TREE_EXT_TABLE_ROWS} from '../entities/sharee-tree-ext'; 
 import {TREE_TABLE, TREE_TABLE_ROWS} from '../entities/tree'; 
 import { supabase } from '../../utils/supabase';
 import { UserContext } from '../contexts/user';
@@ -45,8 +46,26 @@ export default function useSharedTreeAPI(fetchTrees) {
       ...acc,
       [s.tree_uuid]: s, 
     }), {}); 
-        
-    // 2. fetch actual trees using those uuids 
+
+    // 2. fetch extension preferences for each shared tree
+    const {data: shareeExtData, error: shareeExtError} = await supabase
+      .from(SHAREE_TREE_EXT_TABLE)
+      .select('*')
+      .eq(SHAREE_TREE_EXT_TABLE_ROWS.SHAREE_EMAIL, user?.email)
+      .in(SHAREE_TREE_EXT_TABLE_ROWS.SHARED_TREE_ROW_UUID, sharedTrees.map(t => t.uuid)); 
+
+    if (shareeExtError) { 
+      message.error(sharedTreeError?.message || GENERIC_ERROR_MESSAGE)
+      setLoading(false); 
+      return; 
+    }
+
+    const shareeTreeExtBySharedTreeRowUuid = shareeExtData.reduce((acc, s) => ({ 
+      ...acc,
+      [s.shared_tree_row_uuid]: s, 
+    }), {}); 
+
+    // 3. fetch actual trees using those uuids 
     const {data: trees, error: treeError} = await supabase
       .from(TREE_TABLE)
       .select('*')
@@ -59,7 +78,10 @@ export default function useSharedTreeAPI(fetchTrees) {
       const keyedData = trees.map((tree) => ({
         key: tree.uuid, 
         ...tree, 
+        shared_tree_row_uuid: sharedTreesByUuid[tree.uuid].uuid, 
         sharer_email: sharedTreesByUuid[tree.uuid].sharer_email, 
+        is_email_subscribed: shareeTreeExtBySharedTreeRowUuid[sharedTreesByUuid[tree.uuid].uuid]?.is_email_subscribed,
+        sharee_tree_ext_row_uuid: shareeTreeExtBySharedTreeRowUuid[sharedTreesByUuid[tree.uuid].uuid]?.uuid,  
       }))
       setData(keyedData); 
       setTotalCount(count); 
@@ -110,11 +132,42 @@ export default function useSharedTreeAPI(fetchTrees) {
     setLoading(false); 
   }
 
+  async function upsertShareeTreeExt(record) { 
+    setLoading(true); 
+    const EDITABLE_FIELDS = ['uuid', 'sharee_email', 'shared_tree_row_uuid', 'is_email_subscribed'];
+    const editableFieldsSet = new Set(EDITABLE_FIELDS);  
+    
+    const payload = Object.keys(record).reduce((acc, field) => { 
+      if (editableFieldsSet.has(field)) { 
+        return { 
+          ...acc,
+          [field]: record[field], 
+        }; 
+      }
+      return acc; 
+    }, {
+      sharee_email: user?.email, 
+      uuid: record.sharee_tree_ext_row_uuid, 
+    }); 
+
+    const { error } = await supabase
+      .from(SHAREE_TREE_EXT_TABLE)
+      .upsert(payload)
+      .eq(SHAREE_TREE_EXT_TABLE_ROWS.SHARED_TREE_ROW_UUID, record.shared_tree_row_uuid); 
+    if (error) {
+      message.error(error?.message || GENERIC_ERROR_MESSAGE)
+      setLoading(false); 
+    } else { 
+      fetchSharedTrees();
+    }
+  }
+
   return {
     // crud  
     fetchSharedTrees,
     createSharedTree,
     deleteSharedTree,
+    upsertShareeTreeExt,
 
     // data 
     data,

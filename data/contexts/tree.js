@@ -26,6 +26,7 @@ export function TreeContextProvider({children}) {
     fetchSharedTrees,
     createSharedTree,
     deleteSharedTree,
+    upsertShareeTreeExt,
     
     data: sharedTreeData, 
     totalCount: sharedTreeCount, 
@@ -55,6 +56,7 @@ export function TreeContextProvider({children}) {
     fetchSharedTrees,
     createSharedTree,
     deleteSharedTree,
+    upsertShareeTreeExt,
     SHARED_TREE_PAGE_SIZE,
     
     sharedTreeData, 

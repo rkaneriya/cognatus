@@ -100,6 +100,7 @@ export default function Trees() {
     createTree,
     updateTree,
     treeCount, 
+    upsertShareeTreeExt,
     
     // shared trees
     sharedTreeData, 
@@ -173,14 +174,14 @@ export default function Trees() {
     {
       title: 'Name',
       dataIndex: 'name',
-      width: '25%',
+      width: '20%',
       key: 'name',
       render: (text, record) => <Link href={`/trees/${record.uuid}`}>{text}</Link>,
     },
     {
       title: 'Description', 
       dataIndex: 'description', 
-      width: '50%', 
+      width: '35%', 
       key: 'description', 
     }, 
     { 
@@ -196,7 +197,25 @@ export default function Trees() {
       width: '10%', 
       key: 'sharer_email', 
     },
+    {
+      title: <IsEmailSubscribedColumnHeader />, 
+      dataIndex: 'name', 
+      width: '10%', 
+      editable: false, 
+      key: 'created_at', 
+      render: (_, record) => (
+        <IsEmailSubscribedCheckbox 
+          checked={record?.is_email_subscribed} 
+          onChange={() => upsertShareeTreeExt({
+            shared_tree_row_uuid: record?.shared_tree_row_uuid,
+            is_email_subscribed: !record.is_email_subscribed, 
+            sharee_tree_ext_row_uuid: record?.sharee_tree_ext_row_uuid, 
+          })} 
+        />
+      )
+    }
   ]; 
+
 
   return (
     <Wrapper>
