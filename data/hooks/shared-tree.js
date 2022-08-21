@@ -134,7 +134,7 @@ export default function useSharedTreeAPI(fetchTrees) {
 
   async function upsertShareeTreeExt(record) { 
     setLoading(true); 
-    const EDITABLE_FIELDS = ['uuid', 'sharee_email', 'shared_tree_row_uuid', 'is_email_subscribed'];
+    const EDITABLE_FIELDS = ['uuid', 'sharee_email', 'shared_tree_row_uuid', 'tree_uuid', 'is_email_subscribed'];
     const editableFieldsSet = new Set(EDITABLE_FIELDS);  
     
     const payload = Object.keys(record).reduce((acc, field) => { 

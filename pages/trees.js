@@ -210,6 +210,7 @@ export default function Trees() {
             shared_tree_row_uuid: record?.shared_tree_row_uuid,
             is_email_subscribed: !record.is_email_subscribed, 
             sharee_tree_ext_row_uuid: record?.sharee_tree_ext_row_uuid, 
+            tree_uuid: record?.uuid, 
           })} 
         />
       )

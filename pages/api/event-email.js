@@ -5,6 +5,7 @@ import {TREE_TABLE, TREE_TABLE_ROWS} from '../../data/entities/tree';
 import {RELATION_TABLE, RELATION_TABLE_ROWS} from '../../data/entities/relation';
 import {MEMBER_TABLE, MEMBER_TABLE_ROWS} from '../../data/entities/member';
 import { RELATION_TYPES } from '../../constants/relation-types';
+import {SHAREE_TREE_EXT_TABLE, SHAREE_TREE_EXT_TABLE_ROWS} from '../../data/entities/sharee-tree-ext'; 
 
 const MONTH_FORMAT = 'MMMM'; 
 const MONTH_DAY_FORMAT = 'MMM D';
@@ -32,12 +33,23 @@ export default async function handler(req, res) {
 
   // for each user...
   for (let i = 0; i < users.length; i++) { 
-    // fetch all trees with e-mail subscription 
+    // fetch all trees shared with user with e-mail subscription 
+    const { data: sharedExtData, error: sharedTreesError } = await supabase
+      .from(SHAREE_TREE_EXT_TABLE)
+      .select("*")
+      .eq(SHAREE_TREE_EXT_TABLE_ROWS.SHAREE_EMAIL, users[i]?.email)
+      .eq(TREE_TABLE_ROWS.IS_EMAIL_SUBSCRIBED, 'true'); 
+
+    if (sharedTreesError) { 
+      return; 
+    }
+
+    // fetch all of user's trees with e-mail subscription 
+    const orCondition = `${TREE_TABLE_ROWS.UUID}.in.(${sharedExtData.map(s => s.tree_uuid)}),and(${TREE_TABLE_ROWS.CREATOR_UUID}.eq.${users[i]?.id},${TREE_TABLE_ROWS.IS_EMAIL_SUBSCRIBED}.eq.true)`; 
     const { data: trees, error: treeError } = await supabase
       .from(TREE_TABLE)
       .select("*")
-      .eq(TREE_TABLE_ROWS.CREATOR_UUID, users[i]?.id)
-      .eq(TREE_TABLE_ROWS.IS_EMAIL_SUBSCRIBED, 'true'); 
+      .or(orCondition)
 
     if (treeError) { 
       return; 
