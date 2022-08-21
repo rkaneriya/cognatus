@@ -13,6 +13,17 @@ const YEAR_FORMAT = 'YYYY';
 export default async function handler(req, res) { 
   const supabase = getServiceSupabase(); 
 
+  // Authz
+  const authHeader = req?.headers?.authorization || ""; 
+  if (!authHeader) { 
+    return res.status(400).json({success: 'false'});  
+  }
+
+  const EVENT_EMAIL_KEY = authHeader.split(" ")[1];
+  if (!process.env.EVENT_EMAIL_KEY || !EVENT_EMAIL_KEY || process.env.EVENT_EMAIL_KEY !== EVENT_EMAIL_KEY) { 
+    return res.status(500).json({success: 'false'}); 
+  }
+
   // get all users 
   const { data: users, error: userError } = await supabase.auth.api.listUsers()
   if (userError) { 
@@ -159,5 +170,5 @@ export default async function handler(req, res) {
       sendgrid.send(data); 
     }
   }
-  return res.json({success: "OK"}); 
+  return res.status(200).json({success: 'true'}); 
 }
