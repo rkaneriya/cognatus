@@ -1,7 +1,7 @@
 import {useState, useContext} from 'react';
 import {useStyletron} from 'styletron-react';  
 import moment from 'moment'; 
-import {Button, Checkbox, Table, Tooltip, Typography} from 'antd';
+import {Button, Checkbox, Table, Tag, Tooltip, Typography} from 'antd';
 import {QuestionCircleOutlined} from '@ant-design/icons'; 
 import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
@@ -84,6 +84,9 @@ function IsEmailSubscribedColumnHeader() {
       display: 'flex', 
       alignItems: 'center', 
     })}>
+      <Tooltip placement="top" title={'If checked, you will receive an e-mail on the first of every month reminding you of upcoming birthdays and anniversaries of members of this tree. You can un-check this box to stop receiving e-mails at any time.'}>
+        <Tag color="#f50">NEW</Tag>
+      </Tooltip>
       Subscribe to E-mail? 
       <Tooltip placement="top" title={'If checked, you will receive an e-mail on the first of every month reminding you of upcoming birthdays and anniversaries of members of this tree. You can un-check this box to stop receiving e-mails at any time.'}>
         <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
