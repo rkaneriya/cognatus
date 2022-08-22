@@ -28,7 +28,7 @@ export default function NavBar() {
         color: 'lightgray',
         marginRight: '10px', 
       })}>Logged in as {user?.email}</div>
-        <Button type="default" onClick={logout}>Logout</Button>
+      <Button type="default" onClick={logout}>Logout</Button>
     </div>
   );
 } 

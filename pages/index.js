@@ -125,6 +125,10 @@ function HoverEffectText({text}) {
   )
 }
 
+async function logout() {
+  await supabase.auth.signOut(); 
+}
+
 export default function Home() {
   const [css] = useStyletron(); 
   const router = useRouter();
@@ -166,7 +170,11 @@ export default function Home() {
                     View your family trees <ArrowRightOutlined />
                   </Button>
                   <div className={css({color: 'gray'})}>
-                    Logged in as {user?.email}
+                    Logged in as {user?.email}. (
+                    <a onClick={logout}>
+                      Logout
+                    </a>
+                    )
                   </div>
                 </>
               : <Login />
