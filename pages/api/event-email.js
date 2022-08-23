@@ -82,6 +82,7 @@ export default async function handler(req, res) {
       const weddingAnniversaries = []; 
       const deathAnniversaries = []; 
       
+      // (birthdays and death anniversaries from members)
       for (let m = 0; m < members.length; m++) { 
         const {
           first_name,
@@ -124,7 +125,9 @@ export default async function handler(req, res) {
       const membersByUuid = members.reduce((acc, member) => ({
         ...acc, 
         [member.uuid]: member, 
-      }), {});    
+      }), {});
+ 
+      // (wedding anniversaries from relations)
       for (let r = 0; r < relations.length; r++) { 
         const { 
           from_member_uuid, 
@@ -158,6 +161,11 @@ export default async function handler(req, res) {
           date: mMarriageStartDate.format(MONTH_DAY_FORMAT), 
           value: `${displayFromSpouse} & ${displayToSpouse} (m. ${mMarriageStartDate.format(YEAR_FORMAT)}, celebrating ${marriageLength} years)`
         }); 
+      }
+
+      // skip e-mail if no events in month
+      if (birthdays.length === 0 && weddingAnniversaries.length === 0 && deathAnniversaries.length === 0) {
+        continue; 
       }
 
       birthdays.sort((a, b) => moment(a.date).diff(moment(b.date))); 
