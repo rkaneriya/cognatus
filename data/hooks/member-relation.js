@@ -364,13 +364,16 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     const path = uuidv4();  
 
     // 1. upload avatar 
-    const { error: uploadError } = await supabase
+    const { data, error: uploadError } = await supabase
       .storage
       .from('avatars')
       .upload(path, file, {
         cacheControl: '3600',
         upsert: false
       });
+    
+    console.log("upload data: ", data);
+    console.log("upload error: ", uploadError);  
     
     if (uploadError) { 
       message.error(uploadError?.message || GENERIC_ERROR_MESSAGE); 
