@@ -183,7 +183,7 @@ export default async function handler(req, res) {
           birthdays,
           wedding_anniversaries: weddingAnniversaries, 
           death_anniversaries: deathAnniversaries, 
-          tree_url: `https://cognatus.herokuapp.com/trees/${trees[j][TREE_TABLE_ROWS.UUID]}`, 
+          tree_url: `https://www.cognatus.app/trees/${trees[j][TREE_TABLE_ROWS.UUID]}`, 
         }, 
       }; 
 

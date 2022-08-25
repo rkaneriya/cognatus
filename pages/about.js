@@ -53,7 +53,7 @@ export default function About() {
       <Question>What is Cognatus? </Question>
       <Answer>
         <p>
-          <a href='https://cognatus.herokuapp.com'>Cognatus</a> is a web app for visualizing and connecting with your kin. It lets you create interactive networks (&quot;trees&quot;) of family members and the relations between them. You can query how relatives are related to one another, view interesting statistics about your family, as well as view important upcoming dates such as birthdays and wedding anniversaries. If you choose, you can share trees with other people. You can also opt to receive monthly e-mails reminding you of upcoming birthdays and anniversaries in one or more of your trees (or trees that were shared with you). 
+          <a href='https://www.cognatus.app'>Cognatus</a> is a web app for visualizing and connecting with your kin. It lets you create interactive networks (&quot;trees&quot;) of family members and the relations between them. You can query how relatives are related to one another, view interesting statistics about your family, as well as view important upcoming dates such as birthdays and wedding anniversaries. If you choose, you can share trees with other people. You can also opt to receive monthly e-mails reminding you of upcoming birthdays and anniversaries in one or more of your trees (or trees that were shared with you). 
         </p>
       </Answer>
 
