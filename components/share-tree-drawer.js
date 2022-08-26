@@ -109,9 +109,9 @@ export default function ShareTreeDrawer({
             placement='left' 
             title={<TooltipText />}
           >
-            <Select value={String(isEditable)} onChange={setIsEditable}>
-              <Select.Option value="false">Viewer</Select.Option>
-              <Select.Option value="true">Collaborator</Select.Option>
+            <Select value={isEditable} onChange={setIsEditable}>
+              <Select.Option value={false}>Viewer</Select.Option>
+              <Select.Option value={true}>Collaborator</Select.Option>
             </Select>
           </Tooltip>
           <Input 
