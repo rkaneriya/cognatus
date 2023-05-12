@@ -2,7 +2,7 @@ import moment from 'moment';
 import { useState, useContext } from 'react';
 import { Card, Avatar, Tooltip, Tabs, Popconfirm, Upload, Divider as AntDivider } from 'antd';
 import { useStyletron } from 'styletron-react';
-import { UpOutlined, CalendarOutlined, UserOutlined, EditOutlined, ApartmentOutlined, PieChartOutlined, DeleteOutlined} from '@ant-design/icons';
+import { UpOutlined, CloseCircleOutlined, UserOutlined, EditOutlined, ApartmentOutlined, PieChartOutlined, DeleteOutlined} from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
 import { MemberRelationContext } from '../data/contexts/member-relation';
 import { RelativeContent } from './relative-content';
@@ -97,6 +97,14 @@ function EditButton({onClick}) {
   return (
     <Tooltip placement='bottom' title='Edit'>  
       <EditOutlined key="edit" onClick={onClick} />
+    </Tooltip>
+  ); 
+}
+
+function CloseButton({onClick}) {
+  return (
+    <Tooltip placement='bottom' title='Close'>  
+      <CloseCircleOutlined key="close" onClick={onClick} />
     </Tooltip>
   ); 
 }
@@ -222,6 +230,7 @@ export default function MemberCard({
     loading,
     uploadAvatar, 
     deleteAvatar, 
+    setSelectedMemberUuid, 
   } = useContext(MemberRelationContext); 
 
   const {
@@ -241,6 +250,7 @@ export default function MemberCard({
   const actions = [
     <EditButton key='edit' onClick={onEditMember} />,
     <DeleteButton key='add_relation' onClick={() => deleteMemberAndRelations(selectedMemberUuid)} />,
+    <CloseButton key='close' onClick={() => setSelectedMemberUuid(null)} />, 
   ]; 
 
   async function handleUploadFile({file}) { 
