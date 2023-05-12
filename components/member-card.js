@@ -288,7 +288,7 @@ export default function MemberCard({
       <div className={css({display: 'flex', alignItems: 'center', justifyContent: 'space-between'})}>
         <div className={css({display: 'flex', alignItems: 'center'})}>
           { 
-            isTreeEditable ? (
+            (isTreeEditable && false) ? (
               <div className={css({display: 'flex', flexDirection: 'column', alignItems: 'center'})}>
                 <Tooltip title='Click to upload new photo'>
                   <Upload
