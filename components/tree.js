@@ -1,5 +1,6 @@
-import { useContext, useState } from 'react';
-import {useStyletron} from 'styletron-react'; 
+import { useContext, useState, useEffect, useRef } from 'react';
+import {useStyletron} from 'styletron-react';
+import {debounce} from 'lodash'; 
 import MemberDrawer from './member-drawer'; 
 import MemberCard from './member-card';
 import Graph from './graph'; 
@@ -11,6 +12,7 @@ import { ROUTES } from '../constants/routes';
 import { MemberRelationContext } from '../data/contexts/member-relation';
 import { useRouter } from 'next/router';
 import { DemoModal } from './demo-modal';
+import SearchBar from './search-bar';
 
 const DEMO_ROUTES = [ 
   ROUTES.DEMO_ROOSEVELTS,
@@ -27,13 +29,16 @@ const DEFAULT_MEMBER_FORM_VALUES = {
   use_year_only: 'false', 
 }; 
 
-function Wrapper({children}) { 
+function Wrapper({children, onKeyDown}) { 
   const [css] = useStyletron(); 
   return (
-    <div className={css({
-      height: '100vh',
-      backgroundColor: '#eee', 
-    })}>
+    <div 
+      className={css({
+        height: '100vh',
+        backgroundColor: '#eee', 
+      })}
+      onKeyDown={onKeyDown}
+    >
       {children}
     </div>
   ); 
@@ -42,6 +47,9 @@ function Wrapper({children}) {
 export default function Tree() {  
   const router = useRouter(); 
   const [css] = useStyletron(); 
+  
+  const [searchTerm, setSearchTerm] = useState(''); 
+  const [isMemberCardExpanded, setIsMemberCardExpanded] = useState(true); 
 
   const isDemo = DEMO_ROUTES.includes(router?.asPath);
   const [isDemoModalVisible, setIsDemoModalVisible] = useState(isDemo); 
@@ -59,6 +67,7 @@ export default function Tree() {
     membersByUuid,
     members,
     loading,
+    setSelectedMemberUuid,
   } = useContext(MemberRelationContext); 
 
   function handleAddNewMemberAndRelation(config, initialDrawerValues) {
@@ -91,9 +100,42 @@ export default function Tree() {
     setIsRelationDrawerOpen(true); 
   }
 
+  function handleKeyDown(e) { 
+    if (!isKeystrokeAllowed(e) || isMemberDrawerOpen || isRelationDrawerOpen || (selectedMember && isMemberCardExpanded)) { 
+      return;
+    } 
+
+    const newSearchTerm = searchTerm + e.key; 
+    setSearchTerm(newSearchTerm); 
+    handleSearch(newSearchTerm, members); 
+  }
+
+  function isKeystrokeAllowed(e) { 
+    return (e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode == 32; 
+  }
+
+  const handleSearch = useRef(
+    debounce((searchTerm, members) => { 
+      const member = members.find(m => m.first_name.toLowerCase().includes(searchTerm.toLowerCase())); 
+      if (member) { 
+        setSelectedMemberUuid(member.uuid); 
+      }
+    }, 300)
+  ).current;
+  
+  // Clear search term every 2 seconds (if one exists)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (searchTerm) { 
+        setSearchTerm('');
+      }
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [searchTerm]);
+
   const selectedMember = membersByUuid[selectedMemberUuid];
   const isTreeEmpty = !loading && members.length === 0; 
-
+  
   // First load (to avoid flicker)
   if (loading && members.length === 0) { 
     return (
@@ -122,7 +164,8 @@ export default function Tree() {
   }
 
   return (
-    <Wrapper>
+    <Wrapper onKeyDown={handleKeyDown}>
+      <SearchBar searchTerm={searchTerm} />
       <Graph />       
       <MemberDrawer
         drawerConfig={memberDrawerConfig}
@@ -137,10 +180,12 @@ export default function Tree() {
       /> 
       { 
         selectedMember && (
-          <MemberCard 
+          <MemberCard
             onAddNewMemberAndRelation={handleAddNewMemberAndRelation}
             onEditMember={handleEditMember} 
             onEditRelation={handleEditRelation}
+            isExpanded={isMemberCardExpanded}
+            setIsExpanded={setIsMemberCardExpanded}
           />
         )
       }
