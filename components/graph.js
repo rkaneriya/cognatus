@@ -1,11 +1,11 @@
 import moment from 'moment';
-import {useContext, useRef} from 'react'; 
+import {useContext, useRef, memo} from 'react'; 
 import { useStyletron } from 'styletron-react';
 import {getRelationEdgeColor, getIsRelationEdgeDashed} from '../utils/relations'; 
 import { MemberRelationContext } from '../data/contexts/member-relation';
 import VisGraph from './vis-graph'; 
 
-export default function TreeGraph() { 
+export default memo(function TreeGraph() { 
   const [css] = useStyletron(); 
   const {
     members, 
@@ -123,4 +123,4 @@ export default function TreeGraph() {
       />
     </div>
   ); 
-}
+})

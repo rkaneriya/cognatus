@@ -103,7 +103,7 @@ function EditButton({onClick}) {
 
 function CloseButton({onClick}) {
   return (
-    <Tooltip placement='bottom' title='Close'>  
+    <Tooltip placement='bottom' title='Dismiss'>  
       <CloseCircleOutlined key="close" onClick={onClick} />
     </Tooltip>
   ); 
@@ -216,10 +216,11 @@ function NotesSection() {
 export default function MemberCard({
   onAddNewMemberAndRelation, 
   onEditMember, 
-  onEditRelation, 
+  onEditRelation,
+  isExpanded, 
+  setIsExpanded, 
 }) {
   const [css] = useStyletron(); 
-  const [isExpanded, setIsExpanded] = useState(true); 
   const [editableSection, setEditableSection] = useState(null); 
 
   const {
