@@ -101,7 +101,13 @@ export default function Tree() {
   }
 
   function handleKeyDown(e) { 
-    if (!isKeystrokeAllowed(e) || isMemberDrawerOpen || isRelationDrawerOpen || (selectedMember && isMemberCardExpanded)) { 
+    if (
+      !isKeystrokeAllowed(e) || 
+      isMemberDrawerOpen || 
+      (isTreeEmpty && isTreeEditable) ||
+      isRelationDrawerOpen || 
+      (selectedMember && isMemberCardExpanded)
+    ) { 
       return;
     } 
 
