@@ -40,15 +40,7 @@ function Footer() {
       display: 'flex',
       flexDirection: 'column',  
     })}>
-      <a href="https://www.buymeacoffee.com/rkaneriya" target="_blank" rel="noreferrer">
-        <Image 
-          src="/default-red-button.jpg"
-          alt="Buy Me A Coffee" 
-          height={40}
-          width={145}
-        />
-      </a>
-      © 2022 Rishi Kaneriya 
+      © 2024 Rishi Kaneriya 
     </div>
   ); 
 }
