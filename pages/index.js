@@ -145,7 +145,7 @@ export default function Home() {
             Stay
             {' '}
             <Link href={ROUTES.ADMIN}>
-              <a>connected</a>
+              connected
             </Link> 
             {' '}
             to your family
