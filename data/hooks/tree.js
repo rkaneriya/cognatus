@@ -99,7 +99,13 @@ export default function useTreeAPI() {
 
   async function updateTree(tree) { 
     setLoading(true); 
-    const EDITABLE_FIELDS = ['name', 'description', 'is_public', 'is_email_subscribed'];
+    const EDITABLE_FIELDS = [ 
+      TREE_TABLE_ROWS.NAME, 
+      TREE_TABLE_ROWS.DESCRIPTION, 
+      TREE_TABLE_ROWS.IS_PUBLIC,
+      TREE_TABLE_ROWS.IS_EMAIL_SUBSCRIBED,
+    ]; 
+    
     const editableFieldsSet = new Set(EDITABLE_FIELDS);  
 
     const payload = Object.keys(tree).reduce((acc, field) => { 
