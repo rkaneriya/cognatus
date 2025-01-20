@@ -1,11 +1,9 @@
-import {Alert, Select} from 'antd'; 
+import {Alert, Select, Typography} from 'antd'; 
 import {useContext} from 'react'; 
-import { useStyletron } from 'styletron-react';
 import {MemberRelationContext} from '../data/contexts/member-relation'; 
 import { getRelation } from '../utils/relations';
 
-export default function QueryRelationTab() { 
-  const [css] = useStyletron(); 
+export default function QueryRelationTab({onSelectTargetInRelation}) { 
   const {
     pathNodes,
     pathEdges, 
@@ -24,17 +22,28 @@ export default function QueryRelationTab() {
 
   const pathPeople = pathNodes.map(n => membersByUuid[n]); 
   const pathRelations = pathEdges.map(e => relationsByUuid[e]); 
-  const relationStr = getRelation(pathPeople, pathRelations); 
+
+  let relationStr = getRelation(pathPeople, pathRelations); 
+
+  if (pathPeople.length > 0) { 
+    const target = pathPeople[0]; 
+    const source = pathPeople[pathPeople.length-1];   
+    relationStr = <>
+      <Typography.Link onClick={() => onSelectTargetInRelation(target)}>{target.first_name}</Typography.Link>
+     {` is ${source.first_name}'s ${relationStr}`}  
+     </>
+  }
 
   return (
     <>
-      <div className={css({fontStyle: 'italic'})}>How is {first_name} related to</div>
-      <div className={css({display: 'flex', alignItems: 'center', margin: '10px 0px'})}>
+      <div className='italic'>How is {first_name} related to</div>
+      <div className='flex items-center my-2'>
         <Select
+          size='large'
           autoFocus={true}
           showSearch={true}
           value={targetRelativeUuid}
-          style={{ width: 175 }}
+          style={{ width: '100%' }}
           onSelect={setTargetRelativeUuid}
           placeholder='Select relative'
           filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
@@ -50,7 +59,7 @@ export default function QueryRelationTab() {
             ))
           }
         </Select>
-        <span className={css({fontStyle: 'italic', marginLeft: '5px'})}>?</span>
+        <span className='italic ml-4'>?</span>
       </div>
       { 
         pathNodes.length > 0 && (
@@ -59,13 +68,8 @@ export default function QueryRelationTab() {
       }
       { 
         pathNodes.length > 0 && (
-          <div className={css({
-            marginTop: '5px', 
-            fontStyle: 'italic',
-            fontSize: '12px', 
-            color: 'gray', 
-          })}>
-            ^ Incorrect relation? Let me know <a href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>here</a>.
+          <div className='italic text-xs text-gray-400 mt-2'>
+            ^ Incorrect relation? Let me know <Typography.Link className='text-xs' href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>here</Typography.Link>.
           </div>
         ) 
       }

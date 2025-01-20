@@ -87,7 +87,7 @@ export default function MemberDrawer({
       title={title}
       placement="right"
       onClose={handleClose} 
-      visible={visible}
+      open={visible}
     >
       <Form {...layout} form={form} name="nest-messages" onFinish={handleFinish}>
         <Form.Item name='first_name' label="First Name" rules={[{ required: true }]}>

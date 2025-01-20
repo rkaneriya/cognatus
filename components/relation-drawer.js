@@ -45,7 +45,7 @@ export default function RelationDrawer({
       title='Edit relationship details'
       placement="right"
       onClose={handleClose} 
-      visible={visible}
+      open={visible}
     >
       <Form {...layout} form={form} name="nest-messages" onFinish={handleFinish}>
         <Form.Item name='start_date' label="Marriage Start" rules={[{ required: true }]}>

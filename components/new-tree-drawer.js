@@ -22,7 +22,7 @@ export default function NewTreeDrawer(props) {
       title="Create new tree" 
       placement="right"
       onClose={onClose} 
-      visible={visible}
+      open={visible}
     >
       <Form {...layout} name="nest-messages" onFinish={handleFinish}>
         <Form.Item name='name' label="Name" rules={[{ required: true }]}>

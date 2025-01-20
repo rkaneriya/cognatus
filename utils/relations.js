@@ -131,10 +131,10 @@ export function getRelation(people, relations) {
   }
 
   if (!relationStr) { 
-    return `${prefixStr} ${getRawRelation(people, relations)}.`; 
+    return `${getRawRelation(people, relations)}.`; 
   }
 
-  return `${prefixStr} ${relationStr}.`; 
+  return `${relationStr}.`; 
 }; 
 
 function getGrandPrefix(numGrands) { 

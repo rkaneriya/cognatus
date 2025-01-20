@@ -6,7 +6,7 @@ export default function MobileWarningModal({visible, onCancel}) {
   return (
     <Modal 
       title='Uh oh' 
-      visible={visible} 
+      open={visible} 
       onCancel={onCancel}
       footer={[
         <Button key="submit" type="primary" onClick={onCancel}>

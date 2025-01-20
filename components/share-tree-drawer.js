@@ -51,7 +51,7 @@ export default function ShareTreeDrawer({
       title={`Share '${tree?.name}' with specific people`}
       placement="right"
       onClose={onClose} 
-      visible={visible}
+      open={visible}
     >
       <div className={css({marginBottom: '20px'})}>
         <p>

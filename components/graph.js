@@ -4,6 +4,7 @@ import { useStyletron } from 'styletron-react';
 import {getRelationEdgeColor, getIsRelationEdgeDashed} from '../utils/relations'; 
 import { MemberRelationContext } from '../data/contexts/member-relation';
 import VisGraph from './vis-graph'; 
+import { isMobile } from 'react-device-detect';
 
 export default memo(function TreeGraph() { 
   const [css] = useStyletron(); 
@@ -111,10 +112,7 @@ export default memo(function TreeGraph() {
   const ref = useRef(); 
 
   return (
-    <div className={css({
-      height: '100%', 
-      // margin: '0 -36px', // TODO: Not sure why this was done. If not necessary, delete it. 
-    })}>
+    <div className={`h-full ${isMobile ? 'mt-34' : ''}`}>
       <VisGraph
         ref={ref}
         graph={graph}

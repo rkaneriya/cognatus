@@ -9,6 +9,7 @@ import { RelativeContent } from './relative-content';
 import {DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG} from '../constants/display-relation-types'; 
 import QueryRelationTab from '../components/query-relation-tab'; 
 // import StatsTab from './stats-tab';
+import { isMobile } from 'react-device-detect';
 
 const FULL_DATE_FORMAT = 'll'; 
 const YEAR_DATE_FORMAT = 'y'; 
@@ -232,6 +233,7 @@ export default function MemberCard({
     uploadAvatar, 
     deleteAvatar, 
     setSelectedMemberUuid, 
+    setTargetRelativeUuid, 
   } = useContext(MemberRelationContext); 
 
   const {
@@ -274,25 +276,42 @@ export default function MemberCard({
     deleteAvatar(photo_path); 
   }
 
+  function onHandleTargetClick(target) { 
+    setSelectedMemberUuid(target.uuid); 
+    setTargetRelativeUuid(null); 
+    setIsExpanded(false); 
+  }
+
   let filename = is_male ? '/male.jpg' : '/female.jpg'; 
   if (photo_path) { 
     filename = photo_path; 
   }
+  
+  const cardStyles = isMobile ? { 
+    zIndex: 1, 
+    position: 'absolute', 
+    top: 0,  
+    backgroundColor: 'white',
+    width: '100%', 
+    boxShadow: '-1px 2px 5px 2px rgba(0, 0, 0, 0.2)',
+    maxHeight: '85vh', 
+    overflow: 'auto',
+  } : { 
+    zIndex: 1, 
+    position: 'absolute', 
+    top: 20, 
+    left: 20, 
+    margin: '20px', 
+    backgroundColor: 'white',
+    width: '380px',
+    boxShadow: '-1px 2px 5px 2px rgba(0, 0, 0, 0.2)',
+    maxHeight: '85vh', 
+    overflow: 'auto',
+  }; 
 
   return (
     <Card
-      style={{ 
-        zIndex: 1, 
-        position: 'absolute', 
-        top: 20, 
-        left: 20, 
-        margin: '20px', 
-        backgroundColor: 'white',
-        width: '380px',
-        boxShadow: '-1px 2px 5px 2px rgba(0, 0, 0, 0.2)',
-        maxHeight: '85vh', 
-        overflow: 'auto',
-      }}
+      style={cardStyles}
       actions={isTreeEditable ? actions : undefined}
       loading={loading}
     > 
@@ -384,7 +403,7 @@ export default function MemberCard({
             <NotesSection />
           </Tabs.TabPane>
           <Tabs.TabPane tab={<QueryRelationTabLabel name={first_name} />} key="2">
-            <QueryRelationTab />
+            <QueryRelationTab onSelectTargetInRelation={onHandleTargetClick} />
           </Tabs.TabPane>
           {/* <Tabs.TabPane tab={<StatsTabLabel />} key="3">
             <StatsTab /> 

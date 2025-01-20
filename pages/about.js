@@ -30,7 +30,7 @@ export default function About() {
       <Question>What is Cognatus?</Question>
       <Answer>
         <p>
-          <a href='https://www.cognatus.app'>Cognatus</a> is a web app for visualizing and connecting with your kin. It lets you create interactive networks (&quot;trees&quot;) of family members and the relations between them. You can query how relatives are related to one another, view interesting statistics about your family, as well as view important upcoming dates such as birthdays and wedding anniversaries. If you choose, you can share trees with other people. You can also opt to receive monthly e-mails reminding you of upcoming birthdays and anniversaries in one or more of your trees (or trees that were shared with you). 
+          <Typography.Link href='https://www.cognatus.app'>Cognatus</Typography.Link> is a web app for visualizing and connecting with your kin. It lets you create interactive networks (&quot;trees&quot;) of family members and the relations between them. You can query how relatives are related to one another, view interesting statistics about your family, as well as view important upcoming dates such as birthdays and wedding anniversaries. If you choose, you can share trees with other people. You can also opt to receive monthly e-mails reminding you of upcoming birthdays and anniversaries in one or more of your trees (or trees that were shared with you). 
         </p>
       </Answer>
 
@@ -67,14 +67,14 @@ export default function About() {
       <Question>How was Cognatus made?</Question>
       <Answer>
         <p>
-          Cognatus was made as a non-commercial hobby project in December 2021. It uses <a href='https://nextjs.org/' target='_blank' rel='noreferrer'>Next.js</a> as a <a href='https://reactjs.org/' target='_blank' rel='noreferrer'>React</a> framework, <a href='https://ant.design/' target='_blank' rel='noreferrer'>Ant Design</a> as a component library, and <a href='https://supabase.com/' target='_blank' rel='noreferrer'>Supabase</a>, an open-source alternative to Firebase, for authentication and data storage. It&apos;s deployed using <a href='https://aws.amazon.com/amplify/' target='_blank' rel='noreferrer'>AWS Amplify</a>. 
+          Cognatus was made as a non-commercial hobby project in December 2021. It uses <Typography.Link href='https://nextjs.org/' target='_blank' rel='noreferrer'>Next.js</Typography.Link> as a <Typography.Link href='https://reactjs.org/' target='_blank' rel='noreferrer'>React</Typography.Link> framework, <Typography.Link href='https://ant.design/' target='_blank' rel='noreferrer'>Ant Design</Typography.Link> as a component library, and <Typography.Link href='https://supabase.com/' target='_blank' rel='noreferrer'>Supabase</Typography.Link>, an open-source alternative to Firebase, for authentication and data storage. It&apos;s deployed using <Typography.Link href='https://aws.amazon.com/amplify/' target='_blank' rel='noreferrer'>AWS Amplify</Typography.Link>. 
         </p> 
       </Answer>
 
       <Question>How can I contact you?</Question>
       <Answer>
         <p>
-          Use <a href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>this form</a> to get in touch with me. Bug reports, feature requests, and general feedback are all welcome and appreciated!
+          Use <Typography.Link href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>this form</Typography.Link> to get in touch with me. Bug reports, feature requests, and general feedback are all welcome and appreciated!
         </p>
       </Answer>
     </div>

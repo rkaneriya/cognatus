@@ -27,7 +27,7 @@ export function DemoModal({visible, onCancel}) {
   return (
     <Modal 
       title='How to use Cognatus' 
-      visible={visible} 
+      open={visible} 
       onCancel={onCancel}
       footer={[
         <Button key="submit" type="primary" onClick={onCancel}>
