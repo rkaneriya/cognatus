@@ -11,7 +11,7 @@ function Question({children}) {
 
 function Answer({children}) { 
   return (
-    <div className='pl-5 mb-10 sm:text-base border-gray-300 border-l-2 flex flex-col gap-4'>
+    <div className='pl-5 mb-10 font-light text-sm sm:text-base border-gray-300 border-l-2 flex flex-col gap-4'>
       {children}
     </div>
   )

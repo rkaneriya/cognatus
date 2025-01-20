@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Provider as StyletronProvider } from 'styletron-react'
-import 'antd/dist/antd.css';
 import { supabase } from '../utils/supabase';
 import { styletron } from '../styletron'
 import {useRouter} from 'next/router';

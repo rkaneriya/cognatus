@@ -6,8 +6,6 @@ import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
 import {SITE_URLS} from '../constants/site-urls'; 
-import Link from 'next/link'; 
-import Image from 'next/image'
 import Demos from '../components/demos'; 
 import Head from 'next/head'; 
 import { UserContext } from '../data/contexts/user';
@@ -119,7 +117,7 @@ export default function Home() {
       <div className='sm:w-2/3'>
         <div className='flex flex-col items-center'>
           <h1 className='text-6xl mb-2 sm:text-8xl uppercase font-bold text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-green-300'>COGNATUS</h1>
-          <p className='text-2xl sm:mb-2 sm:text-3xl italic'>Stay <span className='text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-green-500'>connected</span> to your family</p>
+          <p className='text-2xl sm:mb-2 sm:text-3xl italic'>Stay <span className='text-transparent px-1 bg-clip-text bg-gradient-to-br from-blue-600 to-green-500'>connected</span> to your family</p>
           {
               user 
                 ? <>
@@ -143,14 +141,14 @@ export default function Home() {
             }
           <Button 
             size='large'
-            style={{ marginTop: '20px'}}
+            style={{ marginTop: '24px'}}
             type='default'
             onClick={() => router.push(ROUTES.ABOUT)}
           >
             Learn more
           </Button>
           <Divider />
-          <div className='text-lg sm:text-xl font-light italic'>
+          <div className='text-base sm:text-large font-light italic'>
             Or, check out one of these demo trees:
           </div>
           <Demos />

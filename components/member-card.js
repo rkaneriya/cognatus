@@ -8,7 +8,7 @@ import { MemberRelationContext } from '../data/contexts/member-relation';
 import { RelativeContent } from './relative-content';
 import {DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG} from '../constants/display-relation-types'; 
 import QueryRelationTab from '../components/query-relation-tab'; 
-import StatsTab from './stats-tab';
+// import StatsTab from './stats-tab';
 
 const FULL_DATE_FORMAT = 'll'; 
 const YEAR_DATE_FORMAT = 'y'; 
@@ -125,13 +125,13 @@ function QueryRelationTabLabel({name}) {
   ); 
 }
 
-function StatsTabLabel() { 
-  return (
-    <Tooltip placement='top' title='View interesting stats about the people in your tree'>  
-      <PieChartOutlined /> Stats
-    </Tooltip>
-  ); 
-}
+// function StatsTabLabel() { 
+//   return (
+//     <Tooltip placement='top' title='View interesting stats about the people in your tree'>  
+//       <PieChartOutlined /> Stats
+//     </Tooltip>
+//   ); 
+// }
 
 function DateSection() { 
   const {
@@ -386,9 +386,9 @@ export default function MemberCard({
           <Tabs.TabPane tab={<QueryRelationTabLabel name={first_name} />} key="2">
             <QueryRelationTab />
           </Tabs.TabPane>
-          <Tabs.TabPane tab={<StatsTabLabel />} key="3">
+          {/* <Tabs.TabPane tab={<StatsTabLabel />} key="3">
             <StatsTab /> 
-          </Tabs.TabPane>
+          </Tabs.TabPane> */}
           {/* <Tabs.TabPane tab={<span><CalendarOutlined /> Events</span>} key="4">
             <StatsTab /> 
           </Tabs.TabPane> */}
