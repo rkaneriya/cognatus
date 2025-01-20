@@ -113,7 +113,7 @@ export default memo(function TreeGraph() {
   return (
     <div className={css({
       height: '100%', 
-      margin: '0 -36px',
+      // margin: '0 -36px', // TODO: Not sure why this was done. If not necessary, delete it. 
     })}>
       <VisGraph
         ref={ref}
