@@ -42,14 +42,8 @@ export function getRelation(people, relations) {
   if (people.length === 0 || relations.length === 0) { 
     return '--';
   }
-
-  people.reverse(); 
-  relations.reverse(); 
   
-  const source = people[0]; 
   const target = people[people.length-1];   
-
-  let prefixStr = `${target.first_name} is ${source.first_name}'s `; 
 
   let parentCount = 0; 
   let childCount = 0; 

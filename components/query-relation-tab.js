@@ -26,8 +26,8 @@ export default function QueryRelationTab({onSelectTargetInRelation}) {
   let relationStr = getRelation(pathPeople, pathRelations); 
 
   if (pathPeople.length > 0) { 
-    const target = pathPeople[0]; 
-    const source = pathPeople[pathPeople.length-1];   
+    const source = pathPeople[0];
+    const target = pathPeople[pathPeople.length-1];
     relationStr = <>
       <Typography.Link onClick={() => onSelectTargetInRelation(target)}>{target.first_name}</Typography.Link>
      {` is ${source.first_name}'s ${relationStr}`}  
