@@ -30,21 +30,6 @@ function Wrapper({children}) {
   ); 
 }
 
-function Footer() {
-  const [css] = useStyletron(); 
-  return (
-    <div className={css({
-      color: 'lightgray',
-      width: '100%', 
-      alignItems: 'center', 
-      display: 'flex',
-      flexDirection: 'column',  
-    })}>
-      © 2024 Rishi Kaneriya 
-    </div>
-  ); 
-}
-
 function Content({children}) { 
   const [css] = useStyletron(); 
   return (
@@ -78,13 +63,13 @@ function Login() {
   }
 
   return (
-    <div className={css({marginTop: '20px', display: 'flex', alignItems: 'center'})}>
+    <div className='mt-5 flex items-center w-full max-w-96'>
       <Search
         size='large'
         allowClear
         placeholder="Enter e-mail address"
         loading={loading} 
-        enterButton="Sign in via magic link"
+        enterButton="Sign in"
         onSearch={(email) => handleLogin(email)}
       />
       <Tooltip placement="right" title={'All you need in order to use Cognatus is an e-mail address. No need for a password!'}>
@@ -127,50 +112,35 @@ export default function Home() {
   const {user} = useContext(UserContext);  
 
   return (
-    <>
+    <div className='h-screen flex justify-center items-center'>
       <Head>
         <title>Cognatus</title>
       </Head>
-      <Wrapper>
-        <Content>
-          <div className={css({
-            fontWeight: '500', 
-            fontSize: '120px', 
-            display: 'flex', 
-          })}>
-            <HoverEffectText text='cognatus' />
-          </div>
-
-          <div className={css({fontStyle: 'italic', fontSize: '24px'})}>
-            Stay
-            {' '}
-            <Link href={ROUTES.ADMIN}>
-              connected
-            </Link> 
-            {' '}
-            to your family
-          </div>
+      <div className='sm:w-2/3'>
+        <div className='flex flex-col items-center'>
+          <h1 className='text-6xl mb-2 sm:text-8xl uppercase font-bold text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-green-300'>COGNATUS</h1>
+          <p className='text-2xl sm:mb-2 sm:text-3xl italic'>Stay <span className='text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-green-500'>connected</span> to your family</p>
           {
-            user 
-              ? <>
-                  <Button 
-                    size='large'
-                    style={{ margin: '20px 0px' }}
-                    type="primary" 
-                    onClick={() => router.push(ROUTES.ADMIN)}
-                  >
-                    View your family trees <ArrowRightOutlined />
-                  </Button>
-                  <div className={css({color: 'gray'})}>
-                    Logged in as {user?.email}. (
-                    <a onClick={logout}>
-                      Logout
-                    </a>
-                    )
-                  </div>
-                </>
-              : <Login />
-          }
+              user 
+                ? <>
+                    <Button 
+                      size='large'
+                      style={{ margin: '20px 0px' }}
+                      type="primary" 
+                      onClick={() => router.push(ROUTES.ADMIN)}
+                    >
+                      View your family trees <ArrowRightOutlined />
+                    </Button>
+                    <div className={css({color: 'gray'})}>
+                      Logged in as {user?.email}. (
+                      <a onClick={logout}>
+                        Logout
+                      </a>
+                      )
+                    </div>
+                  </>
+                : <Login />
+            }
           <Button 
             size='large'
             style={{ marginTop: '20px'}}
@@ -180,14 +150,14 @@ export default function Home() {
             Learn more
           </Button>
           <Divider />
-          <div className={css({fontStyle: 'italic', fontWeight: 300, fontSize: '18px'})}>
+          <div className='text-lg sm:text-xl font-light italic'>
             Or, check out one of these demo trees:
           </div>
           <Demos />
-        </Content>
-        <Footer /> 
-      </Wrapper>
-    </>
+          <div className='mt-8 text-gray-300 font-light'>© 2025 Rishi Kaneriya </div>
+        </div>
+      </div>
+    </div>
   ); 
 }
 

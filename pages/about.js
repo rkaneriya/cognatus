@@ -1,21 +1,7 @@
-import {useStyletron} from 'styletron-react'; 
 import {Typography} from 'antd'; 
-import {useRouter} from 'next/router'
 import Head from 'next/head'; 
 
-function Wrapper({children}) { 
-  const [css] = useStyletron(); 
-  return (
-    <div className={css({
-      padding: '50px', 
-    })}>
-      {children}
-    </div>
-  ); 
-}
-
 function Question({children}) { 
-  const [css] = useStyletron(); 
   return (
     <Typography.Title level={4}>
       {children}
@@ -24,25 +10,16 @@ function Question({children}) {
 }
 
 function Answer({children}) { 
-  const [css] = useStyletron(); 
   return (
-    <div className={css({
-      borderLeft: '3px solid lightgray',  
-      paddingLeft: '10px', 
-      marginBottom: '40px', 
-      fontSize: '14px', 
-    })}>
+    <div className='pl-5 mb-10 sm:text-base border-gray-300 border-l-2 flex flex-col gap-4'>
       {children}
     </div>
   )
 }
 
 export default function About() {
-  const [css] = useStyletron(); 
-  const router = useRouter(); 
-
   return (
-    <Wrapper>
+    <div className='p-10 max-w-5xl'>
       <Head>
         <title>Cognatus | About</title>
       </Head>
@@ -50,7 +27,7 @@ export default function About() {
         About
       </Typography.Title>
 
-      <Question>What is Cognatus? </Question>
+      <Question>What is Cognatus?</Question>
       <Answer>
         <p>
           <a href='https://www.cognatus.app'>Cognatus</a> is a web app for visualizing and connecting with your kin. It lets you create interactive networks (&quot;trees&quot;) of family members and the relations between them. You can query how relatives are related to one another, view interesting statistics about your family, as well as view important upcoming dates such as birthdays and wedding anniversaries. If you choose, you can share trees with other people. You can also opt to receive monthly e-mails reminding you of upcoming birthdays and anniversaries in one or more of your trees (or trees that were shared with you). 
@@ -96,8 +73,10 @@ export default function About() {
 
       <Question>How can I contact you?</Question>
       <Answer>
-        Use <a href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>this form</a> to get in touch with me. Bug reports, feature requests, and general feedback are all welcome and appreciated!
+        <p>
+          Use <a href='https://forms.gle/H73Xvs4qqpc3QPqB9' target='_blank' rel='noreferrer'>this form</a> to get in touch with me. Bug reports, feature requests, and general feedback are all welcome and appreciated!
+        </p>
       </Answer>
-    </Wrapper>
+    </div>
   ); 
 }

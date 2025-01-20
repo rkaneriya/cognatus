@@ -20,37 +20,14 @@ export default function Demos() {
   ]; 
 
   const IMAGE_WIDTH = 100; 
-  const CONTAINER_WIDTH = IMAGE_WIDTH * demos.length + 50; 
 
   return (
-    <div className={css({
-      marginTop: '20px', 
-      display: 'flex', 
-      width: `${CONTAINER_WIDTH}px`, 
-      height: '200px', 
-      justifyContent: 'space-between',
-    })}>
+    <div className='mt-5 flex flex-row gap-5'>
       { 
         demos.map(({file, path, label}) => (
-          <div key={file} className={css({
-            display: 'flex',
-            flexDirection: 'column', 
-            alignItems: 'center', 
-            textAlign: 'center'
-          })}>
+          <div key={file} className='flex flex-col justify-center items-center'>
             <Tooltip placement="bottom" title={label}>
-              <div className={css({
-                width: 'fit-content', 
-                height: 'fit-content', 
-                border: '3px solid lightgray', 
-                borderRadius: '50%', 
-                opacity: 0.7, 
-                ':hover': {
-                  opacity: 1, 
-                  border: '3px solid gray', 
-                  cursor: 'pointer', 
-                }
-              })}>
+              <div className='w-fit h-fit border-4 border-gray-300 rounded-full opacity-70 hover:opacity-100 hover:border-gray-400 hover:cursor-pointer'>
                 <Link href={path} passHref>
                   <Avatar 
                     src={file} 
