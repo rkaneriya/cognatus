@@ -67,7 +67,7 @@ export default function About() {
       <Question>How was Cognatus made?</Question>
       <Answer>
         <p>
-          Cognatus was made as a non-commercial hobby project in December 2021. It uses <a href='https://nextjs.org/' target='_blank' rel='noreferrer'>Next.js</a> as a <a href='https://reactjs.org/' target='_blank' rel='noreferrer'>React</a> framework, <a href='https://ant.design/' target='_blank' rel='noreferrer'>Ant Design</a> as a component library, and <a href='https://supabase.com/' tagret='_blank' rel='noreferrer'>Supabase</a>, an open-source alternative to Firebase, for authentication and data storage. It&apos;s deployed using <a href='https://aws.amazon.com/amplify/' target='_blank' rel='noreferrer'>AWS Amplify</a>. 
+          Cognatus was made as a non-commercial hobby project in December 2021. It uses <a href='https://nextjs.org/' target='_blank' rel='noreferrer'>Next.js</a> as a <a href='https://reactjs.org/' target='_blank' rel='noreferrer'>React</a> framework, <a href='https://ant.design/' target='_blank' rel='noreferrer'>Ant Design</a> as a component library, and <a href='https://supabase.com/' target='_blank' rel='noreferrer'>Supabase</a>, an open-source alternative to Firebase, for authentication and data storage. It&apos;s deployed using <a href='https://aws.amazon.com/amplify/' target='_blank' rel='noreferrer'>AWS Amplify</a>. 
         </p> 
       </Answer>
 
