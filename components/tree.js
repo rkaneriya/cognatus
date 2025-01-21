@@ -1,6 +1,5 @@
-import { useContext, useState, useEffect, useRef } from 'react';
+import { useContext, useState } from 'react';
 import {useStyletron} from 'styletron-react';
-import {debounce} from 'lodash'; 
 import MemberDrawer from './member-drawer'; 
 import MemberCard from './member-card';
 import Graph from './graph'; 
@@ -12,7 +11,6 @@ import { ROUTES } from '../constants/routes';
 import { MemberRelationContext } from '../data/contexts/member-relation';
 import { useRouter } from 'next/router';
 import { DemoModal } from './demo-modal';
-import SearchBar from './search-bar';
 
 const DEMO_ROUTES = [ 
   ROUTES.DEMO_ROOSEVELTS,
@@ -29,7 +27,7 @@ const DEFAULT_MEMBER_FORM_VALUES = {
   use_year_only: 'false', 
 }; 
 
-function Wrapper({children, onKeyDown}) { 
+function Wrapper({children}) { 
   const [css] = useStyletron(); 
   return (
     <div 
@@ -37,7 +35,6 @@ function Wrapper({children, onKeyDown}) {
         height: '100vh',
         backgroundColor: '#eee', 
       })}
-      onKeyDown={onKeyDown}
     >
       {children}
     </div>
@@ -48,7 +45,6 @@ export default function Tree() {
   const router = useRouter(); 
   const [css] = useStyletron(); 
   
-  const [searchTerm, setSearchTerm] = useState(''); 
   const [isMemberCardExpanded, setIsMemberCardExpanded] = useState(true); 
 
   const isDemo = DEMO_ROUTES.includes(router?.asPath);
@@ -100,45 +96,6 @@ export default function Tree() {
     setIsRelationDrawerOpen(true); 
   }
 
-  function handleKeyDown(e) { 
-    if (
-      !isKeystrokeAllowed(e) || 
-      isMemberDrawerOpen || 
-      (isTreeEmpty && isTreeEditable) ||
-      isRelationDrawerOpen || 
-      (selectedMember && isMemberCardExpanded)
-    ) { 
-      return;
-    } 
-
-    const newSearchTerm = searchTerm + e.key; 
-    setSearchTerm(newSearchTerm); 
-    handleSearch(newSearchTerm, members); 
-  }
-
-  function isKeystrokeAllowed(e) { 
-    return (e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode == 32; 
-  }
-
-  const handleSearch = useRef(
-    debounce((searchTerm, members) => { 
-      const member = members.find(m => m.first_name.toLowerCase().includes(searchTerm.toLowerCase())); 
-      if (member) { 
-        setSelectedMemberUuid(member.uuid); 
-      }
-    }, 300)
-  ).current;
-  
-  // Clear search term every 2 seconds (if one exists)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (searchTerm) { 
-        setSearchTerm('');
-      }
-    }, 2000);
-    return () => clearInterval(interval);
-  }, [searchTerm]);
-
   const selectedMember = membersByUuid[selectedMemberUuid];
   const isTreeEmpty = !loading && members.length === 0; 
   
@@ -170,8 +127,7 @@ export default function Tree() {
   }
 
   return (
-    <Wrapper onKeyDown={handleKeyDown}>
-      <SearchBar searchTerm={searchTerm} />
+    <Wrapper>
       <Graph />       
       <MemberDrawer
         drawerConfig={memberDrawerConfig}
