@@ -1,10 +1,7 @@
 import { Button, Modal } from "antd";
 import Image from 'next/image'; 
-import { useStyletron } from "styletron-react";
 
 export function DemoModal({visible, onCancel}) {
-  const [css] = useStyletron(); 
-
   const steps = [
     { 
       label: 'Explore the tree by clicking-and-dragging and scrolling to zoom. Click on an individual to view their profile. Connections between individuals represent either parent/child (blue) or spousal (purple) relations.',
@@ -35,22 +32,14 @@ export function DemoModal({visible, onCancel}) {
         </Button>,
       ]}
     > 
-      <div className={css({
-        maxHeight: '500px', 
-        overflow: 'auto', 
-      })}>
+      <div className='max-h-[500px] overflow-auto'>
         { 
           steps.map(({label, imagePath, width, height}, i) => (
-            <div key={i} className={css({ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              width: '100%', 
-              marginBottom: '20px', 
-            })}>
-              <div className={css({marginBottom: '10px'})}>{i+1}) {label}</div>
+            <div key={i} className='flex flex-col w-full mb-6'>
+              <div className='mb-6'>{i+1}) {label}</div>
               { 
                 imagePath && (
-                  <div className={css({display: 'flex', justifyContent: 'center'})}>
+                  <div className='flex justify-center'>
                     <Image 
                       src={imagePath}
                       alt='demo-step'
