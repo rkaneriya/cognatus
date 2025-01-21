@@ -44,7 +44,10 @@ export default function ShareTreeDrawer({
       acc[0].push(s); 
     }
     return acc; 
-  }, [[], []]); 
+  }, [[], []]);
+  
+  viewers.sort((a, b) => a.sharee_email.localeCompare(b.sharee_email)); 
+  collaborators.sort((a, b) => a.sharee_email.localeCompare(b.sharee_email)); 
 
   return (
     <Drawer 
@@ -53,7 +56,7 @@ export default function ShareTreeDrawer({
       onClose={onClose} 
       open={visible}
     >
-      <div className={css({marginBottom: '20px'})}>
+      <div className='flex flex-col gap-4'>
         <p>
           Instead of making a tree public to all, you can share it with specific people by adding their e-mail addresses below.
         </p>
@@ -68,38 +71,46 @@ export default function ShareTreeDrawer({
       { 
         viewers.length > 0 && (
           <div>
-            <Typography.Title level={4}>Viewers</Typography.Title>
-            <p className={css({fontStyle: 'italic'})}>Viewers can only view your tree, not edit it.</p>
-            {viewers.map(s => (
-              <Tag 
-                key={s.uuid} 
-                color='blue'
-                closable 
-                onClose={() => deleteSharedTree(s.uuid)}
-                style={{ marginBottom: '8px' }}
-              >
-                {s.sharee_email}   
-              </Tag>
-            ))}
+            <Typography.Title level={4}>Viewers ({viewers.length})</Typography.Title>
+            <p className='italic mb-4'>Viewers can only view your tree, not edit it.</p>
+            <div className='flex flex-col max-h-52 overflow-auto'>
+              {viewers.map(s => (
+                <span className='flex justify-start' key={s.uuid}>
+                  <Tag 
+                    key={s.uuid} 
+                    color='blue'
+                    closable 
+                    onClose={() => deleteSharedTree(s.uuid)}
+                    style={{ marginBottom: '8px' }}
+                  >
+                    {s.sharee_email.toLowerCase()}   
+                  </Tag>
+                </span>
+              ))}
+            </div>
           </div>
         )
       }
       { 
         collaborators.length > 0 && (
-          <div className={css({marginTop: '10px'})}>
-            <Typography.Title level={4}>Collaborators</Typography.Title>
-            <p className={css({fontStyle: 'italic'})}>Collaborators can view and edit your tree.</p>
-            {collaborators.map(s => (
-              <Tag 
-                key={s.uuid} 
-                color='green'
-                closable 
-                onClose={() => deleteSharedTree(s.uuid)}
-                style={{ marginBottom: '8px' }}
-              >
-                {s.sharee_email}   
-              </Tag>
-            ))}
+          <div className='mt-4'>
+            <Typography.Title level={4}>Collaborators ({collaborators.length})</Typography.Title>
+            <p className='italic mb-4'>Collaborators can view and edit your tree.</p>
+            <div className='flex flex-col max-h-52 overflow-auto'>
+              {collaborators.map(s => (
+                <span className='flex justify-start' key={s.uuid}>
+                  <Tag 
+                    key={s.uuid} 
+                    color='green'
+                    closable 
+                    onClose={() => deleteSharedTree(s.uuid)}
+                    style={{ marginBottom: '8px' }}
+                    >
+                    {s.sharee_email.toLowerCase()}   
+                  </Tag>
+                  </span>
+              ))}
+            </div>
           </div>
         )
       }
