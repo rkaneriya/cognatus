@@ -1,8 +1,6 @@
 import { Button, Modal } from "antd";
-import { useStyletron } from "styletron-react";
 
 export default function MobileWarningModal({visible, onCancel}) {
-  const [css] = useStyletron(); 
   return (
     <Modal 
       title='Uh oh' 
@@ -14,12 +12,9 @@ export default function MobileWarningModal({visible, onCancel}) {
         </Button>,
       ]}
     > 
-      <div className={css({
-        maxHeight: '500px', 
-        overflow: 'auto', 
-      })}>
+      <div className='flex flex-col gap-2 max-h-52 overflow-auto'>
         <p>
-          {`Hi, there. I see that you're using a mobile device.`}
+          {`Hi there. I see that you're using a mobile device.`}
         </p>
         <p>
           {`Unfortunately, Cognatus isn't optimized for a mobile experience (yet).`}
