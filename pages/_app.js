@@ -6,30 +6,20 @@ import {useRouter} from 'next/router';
 import {ROUTES} from '../constants/routes'; 
 import './_styles.css'; 
 import Script from 'next/script';
-import { isMobile } from 'react-device-detect';
-import MobileWarningModal from '../components/mobile-warning-modal'; 
 import { TreeContextProvider } from '../data/contexts/tree';
 import { UserContext } from '../data/contexts/user';
 
 export default function MyApp(props) {
   const router = useRouter(); 
-  const [isMobileWarningModalVisible, setIsMobileWarningModalVisible] = useState(false); 
   const [user, setUser] = useState(); 
 
   useEffect(() => {
-    if (isMobile) { 
-      setIsMobileWarningModalVisible(true); 
-    }
 
     setUser(supabase.auth.user()); 
   
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => { 
       const user = supabase.auth.user();
       setUser(user); 
-
-      if (event === 'SIGNED_IN') { 
-        router.push(ROUTES.ADMIN); 
-      }
 
       if (event === 'SIGNED_OUT') { 
         router.push(ROUTES.HOME); 
@@ -51,7 +41,6 @@ export default function MyApp(props) {
   const { Component, pageProps } = props
   return (
     <StyletronProvider value={styletron}>
-      <MobileWarningModal visible={isMobileWarningModalVisible} onCancel={() => setIsMobileWarningModalVisible(false)} />
       <Script
         strategy='lazyOnload'
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_KEY}`}
