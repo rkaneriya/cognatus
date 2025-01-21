@@ -1,17 +1,12 @@
 import { useState, useContext } from 'react';
 import {Button, Drawer, Divider, Input, Select, Tag, Tooltip, Typography} from 'antd';
-import { useStyletron } from 'styletron-react';
 import { TreeContext } from '../data/contexts/tree';
 
 function TooltipText() { 
-  const [css] = useStyletron(); 
   return (
-    <div className={css({
-      display: 'flex', 
-      flexDirection: 'column',
-    })}>
-      <p>{`Viewer = user can only VIEW your tree, not edit it.`}</p>
-      <p>{`Collaborator = user can VIEW and EDIT your tree.`}</p>
+    <div className='flex flex-col gap-2'>
+      <p>Viewer = user can only VIEW your tree, not edit it.</p>
+      <p>Collaborator = user can VIEW and EDIT your tree.</p>
     </div>
   )
 }
@@ -23,7 +18,6 @@ export default function ShareTreeDrawer({
 }) {
   const [email, setEmail] = useState(''); 
   const [isEditable, setIsEditable] = useState(false); 
-  const [css] = useStyletron(); 
   const { 
     createSharedTree,
     deleteSharedTree,
@@ -114,13 +108,16 @@ export default function ShareTreeDrawer({
           </div>
         )
       }
-      <div className={css({marginTop: '20px'})}>
+      <div className='mt-4'>
         <Input.Group compact style={{display: 'flex'}}>
           <Tooltip 
             placement='left' 
             title={<TooltipText />}
           >
-            <Select value={isEditable} onChange={setIsEditable}>
+            <Select 
+              value={isEditable} 
+              onChange={setIsEditable}
+            >
               <Select.Option value={false}>Viewer</Select.Option>
               <Select.Option value={true}>Collaborator</Select.Option>
             </Select>
@@ -130,7 +127,12 @@ export default function ShareTreeDrawer({
             onChange={handleChange}
             onPressEnter={handleAdd}
           />
-          <Button type="primary" onClick={handleAdd}>Add</Button>
+          <Button 
+            type="primary" 
+            onClick={handleAdd}
+          >
+            Add
+          </Button>
         </Input.Group>
       </div>
     </Drawer>
