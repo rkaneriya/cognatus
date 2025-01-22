@@ -125,31 +125,29 @@ const EditableTable = ({
           setIsShareTreeDrawerOpen(true); 
         }
         return editable ? (
-          <span>
-            <Typography.Link
-              onClick={() => save(record.key)}
-              style={{
-                marginRight: 8,
-              }}
-            >
+          <div className='block whitespace-nowrap'>
+            <Typography.Link onClick={() => save(record.key)}>
               Save
             </Typography.Link>
+            {' • '}
             <Typography.Link onClick={cancel}>
               Cancel
             </Typography.Link>
-          </span>
+          </div>
         ) : (
-          <span>
-            <Typography.Link disabled={editingKey !== ''} style={{ marginRight: 8 }} onClick={() => edit(record)}>
+          <div className='block whitespace-nowrap'>
+            <Typography.Link disabled={editingKey !== ''} onClick={() => edit(record)}>
               Edit
             </Typography.Link>
+            {' • '}
             <Popconfirm title="Are you sure?" okText="Yes" onConfirm={() => deleteRow(record.uuid)}>
-              <a disabled={editingKey !== ''} >Delete</a>
+              <Typography.Link disabled={editingKey !== ''} >Delete</Typography.Link>
             </Popconfirm>
-            <Typography.Link disabled={editingKey !== ''} style={{ marginLeft: 8 }}  onClick={handleShare}>
+            {' • '}
+            <Typography.Link disabled={editingKey !== ''} onClick={handleShare}>
               <span>Share ({record.sharees.length})</span>
             </Typography.Link>
-          </span>
+          </div>
         );
       },
     },

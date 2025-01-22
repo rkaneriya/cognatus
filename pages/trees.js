@@ -1,6 +1,6 @@
 import {useState, useContext} from 'react';
 import moment from 'moment'; 
-import {Button, Checkbox, Table, Tag, Tooltip, Typography} from 'antd';
+import {Button, Checkbox, Table, Tooltip, Typography} from 'antd';
 import {QuestionCircleOutlined} from '@ant-design/icons'; 
 import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
@@ -40,7 +40,7 @@ function IsEmailSubscribedCheckbox({checked, onChange}) {
 function IsPublicColumnHeader() {
   return (
     <div className='flex items-center'>
-      Is Public?
+      <span className='whitespace-nowrap'>Is Public?</span>
       <Tooltip placement="top" title={'Share a read-only version of your tree with anyone who has a link to it.'}>
         <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
       </Tooltip>
@@ -51,10 +51,7 @@ function IsPublicColumnHeader() {
 function IsEmailSubscribedColumnHeader() { 
   return (
     <div className='flex items-center'>
-      <Tooltip placement="top" title={'If checked, you will receive an e-mail on the first of every month reminding you of upcoming birthdays and anniversaries of members of this tree. You can un-check this box to stop receiving e-mails at any time.'}>
-        <Tag color="#f50">NEW</Tag>
-      </Tooltip>
-      Subscribe to E-mail? 
+      <span className='whitespace-nowrap'>E-mail?</span> 
       <Tooltip placement="top" title={'If checked, you will receive an e-mail on the first of every month reminding you of upcoming birthdays and anniversaries of members of this tree. You can un-check this box to stop receiving e-mails at any time.'}>
         <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
       </Tooltip>
@@ -83,16 +80,15 @@ export default function Trees() {
     {
       title: 'Name',
       dataIndex: 'name',
-      width: '20%',
       editable: true, 
       required: true, 
       key: 'name',
-      render: (text, record) => <Link href={`/trees/${record.uuid}`}>{text}</Link>,
+      width: '15%', 
+      render: (text, record) => <Typography.Link><Link href={`/trees/${record.uuid}`}>{text}</Link></Typography.Link>,
     },
     {
       title: 'Description', 
       dataIndex: 'description', 
-      width: '35%', 
       editable: true, 
       required: false, 
       key: 'description', 
@@ -100,15 +96,13 @@ export default function Trees() {
     { 
       title: 'Created At', 
       dataIndex: 'created_at', 
-      width: '15%', 
       editable: false, 
       key: 'created_at', 
-      render: (text) => moment(text).format('ll LT'), 
+      render: (text) => moment(text).format('l LT'), 
     },
     {
       title: <IsPublicColumnHeader />, 
       dataIndex: 'created_at', 
-      width: '10%', 
       editable: false, 
       key: 'created_at', 
       render: (_, record) => (
@@ -124,7 +118,6 @@ export default function Trees() {
     {
       title: <IsEmailSubscribedColumnHeader />, 
       dataIndex: 'created_at', 
-      width: '10%', 
       editable: false, 
       key: 'created_at', 
       render: (_, record) => (
@@ -143,33 +136,29 @@ export default function Trees() {
     {
       title: 'Name',
       dataIndex: 'name',
-      width: '20%',
       key: 'name',
-      render: (text, record) => <Link href={`/trees/${record.uuid}`}>{text}</Link>,
+      width: '15%', 
+      render: (text, record) => <Typography.Link><Link href={`/trees/${record.uuid}`}>{text}</Link></Typography.Link>,
     },
     {
       title: 'Description', 
       dataIndex: 'description', 
-      width: '35%', 
       key: 'description', 
     }, 
     { 
       title: 'Created At', 
       dataIndex: 'created_at', 
-      width: '15%', 
       key: 'created_at', 
-      render: (text) => moment(text).format('ll LT'), 
+      render: (text) => moment(text).format('l LT'), 
     },
     { 
       title: 'Shared By', 
       dataIndex: 'sharer_email', 
-      width: '10%', 
       key: 'sharer_email', 
     },
     {
       title: <IsEmailSubscribedColumnHeader />, 
       dataIndex: 'name', 
-      width: '10%', 
       editable: false, 
       key: 'created_at', 
       render: (_, record) => (
@@ -188,7 +177,7 @@ export default function Trees() {
 
 
   return (
-    <div className='p-9 w-fit'>
+    <div className='p-10'>
       <Head>
         <title>Cognatus | Trees</title>
       </Head>
