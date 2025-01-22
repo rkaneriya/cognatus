@@ -83,8 +83,7 @@ export default function Trees() {
       editable: true, 
       required: true, 
       key: 'name',
-      width: '15%', 
-      render: (text, record) => <Typography.Link><Link href={`/trees/${record.uuid}`}>{text}</Link></Typography.Link>,
+      render: (text, record) => <Typography.Link href={`/trees/${record.uuid}`}>{text}</Typography.Link>,
     },
     {
       title: 'Description', 
@@ -138,7 +137,7 @@ export default function Trees() {
       dataIndex: 'name',
       key: 'name',
       width: '15%', 
-      render: (text, record) => <Typography.Link><Link href={`/trees/${record.uuid}`}>{text}</Link></Typography.Link>,
+      render: (text, record) => <Typography.Link href={`/trees/${record.uuid}`}>{text}</Typography.Link>,
     },
     {
       title: 'Description', 
@@ -177,7 +176,7 @@ export default function Trees() {
 
 
   return (
-    <div className='p-10'>
+    <div className='p-10 w-fit'>
       <Head>
         <title>Cognatus | Trees</title>
       </Head>
