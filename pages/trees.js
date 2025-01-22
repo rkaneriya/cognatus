@@ -1,15 +1,16 @@
-import {useState, useContext} from 'react';
+import {useState, useEffect, useContext} from 'react';
 import moment from 'moment'; 
 import {Button, Checkbox, Table, Tooltip, Typography} from 'antd';
 import {QuestionCircleOutlined} from '@ant-design/icons'; 
 import {supabase} from '../utils/supabase'
 import {ROUTES} from '../constants/routes'; 
-import Link from 'next/link'; 
 import EditableTable from '../components/editable-table'; 
 import NewTreeDrawer from '../components/new-tree-drawer';
 import NavBar from '../components/nav-bar'; 
 import { TreeContext } from '../data/contexts/tree';
+import TreesMobile from './trees-mobile';
 import Head from 'next/head'; 
+import { isMobile } from 'react-device-detect';
 
 const {Title} = Typography; 
 
@@ -60,6 +61,7 @@ function IsEmailSubscribedColumnHeader() {
 }
 
 export default function Trees() {
+  const [shouldRenderMobile, setShouldRenderMobile] = useState(false); 
   const [isCreateTreeDrawerOpen, setIsCreateTreeDrawerOpen] = useState(false); 
   const {
     // trees
@@ -76,6 +78,10 @@ export default function Trees() {
     SHARED_TREE_PAGE_SIZE, 
   } = useContext(TreeContext); 
 
+  useEffect(() => { 
+    setShouldRenderMobile(isMobile); 
+  }, []); 
+
   const TREE_COLUMNS = [
     {
       title: 'Name',
@@ -83,6 +89,7 @@ export default function Trees() {
       editable: true, 
       required: true, 
       key: 'name',
+      width: '15%', 
       render: (text, record) => <Typography.Link href={`/trees/${record.uuid}`}>{text}</Typography.Link>,
     },
     {
@@ -174,6 +181,9 @@ export default function Trees() {
     }
   ]; 
 
+  if (shouldRenderMobile) { 
+    return <TreesMobile /> 
+  }
 
   return (
     <div className='p-10 w-fit'>
