@@ -1,6 +1,5 @@
 import {useContext, useState} from 'react'; 
-import {useStyletron} from 'styletron-react'; 
-import {message, Button, Input, Tooltip, Divider, Menu} from 'antd'; 
+import {message, Button, Input, Tooltip, Typography, Divider} from 'antd'; 
 import {ArrowRightOutlined, QuestionCircleOutlined} from '@ant-design/icons'; 
 import {useRouter} from 'next/router'
 import {supabase} from '../utils/supabase'
@@ -12,38 +11,8 @@ import { UserContext } from '../data/contexts/user';
 
 const {Search} = Input; 
 
-function Wrapper({children}) { 
-  const [css] = useStyletron(); 
-  return (
-    <div className={css({
-      width: '100vw', 
-      height: '100vh', 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center',
-      flexDirection: 'column', 
-    })}>
-      {children}
-    </div>
-  ); 
-}
-
-function Content({children}) { 
-  const [css] = useStyletron(); 
-  return (
-    <div className={css({
-      display: 'flex',
-      flexDirection: 'column', 
-      alignItems: 'center', 
-    })}>
-      {children}
-    </div>
-  ); 
-}
-
 function Login() {
   const [loading, setLoading] = useState(false)
-  const [css] = useStyletron(); 
 
   const handleLogin = async (email) => {
     try {
@@ -77,35 +46,11 @@ function Login() {
   )
 }
 
-function HoverEffectText({text}) { 
-  const [css] = useStyletron(); 
-  const chars = text.split(''); 
-  return (
-    <>
-      {
-        chars.map((c, i) => (
-          <div key={i} className={css({
-            textTransform: 'lowercase',
-            textDecoration: 'underline', 
-            textDecorationThickness: '15px', 
-            ':hover': { 
-              color: '#40a9ff', 
-            }, 
-          })}>
-            {c}
-          </div>
-        ))
-      }
-    </>
-  )
-}
-
 async function logout() {
   await supabase.auth.signOut(); 
 }
 
 export default function Home() {
-  const [css] = useStyletron(); 
   const router = useRouter();
   const {user} = useContext(UserContext);  
 
@@ -129,11 +74,11 @@ export default function Home() {
                     >
                       View your family trees <ArrowRightOutlined />
                     </Button>
-                    <div className={css({color: 'gray'})}>
+                    <div className='text-gray-500'>
                       Logged in as {user?.email}. (
-                      <a onClick={logout}>
+                      <Typography.Link className='text-base' onClick={logout}>
                         Logout
-                      </a>
+                      </Typography.Link>
                       )
                     </div>
                   </>
