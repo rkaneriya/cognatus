@@ -3,6 +3,7 @@ import { useEffect, useContext } from 'react';
 import {RELATION_TYPES} from '../constants/relation-types'; 
 import { MEMBER_RELATION_ACTIONS } from '../constants/member-relation-actions';
 import { MemberRelationContext } from '../data/contexts/member-relation';
+import { isMobile } from 'react-device-detect';
 
 const layout = {
   labelCol: { span: 9 },
@@ -84,6 +85,7 @@ export default function MemberDrawer({
 
   return (
     <Drawer 
+      size={isMobile ? 'large': 'default'}
       title={title}
       placement="right"
       onClose={handleClose} 

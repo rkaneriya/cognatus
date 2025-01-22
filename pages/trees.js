@@ -1,5 +1,4 @@
 import {useState, useContext} from 'react';
-import {useStyletron} from 'styletron-react';  
 import moment from 'moment'; 
 import {Button, Checkbox, Table, Tag, Tooltip, Typography} from 'antd';
 import {QuestionCircleOutlined} from '@ant-design/icons'; 
@@ -14,61 +13,33 @@ import Head from 'next/head';
 
 const {Title} = Typography; 
 
-function Wrapper({children}) { 
-  const [css] = useStyletron(); 
-  return (
-    <div className={css({
-      padding: '36px', 
-    })}>
-      {children}
-    </div>
-  ); 
-}
-
 function Section({children}) { 
-  const [css] = useStyletron(); 
   return (
-    <div className={css({
-      display: 'flex',
-      flexDirection: 'column', 
-      alignItems: 'flex-start', 
-    })}>
+    <div className='flex flex-col items-start'>
       {children}
     </div>
   ); 
 }
 
 function IsPublicCheckbox({checked, onChange}) {
-  const [css] = useStyletron(); 
   return (
-    <div className={css({
-      display: 'flex', 
-      justifyContent: 'center', 
-    })}>
+    <div className='flex justify-center'>
       <Checkbox checked={checked} onChange={onChange} />
     </div>
   )
 }
 
 function IsEmailSubscribedCheckbox({checked, onChange}) {
-  const [css] = useStyletron(); 
   return (
-    <div className={css({
-      display: 'flex', 
-      justifyContent: 'center', 
-    })}>
+    <div className='flex justify-center'>
       <Checkbox checked={checked} onChange={onChange} />
     </div>
   )
 }
 
-function IsPublicColumnHeader() { 
-  const [css] = useStyletron(); 
+function IsPublicColumnHeader() {
   return (
-    <div className={css({
-      display: 'flex', 
-      alignItems: 'center', 
-    })}>
+    <div className='flex items-center'>
       Is Public?
       <Tooltip placement="top" title={'Share a read-only version of your tree with anyone who has a link to it.'}>
         <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
@@ -78,12 +49,8 @@ function IsPublicColumnHeader() {
 }
 
 function IsEmailSubscribedColumnHeader() { 
-  const [css] = useStyletron(); 
   return (
-    <div className={css({
-      display: 'flex', 
-      alignItems: 'center', 
-    })}>
+    <div className='flex items-center'>
       <Tooltip placement="top" title={'If checked, you will receive an e-mail on the first of every month reminding you of upcoming birthdays and anniversaries of members of this tree. You can un-check this box to stop receiving e-mails at any time.'}>
         <Tag color="#f50">NEW</Tag>
       </Tooltip>
@@ -96,7 +63,6 @@ function IsEmailSubscribedColumnHeader() {
 }
 
 export default function Trees() {
-  const [css] = useStyletron(); 
   const [isCreateTreeDrawerOpen, setIsCreateTreeDrawerOpen] = useState(false); 
   const {
     // trees
@@ -222,19 +188,14 @@ export default function Trees() {
 
 
   return (
-    <Wrapper>
+    <div className='p-9 w-fit'>
       <Head>
         <title>Cognatus | Trees</title>
       </Head>
       <NavBar backRoute={ROUTES.HOME}/>
 
       <Section>
-        <div className={css({
-          display: 'flex', 
-          justifyContent: 'space-between',
-          alignItems: 'center', 
-          width: '100%', 
-        })}>
+        <div className='flex justify-between items-center w-full'>
           <Title level={2}>
             Your trees ({treeCount})
           </Title>
@@ -252,13 +213,7 @@ export default function Trees() {
       </Section>
 
       <Section>
-        <div className={css({
-          display: 'flex', 
-          justifyContent: 'space-between',
-          alignItems: 'center', 
-          width: '100%', 
-          marginTop: treeCount === 0 ? '40px' : '0px',
-        })}>
+        <div className={`flex justify-between items-center w-full ${treeCount === 0 && 'mt-10'}`}>
           <Title level={2}>
             Trees shared with you ({sharedTreeCount})
           </Title>
@@ -285,7 +240,7 @@ export default function Trees() {
         onFinish={createTree}
         visible={isCreateTreeDrawerOpen}
       />
-    </Wrapper>
+    </div>
   ); 
 }
 

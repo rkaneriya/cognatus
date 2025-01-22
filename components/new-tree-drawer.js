@@ -1,4 +1,5 @@
 import {Button, Drawer, Form, Input} from 'antd';
+import { isMobile } from 'react-device-detect';
 
 const layout = {
   labelCol: { span: 8 },
@@ -19,6 +20,7 @@ export default function NewTreeDrawer(props) {
 
   return (
     <Drawer 
+      size={isMobile ? 'large': 'default'}
       title="Create new tree" 
       placement="right"
       onClose={onClose} 

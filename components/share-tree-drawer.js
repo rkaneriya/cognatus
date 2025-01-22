@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import {Button, Drawer, Divider, Input, Select, Tag, Tooltip, Typography} from 'antd';
 import { TreeContext } from '../data/contexts/tree';
+import { isMobile } from 'react-device-detect';
 
 function TooltipText() { 
   return (
@@ -45,6 +46,7 @@ export default function ShareTreeDrawer({
 
   return (
     <Drawer 
+      size={isMobile ? 'large': 'default'}
       title={`Share '${tree?.name}' with specific people`}
       placement="right"
       onClose={onClose} 
