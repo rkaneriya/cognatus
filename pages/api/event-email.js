@@ -15,12 +15,11 @@ export default async function handler(req, res) {
   const supabase = getServiceSupabase(); 
 
   // Authz
-  const authHeader = req?.headers?.authorization || ""; 
-  if (!authHeader) { 
+  const EVENT_EMAIL_KEY = req?.headers?.authorization || ""; 
+  if (!EVENT_EMAIL_KEY) { 
     return res.status(400).json({success: 'false'});  
   }
 
-  const EVENT_EMAIL_KEY = authHeader.split(" ")[1];
   if (!process.env.EVENT_EMAIL_KEY || !EVENT_EMAIL_KEY || process.env.EVENT_EMAIL_KEY !== EVENT_EMAIL_KEY) { 
     return res.status(500).json({success: 'false'}); 
   }
