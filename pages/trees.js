@@ -65,12 +65,14 @@ export default function Trees() {
   const [isCreateTreeDrawerOpen, setIsCreateTreeDrawerOpen] = useState(false); 
   const {
     // trees
+    fetchTrees, 
     createTree,
     updateTree,
     treeCount, 
     upsertShareeTreeExt,
     
     // shared trees
+    fetchSharedTrees, 
     sharedTreeData, 
     sharedTreeCount, 
     sharedTreeLoading,
@@ -79,8 +81,10 @@ export default function Trees() {
   } = useContext(TreeContext); 
 
   useEffect(() => { 
+    fetchTrees(); 
+    fetchSharedTrees(); 
     setShouldRenderMobile(isMobile); 
-  }, []); 
+  }, [fetchTrees, fetchSharedTrees]); 
 
   const TREE_COLUMNS = [
     {
@@ -186,7 +190,7 @@ export default function Trees() {
   }
 
   return (
-    <div className='p-10 w-fit'>
+    <div className='p-10'>
       <Head>
         <title>Cognatus | Trees</title>
       </Head>
