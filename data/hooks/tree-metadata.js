@@ -1,4 +1,4 @@
-import { useState, useCallback, useContext } from "react";
+import { useEffect, useState, useCallback, useContext } from "react";
 import {
   SHARED_TREE_TABLE,
   SHARED_TREE_TABLE_ROWS,
@@ -41,6 +41,10 @@ export default function useTreeMetadataAPI(uuid) {
       setData(sharedTrees);
     }
   }, [user, uuid]);
+
+  useEffect(() => {
+    fetchTree();
+  }, [fetchTree]);
 
   return {
     // crud

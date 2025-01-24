@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { RELATION_TABLE, RELATION_TABLE_ROWS } from "../entities/relation";
 import { MEMBER_TABLE, MEMBER_TABLE_ROWS } from "../entities/member";
 import { message } from "antd";
@@ -43,7 +43,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
         .select(`${TREE_TABLE_ROWS.CREATOR_UUID},${TREE_TABLE_ROWS.IS_PUBLIC}`)
         .eq(TREE_TABLE_ROWS.UUID, treeUuid)
         .or(
-          `${TREE_TABLE_ROWS.CREATOR_UUID}.eq.${user?.id},${TREE_TABLE_ROWS.IS_PUBLIC}.eq.true`,
+          `${TREE_TABLE_ROWS.CREATOR_UUID}.eq.${user?.id},${TREE_TABLE_ROWS.IS_PUBLIC}.eq.true`
         );
 
       if (treeError) {
@@ -57,7 +57,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
       const { data: sharee, error: shareeError } = await supabase
         .from(SHARED_TREE_TABLE)
         .select(
-          `${SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL},${SHARED_TREE_TABLE_ROWS.IS_EDITABLE}`,
+          `${SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL},${SHARED_TREE_TABLE_ROWS.IS_EDITABLE}`
         )
         .eq(SHARED_TREE_TABLE_ROWS.TREE_UUID, treeUuid)
         .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user?.email);
@@ -455,6 +455,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
       return memberData;
     }
   }
+
+  useEffect(() => {
+    fetchMembersAndRelations();
+  }, [fetchMembersAndRelations]);
 
   return {
     // crud

@@ -1,5 +1,5 @@
 import cytoscape from "cytoscape";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useState } from "react";
 import { useRouter } from "next/router";
 import useMemberRelationAPI from "../hooks/member-relation";
 import { findPath } from "../../utils/relations";
@@ -13,7 +13,7 @@ function computeMembersAndRelations(selectedMemberUuid, members, relations) {
       ...acc,
       [member.uuid]: member,
     }),
-    {},
+    {}
   );
 
   // relation data
@@ -22,7 +22,7 @@ function computeMembersAndRelations(selectedMemberUuid, members, relations) {
       ...acc,
       [relation.uuid]: relation,
     }),
-    {},
+    {}
   );
 
   const relationsByMemberUuid = relations.reduce((acc, relation) => {
@@ -53,7 +53,7 @@ function computeMembersAndRelations(selectedMemberUuid, members, relations) {
         [relative.uuid]: relation,
       };
     },
-    {},
+    {}
   );
 
   return {
@@ -70,7 +70,6 @@ export function MemberRelationContextProvider({ children }) {
   const [targetRelativeUuid, setTargetRelativeUuid] = useState(null);
 
   const {
-    fetchMembersAndRelations,
     createMemberAndRelation,
     deleteMemberAndRelations,
 
@@ -90,10 +89,6 @@ export function MemberRelationContextProvider({ children }) {
     loading,
   } = useMemberRelationAPI(treeUuid, selectedMemberUuid);
 
-  useEffect(() => {
-    fetchMembersAndRelations();
-  }, [fetchMembersAndRelations]);
-
   const { membersByUuid, relationsByUuid, directRelationsByRelativeUuid } =
     computeMembersAndRelations(selectedMemberUuid, members, relations);
 
@@ -112,7 +107,7 @@ export function MemberRelationContextProvider({ children }) {
         target: to_member_uuid,
         type,
       },
-    }),
+    })
   );
 
   const cy = cytoscape({
@@ -122,7 +117,7 @@ export function MemberRelationContextProvider({ children }) {
   const { pathNodes, pathEdges } = findPath(
     selectedMemberUuid,
     targetRelativeUuid,
-    cy,
+    cy
   );
 
   const value = {
