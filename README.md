@@ -23,7 +23,7 @@ yarn install
 yarn dev
 ```
 
-### Prjoect structure
+### Project structure
 
 ```
 .
