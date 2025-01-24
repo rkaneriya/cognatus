@@ -6,24 +6,27 @@ I created Cognatus as a non-commercial hobby project in December 2021 to visuali
 
 Cognatus was bootstrapped with [Next.js](https://nextjs.org/) (React), uses [Ant Design](https://ant.design/) as a component library, and uses [Supabase](https://supabase.io/) for authentication and data storage. It's deployed and hosted using [AWS](https://aws.amazon.com/).
 
-_**N.B.** While you're welcome to use the app, please note that this is primarily a personal hobby project, so I can't guarantee its longevity!_
+_While you're welcome to use the app, please note that this is primarily a personal hobby project, so I can't guarantee its longevity!_
 
-# Guide
+<p align="center">
+  <a href="https://www.cognatus.app/trees/6168b760-a4c8-4f39-9e01-184401db5f0d" target="_blank">
+    <img width="700" alt="Screenshot 2025-01-24 at 5 03 18 PM" src="https://github.com/user-attachments/assets/338d6f79-9ada-4232-93dc-0904324519bb" />
+  </a>
+</p>
 
-## Running locally
+## Dev Guide
 
-To run the dev server locally:
+### Running locally
 
 ```bash
 yarn install
-yarn  dev
+yarn dev
 ```
 
-## File structure
+### Prjoect structure
 
 ```
 .
-├── README.md
 ├── components
 │   ├── editable-table.js
 │   ├── graph.js
@@ -57,6 +60,7 @@ yarn  dev
 │   └── ... # Images, SVGs
 ├── utils
 │   └── ... # Formatting, business logic, 3P API clients (Supabase, Sendgrid)
+├── README.md
 ├── styletron.js # To be deleted in favor of Tailwind
 ├── tailwind.config.js
 ├── postcss.config.js
