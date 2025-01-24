@@ -9,13 +9,16 @@ export default function TreeWrapper() {
   const treeUuid = router?.query?.uuid;
 
   const { data: treeData } = useTreeMetadataAPI(treeUuid);
+  let title = "Cognatus";
+
+  if (treeData[0]?.name) {
+    title += ` | ${treeData[0]?.name}`;
+  }
 
   return (
     <MemberRelationContextProvider>
       <Head>
-        <title>
-          {treeUuid ? `Cognatus | ${treeData[0]?.name}` : "Cognatus"}
-        </title>
+        <title>{title}</title>
       </Head>
       <Tree />
     </MemberRelationContextProvider>
