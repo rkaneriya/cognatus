@@ -1,58 +1,61 @@
-import {Button, DatePicker, Drawer, Form, Input, Radio} from 'antd';
-import { useEffect, useContext } from 'react';
-import { MemberRelationContext } from '../data/contexts/member-relation';
+import { Button, DatePicker, Drawer, Form, Input, Radio } from "antd";
+import { useEffect, useContext } from "react";
+import { MemberRelationContext } from "../data/contexts/member-relation";
 
 const layout = {
   labelCol: { span: 9 },
   wrapperCol: { span: 16 },
 };
 
-export default function RelationDrawer({
-  initialValues, 
-  onClose, 
-  visible, 
-}) {
-  const [form] = Form.useForm(); 
+export default function RelationDrawer({ initialValues, onClose, visible }) {
+  const [form] = Form.useForm();
 
-  useEffect(() => { 
-    form.setFieldsValue(initialValues); 
-  }); 
+  useEffect(() => {
+    form.setFieldsValue(initialValues);
+  });
 
-  const {
-    selectedMemberUuid,
-    membersByUuid, 
-    updateRelation,
-  } = useContext(MemberRelationContext); 
+  const { selectedMemberUuid, membersByUuid, updateRelation } = useContext(
+    MemberRelationContext,
+  );
 
-  function handleClose() { 
-    form.resetFields(); 
-    onClose(); 
+  function handleClose() {
+    form.resetFields();
+    onClose();
   }
 
-  function handleFinish(values) { 
-    form.resetFields(); 
-    onClose(); 
+  function handleFinish(values) {
+    form.resetFields();
+    onClose();
     updateRelation({
-      uuid: initialValues.uuid, 
+      uuid: initialValues.uuid,
       ...values,
     });
   }
 
-  const useYearOnly = membersByUuid[selectedMemberUuid]?.use_year_only; 
-  
+  const useYearOnly = membersByUuid[selectedMemberUuid]?.use_year_only;
+
   return (
-    <Drawer 
-      title='Edit relationship details'
+    <Drawer
+      title="Edit relationship details"
       placement="right"
-      onClose={handleClose} 
+      onClose={handleClose}
       open={visible}
     >
-      <Form {...layout} form={form} name="nest-messages" onFinish={handleFinish}>
-        <Form.Item name='start_date' label="Marriage Start" rules={[{ required: true }]}>
-          <DatePicker picker={useYearOnly ? 'year' : 'undefined'} /> 
+      <Form
+        {...layout}
+        form={form}
+        name="nest-messages"
+        onFinish={handleFinish}
+      >
+        <Form.Item
+          name="start_date"
+          label="Marriage Start"
+          rules={[{ required: true }]}
+        >
+          <DatePicker picker={useYearOnly ? "year" : "undefined"} />
         </Form.Item>
-        <Form.Item name='end_date' label="Marriage End">
-          <DatePicker picker={useYearOnly ? 'year' : 'undefined'} /> 
+        <Form.Item name="end_date" label="Marriage End">
+          <DatePicker picker={useYearOnly ? "year" : "undefined"} />
         </Form.Item>
         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 9 }}>
           <Button type="primary" htmlType="submit">
@@ -61,5 +64,5 @@ export default function RelationDrawer({
         </Form.Item>
       </Form>
     </Drawer>
-  ); 
+  );
 }

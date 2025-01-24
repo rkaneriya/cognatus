@@ -1,5 +1,5 @@
-import {Button, Drawer, Form, Input} from 'antd';
-import { isMobile } from 'react-device-detect';
+import { Button, Drawer, Form, Input } from "antd";
+import { isMobile } from "react-device-detect";
 
 const layout = {
   labelCol: { span: 8 },
@@ -7,30 +7,26 @@ const layout = {
 };
 
 export default function NewTreeDrawer(props) {
-  const { 
-    onClose, 
-    onFinish,
-    visible, 
-  } = props; 
+  const { onClose, onFinish, visible } = props;
 
-  function handleFinish(tree) { 
-    onClose(); 
-    onFinish(tree); 
+  function handleFinish(tree) {
+    onClose();
+    onFinish(tree);
   }
 
   return (
-    <Drawer 
-      size={isMobile ? 'large': 'default'}
-      title="Create new tree" 
+    <Drawer
+      size={isMobile ? "large" : "default"}
+      title="Create new tree"
       placement="right"
-      onClose={onClose} 
+      onClose={onClose}
       open={visible}
     >
       <Form {...layout} name="nest-messages" onFinish={handleFinish}>
-        <Form.Item name='name' label="Name" rules={[{ required: true }]}>
+        <Form.Item name="name" label="Name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name='description' label="Description">
+        <Form.Item name="description" label="Description">
           <Input.TextArea />
         </Form.Item>
         <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
@@ -40,5 +36,5 @@ export default function NewTreeDrawer(props) {
         </Form.Item>
       </Form>
     </Drawer>
-  ); 
+  );
 }

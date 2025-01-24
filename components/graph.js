@@ -1,122 +1,119 @@
-import moment from 'moment';
-import {useContext, useRef, memo} from 'react'; 
-import {getRelationEdgeColor, getIsRelationEdgeDashed} from '../utils/relations'; 
-import { MemberRelationContext } from '../data/contexts/member-relation';
-import VisGraph from './vis-graph'; 
-import { isMobile } from 'react-device-detect';
+import moment from "moment";
+import { useContext, useRef, memo } from "react";
+import {
+  getRelationEdgeColor,
+  getIsRelationEdgeDashed,
+} from "../utils/relations";
+import { MemberRelationContext } from "../data/contexts/member-relation";
+import VisGraph from "./vis-graph";
+import { isMobile } from "react-device-detect";
 
-export default memo(function TreeGraph() { 
+export default memo(function TreeGraph() {
   const {
-    members, 
-    membersByUuid, 
-    relations, 
+    members,
+    membersByUuid,
+    relations,
     pathNodes,
-    pathEdges,  
+    pathEdges,
     selectedMemberUuid,
     setSelectedMemberUuid,
     setTargetRelativeUuid,
-  } = useContext(MemberRelationContext); 
+  } = useContext(MemberRelationContext);
 
-  const getNodeColor = (id) => { 
-    if (id === selectedMemberUuid) return 'yellow'; 
-    if (pathNodes.includes(id)) return 'red'; 
-    return 'gray'; 
-  }
+  const getNodeColor = (id) => {
+    if (id === selectedMemberUuid) return "yellow";
+    if (pathNodes.includes(id)) return "red";
+    return "gray";
+  };
 
-  const nodes = members.map(({uuid, first_name, photo_path, is_male}) => ({ 
+  const nodes = members.map(({ uuid, first_name, photo_path, is_male }) => ({
     id: uuid,
-    shape: 'circularImage',
-    image: photo_path ? photo_path : ( 
-      is_male
-        ? '/male.jpg' 
-        : '/female.jpg'
-    ), 
-    color: getNodeColor(uuid), 
+    shape: "circularImage",
+    image: photo_path ? photo_path : is_male ? "/male.jpg" : "/female.jpg",
+    color: getNodeColor(uuid),
     borderWidth: 3,
-    label: first_name, 
+    label: first_name,
   }));
 
-  const edges = relations.map(({uuid, from_member_uuid, to_member_uuid, type}) => { 
-    const fromBeforeTo = moment(membersByUuid[from_member_uuid].birth_date)
-      .isBefore(moment(membersByUuid[to_member_uuid].birth_date)); 
+  const edges = relations.map(
+    ({ uuid, from_member_uuid, to_member_uuid, type }) => {
+      const fromBeforeTo = moment(
+        membersByUuid[from_member_uuid].birth_date,
+      ).isBefore(moment(membersByUuid[to_member_uuid].birth_date));
 
-    const from = fromBeforeTo ? from_member_uuid : to_member_uuid; 
-    const to = fromBeforeTo ? to_member_uuid : from_member_uuid; 
+      const from = fromBeforeTo ? from_member_uuid : to_member_uuid;
+      const to = fromBeforeTo ? to_member_uuid : from_member_uuid;
 
-    return {
-      from,
-      to, 
-      color: { 
-        color: pathEdges.includes(uuid) ? 'red' : getRelationEdgeColor(type), 
-        inherit: 'false',  
-      },
-      width: pathEdges.includes(uuid) ? 1 : undefined, 
-      dashes: getIsRelationEdgeDashed(type), 
-    }; 
-  });  
+      return {
+        from,
+        to,
+        color: {
+          color: pathEdges.includes(uuid) ? "red" : getRelationEdgeColor(type),
+          inherit: "false",
+        },
+        width: pathEdges.includes(uuid) ? 1 : undefined,
+        dashes: getIsRelationEdgeDashed(type),
+      };
+    },
+  );
 
   const graph = {
     nodes,
-    edges, 
+    edges,
   };
 
   const options = {
-    autoResize: true, 
+    autoResize: true,
     edges: {
-      arrows: { 
+      arrows: {
         to: {
-          enabled: false 
-        }, 
+          enabled: false,
+        },
         from: {
-          enabled: false, 
-        }, 
+          enabled: false,
+        },
       },
-      smooth: true,  
+      smooth: true,
     },
-    layout: { 
-      randomSeed: 1000, 
-      improvedLayout: true,  
-      // hierarchical: { 
-      //   enabled: true, 
+    layout: {
+      randomSeed: 1000,
+      improvedLayout: true,
+      // hierarchical: {
+      //   enabled: true,
       //   direction: 'UD',
       //   sortMethod: 'directed',
-      //   shakeTowards: 'leaves', 
-      //   edgeMinimization: false, 
+      //   shakeTowards: 'leaves',
+      //   edgeMinimization: false,
       // },
     },
-    physics: { 
-      enabled: true, 
-      repulsion: { 
+    physics: {
+      enabled: true,
+      repulsion: {
         nodeDistance: 2000,
-        centralGravity: 0, 
+        centralGravity: 0,
       },
-      timestep: 0.7, 
-      adaptiveTimestep: true, 
+      timestep: 0.7,
+      adaptiveTimestep: true,
     },
-    interaction: { 
-      hideEdgesOnDrag: true, 
+    interaction: {
+      hideEdgesOnDrag: true,
     },
   };
 
   const events = {
-    selectNode: function(event) {
-      const {nodes} = event;
-      const uuid = nodes[0] || null; 
-      setSelectedMemberUuid(uuid); 
-      setTargetRelativeUuid(null); 
+    selectNode: function (event) {
+      const { nodes } = event;
+      const uuid = nodes[0] || null;
+      setSelectedMemberUuid(uuid);
+      setTargetRelativeUuid(null);
     },
   };
 
-  const ref = useRef(); 
+  const ref = useRef();
 
   return (
-    <div className={`h-full ${isMobile ? 'mt-34' : ''}`}>
-      <VisGraph
-        ref={ref}
-        graph={graph}
-        options={options}
-        events={events}
-      />
+    <div className={`h-full ${isMobile ? "mt-34" : ""}`}>
+      <VisGraph ref={ref} graph={graph} options={options} events={events} />
     </div>
-  ); 
-})
+  );
+});

@@ -1,37 +1,39 @@
-import { createContext } from "react"; 
-import useTreeAPI, {PAGE_SIZE as TREE_PAGE_SIZE} from "../hooks/tree";
-import useSharedTreeAPI, {PAGE_SIZE as SHARED_TREE_PAGE_SIZE} from "../hooks/shared-tree";
+import { createContext } from "react";
+import useTreeAPI, { PAGE_SIZE as TREE_PAGE_SIZE } from "../hooks/tree";
+import useSharedTreeAPI, {
+  PAGE_SIZE as SHARED_TREE_PAGE_SIZE,
+} from "../hooks/shared-tree";
 
-export const TreeContext = createContext(); 
+export const TreeContext = createContext();
 
-export function TreeContextProvider({children}) { 
-  const { 
+export function TreeContextProvider({ children }) {
+  const {
     // crud
     fetchTrees,
     createTree,
     updateTree,
     deleteTree,
 
-    // data 
+    // data
     data: treeData,
-    totalCount: treeCount, 
-    loading: treeLoading, 
-    setCurrentPage: treeSetCurrentPage, 
-  } = useTreeAPI(); 
+    totalCount: treeCount,
+    loading: treeLoading,
+    setCurrentPage: treeSetCurrentPage,
+  } = useTreeAPI();
 
   const {
     fetchSharedTrees,
     createSharedTree,
     deleteSharedTree,
     upsertShareeTreeExt,
-    
-    data: sharedTreeData, 
-    totalCount: sharedTreeCount, 
-    loading: sharedTreeLoading,
-    setCurrentPage: sharedTreeSetCurrentPage, 
-  } = useSharedTreeAPI(fetchTrees); 
 
-  const value = { 
+    data: sharedTreeData,
+    totalCount: sharedTreeCount,
+    loading: sharedTreeLoading,
+    setCurrentPage: sharedTreeSetCurrentPage,
+  } = useSharedTreeAPI(fetchTrees);
+
+  const value = {
     // trees
     fetchTrees,
     createTree,
@@ -39,7 +41,7 @@ export function TreeContextProvider({children}) {
     deleteTree,
 
     treeData,
-    treeCount, 
+    treeCount,
     treeLoading,
     treeSetCurrentPage,
     TREE_PAGE_SIZE,
@@ -50,16 +52,12 @@ export function TreeContextProvider({children}) {
     deleteSharedTree,
     upsertShareeTreeExt,
     SHARED_TREE_PAGE_SIZE,
-    
-    sharedTreeData, 
-    sharedTreeCount, 
-    sharedTreeLoading,
-    sharedTreeSetCurrentPage, 
-  }; 
 
-  return (
-    <TreeContext.Provider value={value}>
-      {children}
-    </TreeContext.Provider>
-  )
+    sharedTreeData,
+    sharedTreeCount,
+    sharedTreeLoading,
+    sharedTreeSetCurrentPage,
+  };
+
+  return <TreeContext.Provider value={value}>{children}</TreeContext.Provider>;
 }
