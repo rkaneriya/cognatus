@@ -1,11 +1,24 @@
+import "chart.js/auto";
 import moment from "moment";
 import { useContext } from "react";
 import { Typography } from "antd";
-import { Bar, Pie } from "@ant-design/plots";
+import { Bar, Pie } from "react-chartjs-2";
 import { MemberRelationContext } from "../data/contexts/member-relation";
 
+const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    title: {
+      display: false,
+    },
+  },
+};
+
 function ChartWrapper({ children }) {
-  return <div className="w-full h-[300px] mb-8">{children}</div>;
+  return <div className="w-full mb-8">{children}</div>;
 }
 
 export default function StatsTab() {
@@ -28,66 +41,48 @@ export default function StatsTab() {
     return acc;
   }, {});
 
-  const sexData = [
-    {
-      type: "Male",
-      value: numMales,
-    },
-    {
-      type: "Female",
-      value: members.length - numMales,
-    },
-  ];
-
-  const sexConfig = {
-    data: sexData,
-    angleField: "value",
-    colorField: "type",
-    label: {
-      type: "inner",
-      offset: "30%",
-      content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
-      style: {
-        fontSize: 12,
-        textAlign: "center",
+  const sexData = {
+    labels: ["Male", "Female"],
+    datasets: [
+      {
+        label: "# of Relatives",
+        data: [numMales, members.length - numMales],
+        backgroundColor: ["rgba(23,131,255)", "rgba(212,127,254)"],
+        borderWidth: 1,
       },
-    },
-    legend: {
-      position: "top",
-    },
+    ],
   };
 
-  const decadeData = Object.keys(numMembersByDecade).map((decade) => {
-    const rangeLabel = `${decade}-${Number(decade) + 10}`;
-    const value = numMembersByDecade[decade];
-    return {
-      decade: rangeLabel,
-      value,
-    };
-  });
-
-  const decadeConfig = {
-    data: decadeData,
-    xField: "value",
-    yField: "decade",
-    seriesField: "decade",
-    legend: {
-      position: "top-left",
-      flipPage: false,
-    },
-    renderer: "svg",
+  const decadeData = {
+    labels: Object.keys(numMembersByDecade).map(
+      (decade) => `${decade}-${Number(decade) + 10}`
+    ),
+    datasets: [
+      {
+        data: Object.keys(numMembersByDecade).map(
+          (decade) => numMembersByDecade[decade]
+        ),
+        backgroundColor: [
+          "rgba(23,131,255)",
+          "rgba(0,201,201)",
+          "rgba(235,134,76)",
+          "rgba(212,127,254)",
+          "rgba(119,99,254)",
+          "rgba(96,196,45)",
+        ],
+      },
+    ],
   };
 
   return (
     <div className="h-[500px] overflow-auto">
       <Typography.Title level={4}>Age Breakdown by Decade</Typography.Title>
       <ChartWrapper>
-        <Bar {...decadeConfig} />
+        <Bar options={options} data={decadeData} />
       </ChartWrapper>
-
       <Typography.Title level={4}>Sex Breakdown</Typography.Title>
       <ChartWrapper>
-        <Pie {...sexConfig} />
+        <Pie data={sexData} />
       </ChartWrapper>
     </div>
   );

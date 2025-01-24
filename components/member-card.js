@@ -23,7 +23,7 @@ import { MemberRelationContext } from "../data/contexts/member-relation";
 import { RelativeContent } from "./relative-content";
 import { DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG } from "../constants/display-relation-types";
 import QueryRelationTab from "../components/query-relation-tab";
-// import StatsTab from './stats-tab';
+import StatsTab from "./stats-tab";
 import { isMobile } from "react-device-detect";
 
 const FULL_DATE_FORMAT = "ll";
@@ -101,17 +101,20 @@ function QueryRelationTabLabel({ name }) {
   );
 }
 
-// function StatsTabLabel() {
-//   return (
-//     <Tooltip placement='top' title='View interesting stats about the people in your tree'>
-//       <PieChartOutlined /> Stats
-//     </Tooltip>
-//   );
-// }
+function StatsTabLabel() {
+  return (
+    <Tooltip
+      placement="top"
+      title="View interesting stats about the people in your tree"
+    >
+      <PieChartOutlined /> Stats
+    </Tooltip>
+  );
+}
 
 function DateSection() {
   const { selectedMemberUuid, membersByUuid } = useContext(
-    MemberRelationContext,
+    MemberRelationContext
   );
 
   const { birth_date, death_date, use_year_only } =
@@ -120,10 +123,10 @@ function DateSection() {
   const mBirthDate = moment(birth_date);
   const mDeathDate = moment(death_date);
   const formattedBirthDate = mBirthDate.format(
-    use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT,
+    use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT
   );
   const formattedDeathDate = mDeathDate.format(
-    use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT,
+    use_year_only ? YEAR_DATE_FORMAT : FULL_DATE_FORMAT
   );
   const age = death_date
     ? mDeathDate.diff(mBirthDate, "years")
@@ -168,7 +171,7 @@ function DateSection() {
 
 function NotesSection() {
   const { selectedMemberUuid, membersByUuid } = useContext(
-    MemberRelationContext,
+    MemberRelationContext
   );
 
   const { notes } = membersByUuid[selectedMemberUuid] || {};
@@ -289,6 +292,63 @@ export default function MemberCard({
         overflow: "auto",
       };
 
+  const tabs = [
+    {
+      key: "1",
+      label: <ProfileTabLabel name={first_name} />,
+      children: (
+        <>
+          {" "}
+          <DateSection />
+          <Divider />
+          <BodySection>
+            {Object.keys(DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG).map(
+              (section, i) => (
+                <SectionRow
+                  key={i}
+                  label={
+                    DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[section]
+                      .sectionLabel
+                  }
+                >
+                  <RelativeContent
+                    isEditable={editableSection === section}
+                    displayRelationType={section}
+                    onAddNewMemberAndRelation={onAddNewMemberAndRelation}
+                    onEditRelation={onEditRelation}
+                    setEditableSection={setEditableSection}
+                  />
+                </SectionRow>
+              )
+            )}
+          </BodySection>
+          <NotesSection />
+        </>
+      ),
+    },
+    {
+      key: "2",
+      label: <QueryRelationTabLabel name={first_name} />,
+      children: (
+        <QueryRelationTab onSelectTargetInRelation={onHandleTargetClick} />
+      ),
+    },
+    {
+      key: "3",
+      label: <StatsTabLabel />,
+      children: <StatsTab />,
+    },
+    // {
+    //   key: "4",
+    //   label: (
+    //     <span>
+    //       <CalendarOutlined /> Events
+    //     </span>
+    //   ),
+    //   children: null,
+    // },
+  ];
+
   return (
     <Card
       style={cardStyles}
@@ -342,47 +402,7 @@ export default function MemberCard({
         className={`overflow-hidden ${isExpanded ? "max-h-[700px]" : "max-h-0"} transition-[max-height] duration-[0.3s] ease-in-out`}
       >
         <Divider />
-
-        <Tabs defaultActiveKey="1" type="card" size="small">
-          <Tabs.TabPane tab={<ProfileTabLabel name={first_name} />} key="1">
-            <DateSection />
-            <Divider />
-            <BodySection>
-              {Object.keys(DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG).map(
-                (section, i) => (
-                  <SectionRow
-                    key={i}
-                    label={
-                      DISPLAY_RELATION_TYPE_TO_SECTION_ROW_CONFIG[section]
-                        .sectionLabel
-                    }
-                  >
-                    <RelativeContent
-                      isEditable={editableSection === section}
-                      displayRelationType={section}
-                      onAddNewMemberAndRelation={onAddNewMemberAndRelation}
-                      onEditRelation={onEditRelation}
-                      setEditableSection={setEditableSection}
-                    />
-                  </SectionRow>
-                ),
-              )}
-            </BodySection>
-            <NotesSection />
-          </Tabs.TabPane>
-          <Tabs.TabPane
-            tab={<QueryRelationTabLabel name={first_name} />}
-            key="2"
-          >
-            <QueryRelationTab onSelectTargetInRelation={onHandleTargetClick} />
-          </Tabs.TabPane>
-          {/* <Tabs.TabPane tab={<StatsTabLabel />} key="3">
-            <StatsTab /> 
-          </Tabs.TabPane> */}
-          {/* <Tabs.TabPane tab={<span><CalendarOutlined /> Events</span>} key="4">
-            <StatsTab /> 
-          </Tabs.TabPane> */}
-        </Tabs>
+        <Tabs defaultActiveKey="1" items={tabs} type="card" size="small"></Tabs>
       </div>
     </Card>
   );
