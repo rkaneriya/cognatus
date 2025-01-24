@@ -1,7 +1,6 @@
 import moment from 'moment'; 
 import { useState, useContext } from 'react';
 import { Card, Avatar, Tooltip, Tabs, Popconfirm, Upload, Divider as AntDivider } from 'antd';
-import { useStyletron } from 'styletron-react';
 import { UpOutlined, CloseCircleOutlined, UserOutlined, EditOutlined, ApartmentOutlined, PieChartOutlined, DeleteOutlined} from '@ant-design/icons';
 import {pluralize} from '../utils/pluralize'; 
 import { MemberRelationContext } from '../data/contexts/member-relation';
@@ -20,15 +19,8 @@ const SUPPORTED_FILE_TYPES = [
 ]; 
 
 function Name({children}) { 
-  const [css] = useStyletron(); 
   return (
-    <div className={css({
-      fontWeight: '600', 
-      textTransform: 'uppercase',
-      fontSize: '16px',   
-      width: '100%', 
-      overflowWrap: 'break-word', 
-    })}>
+    <div className='uppercase font-semibold break-words text-base w-full'>
       {children}
     </div>
   ); 
@@ -40,30 +32,13 @@ function Divider() {
   ); 
 }
 
-function SectionRow({label, children, styles}) {
-  const [css] = useStyletron(); 
+function SectionRow({label, children, isLastSection}) {
   return (
-    <div className={css({
-      display: 'flex', 
-      flexDirection: 'row',   
-      width: '100%', 
-      marginBottom: '10px',
-      ...styles,  
-    })}>
-      <div className={css({
-        display: 'flex', 
-        justifyContent: 'flex-end', 
-        marginRight: '15px', 
-        fontWeight: '600',
-        width: '35%',  
-      })}>
+    <div className={`w-full flex flex-row ${!isLastSection && 'mb-[10px]'}`}>
+      <div className='flex justify-end mr-4 font-semibold w-[35%]'>
         {label}
       </div>
-      <div className={css({
-        display: 'flex', 
-        flexDirection: 'column',
-        width: '65%', 
-      })}>
+      <div className='flex flex-col w-[65%]'>
         {children}
       </div>
     </div>
@@ -71,14 +46,8 @@ function SectionRow({label, children, styles}) {
 }
 
 function BodySection({children}) { 
-  const [css] = useStyletron(); 
   return (
-    <div className={css({
-      display: 'flex',
-      alignItems: 'flex-start', 
-      flexDirection: 'column',    
-      width: '100%',          
-    })}>
+    <div className='flex flex-col items-start w-full'>
       {children}
     </div>
   ); 
@@ -175,7 +144,7 @@ function DateSection() {
           <SectionRow 
             key={label} 
             label={label}
-            styles={{ marginBottom: i === dates.length-1 ? '0px' : '10px' }}
+            isLastSection={i === dates.length-1}
           >
             {content}
           </SectionRow>
@@ -190,7 +159,6 @@ function NotesSection() {
     selectedMemberUuid,
     membersByUuid,
   } = useContext(MemberRelationContext); 
-  const [css] = useStyletron(); 
 
   const {notes} = membersByUuid[selectedMemberUuid] || {}; 
 
@@ -202,11 +170,7 @@ function NotesSection() {
     <>
       <Divider /> 
       <BodySection>
-        <div className={css({
-          fontStyle: 'italic',
-          maxHeight: '100px', 
-          overflow: 'auto', 
-        })}>
+        <div className='italic max-h-[100px] overflow-auto'>
           {notes}
         </div>
       </BodySection>
@@ -221,7 +185,6 @@ export default function MemberCard({
   isExpanded, 
   setIsExpanded, 
 }) {
-  const [css] = useStyletron(); 
   const [editableSection, setEditableSection] = useState(null); 
 
   const {
@@ -315,11 +278,11 @@ export default function MemberCard({
       actions={isTreeEditable ? actions : undefined}
       loading={loading}
     > 
-      <div className={css({display: 'flex', alignItems: 'center', justifyContent: 'space-between'})}>
-        <div className={css({display: 'flex', alignItems: 'center'})}>
+      <div className='flex items-center justify-between'>
+        <div className='flex items-center'>
           { 
             (isTreeEditable && false) ? (
-              <div className={css({display: 'flex', flexDirection: 'column', alignItems: 'center'})}>
+              <div className='flex flex-col items-center'>
                 <Tooltip title='Click to upload new photo'>
                   <Upload
                     showUploadList={false}
@@ -330,7 +293,7 @@ export default function MemberCard({
                 </Tooltip>
                 { 
                   Boolean(photo_path) && (
-                    <a onClick={handleRemoveAvatar} className={css({fontSize:'10px'})}>Clear</a>
+                    <a onClick={handleRemoveAvatar} className='text-[10px]'>Clear</a>
                   )
                 }
               </div>
@@ -338,30 +301,13 @@ export default function MemberCard({
               <Avatar src={filename} size={50} />
             )
           }
-          <div className={css({
-            marginLeft: '20px', 
-            display: 'flex', 
-            flexDirection: 'column', 
-            alignItems: 'flex-start',
-            width: '225px',  
-          })}>
+          <div className='flex flex-col items-start w-56 ml-5'>
             <Name>{displayName}{isBirthday ? ' 🎂' : ''}</Name>
-            {nickname && <div className={css({fontStyle: 'italic'})}>&quot;{nickname}&quot;</div>}
+            {nickname && <div className='italic'>&quot;{nickname}&quot;</div>}
           </div>
         </div>
         <div 
-          className={css({
-            display: 'flex', 
-            color: 'gray', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            width: '30px', 
-            height: '30px',
-            ':hover': { 
-              border: '0.1px solid lightgray',
-              cursor: 'pointer'
-            }
-          })} 
+          className='flex text-gray-500 justify-center items-center w-8 h-8 hover:border-[0.1px] hover:border-solid hover:cursor-pointer'
           onClick={() => setIsExpanded(!isExpanded)}
         >
           <UpOutlined style={{ 
@@ -371,11 +317,7 @@ export default function MemberCard({
         </div>
       </div>
 
-      <div className={css({
-        maxHeight: isExpanded ? '700px' : '0px',
-        overflow: 'hidden',
-        transition: 'max-height 0.3s ease-in-out',
-      })}>
+      <div className={`overflow-hidden ${isExpanded ? 'max-h-[700px]' : 'max-h-0'} transition-[max-height] duration-[0.3s] ease-in-out`}>
         <Divider /> 
         
         <Tabs defaultActiveKey="1" type='card' size='small'>

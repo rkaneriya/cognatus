@@ -1,11 +1,8 @@
 import {Avatar, Tooltip} from 'antd'; 
-import { useStyletron } from 'styletron-react';
 import { ROUTES } from '../constants/routes';
 import Link from 'next/link'; 
 
 export default function Demos() { 
-  const [css] = useStyletron(); 
-
   const demos = [
     { 
       file: '/fdr.jpeg', 

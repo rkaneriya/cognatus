@@ -1,7 +1,6 @@
 import moment from 'moment'; 
 import { useState, useContext } from 'react';
 import { Select, Tooltip, Tag } from 'antd';
-import { useStyletron } from 'styletron-react';
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { RELATION_TYPES } from '../constants/relation-types';
 import {getRelationEdgeColor} from '../utils/relations'; 
@@ -17,7 +16,6 @@ function TagValue({
   onDelete,
   children, 
 }) { 
-  const [css] = useStyletron(); 
   const color = getRelationEdgeColor(relationType); 
   const tagStyle = (
     relationType === RELATION_TYPES.EX_SPOUSE 
@@ -28,10 +26,7 @@ function TagValue({
     : {}
   ); 
   return (
-    <div className={css({
-      overflowWrap: 'break-word',
-      marginBottom: '5px'
-    })}>
+    <div className='break-words mb-[5px]'>
       <Tag color={color} style={tagStyle} closable={isTreeEditable} onClose={onDelete}>
         <span style={{ 
           whiteSpace: 'normal',
@@ -59,7 +54,6 @@ function RelativeTag({
   onMemberSelect,
   onEditRelation,
 }) {     
-  const [css] = useStyletron(); 
   const {
     selectedMemberUuid, 
     membersByUuid,
@@ -107,12 +101,12 @@ function RelativeTag({
       </a>
       {
         isSpouse && (
-          <div className={css({marginBottom: '5px'})}>
-            <span className={css({fontStyle: 'italic'})}>
+          <div className='mb-[5px]'>
+            <span className='italic'>
               {formattedMarriageDates}
             </span>
             <br/>
-            <span className={css({display: 'flex', alignItems: 'center', fontStyle: 'italic'})}>
+            <span className='flex items-center italic'>
               <span>({marriageLength} years)</span>
               { 
                 isTreeEditable && (
@@ -134,7 +128,6 @@ export function RelativeContent({
   onEditRelation,
   setEditableSection,
 }) { 
-  const [css] = useStyletron(); 
   const [relativeUuid, setRelativeUuid] = useState(null); 
 
   const {
@@ -207,11 +200,7 @@ export function RelativeContent({
 
   function RelativeSelect() { 
     return (
-      <div className={css({
-        display: 'flex',
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-      })}>
+      <div className='flex justify-between items-center'>
         <Select
           autoFocus={true}
           showSearch={true}

@@ -1,5 +1,4 @@
 import { useContext, useState } from 'react';
-import {useStyletron} from 'styletron-react';
 import MemberDrawer from './member-drawer'; 
 import MemberCard from './member-card';
 import Graph from './graph'; 
@@ -28,14 +27,9 @@ const DEFAULT_MEMBER_FORM_VALUES = {
 }; 
 
 function Wrapper({children}) { 
-  const [css] = useStyletron(); 
   return (
     <div 
-      className={css({
-        height: '100vh',
-        backgroundColor: '#eee', 
-      })}
-    >
+      className='h-screen bg-neutral-100'>
       {children}
     </div>
   ); 
@@ -43,7 +37,6 @@ function Wrapper({children}) {
 
 export default function Tree() {  
   const router = useRouter(); 
-  const [css] = useStyletron(); 
   
   const [isMemberCardExpanded, setIsMemberCardExpanded] = useState(true); 
 
@@ -102,13 +95,7 @@ export default function Tree() {
   // First load (to avoid flicker)
   if (loading && members.length === 0) { 
     return (
-      <div className={css({
-        display: 'flex',
-        justifyContent: 'center', 
-        alignItems: 'center',
-        width: '100vw', 
-        height: '100vh', 
-      })}>
+      <div className='flex justify-center items-center w-screen h-screen'>
         <Spin size='large' />
       </div>
     ); 

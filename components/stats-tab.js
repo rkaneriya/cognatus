@@ -2,24 +2,17 @@ import moment from 'moment';
 import { useContext } from 'react';
 import {Typography} from 'antd'; 
 import { Bar, Pie } from '@ant-design/plots';
-import { useStyletron } from 'styletron-react';
 import {MemberRelationContext} from '../data/contexts/member-relation'; 
 
 function ChartWrapper({children}) { 
-  const [css] = useStyletron(); 
   return (
-    <div className={css({
-      width: '100%', 
-      height: '300px', 
-      marginBottom: '30px', 
-    })}>
+    <div className='w-full h-[300px] mb-8'>
       {children}
     </div>
   )
 }
 
 export default function StatsTab() { 
-  const [css] = useStyletron(); 
   const {
     members, 
   } = useContext(MemberRelationContext); 
@@ -92,10 +85,7 @@ export default function StatsTab() {
   };
 
   return (
-    <div className={css({
-      height: '500px', 
-      overflow: 'auto', 
-    })}>
+    <div className='h-[500px] overflow-auto'>
       <Typography.Title level={4}>Age Breakdown by Decade</Typography.Title>
       <ChartWrapper>
         <Bar {...decadeConfig} />
