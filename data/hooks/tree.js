@@ -1,10 +1,10 @@
 import { useState, useCallback, useContext } from "react";
 import { message } from "antd";
-import { TREE_TABLE, TREE_TABLE_ROWS } from "../entities/tree";
+import { TREE_TABLE, TREE_TABLE_COLS } from "../entities/tree";
 import { supabase } from "../../utils/supabase";
 import {
   SHARED_TREE_TABLE,
-  SHARED_TREE_TABLE_ROWS,
+  SHARED_TREE_TABLE_COLS,
 } from "../entities/shared-tree";
 import { UserContext } from "../contexts/user";
 
@@ -37,8 +37,8 @@ export default function useTreeAPI() {
     } = await supabase
       .from(TREE_TABLE)
       .select("*", { count: "exact" })
-      .eq(TREE_TABLE_ROWS.CREATOR_UUID, user?.id)
-      .order(TREE_TABLE_ROWS.CREATED_AT, { ascending: false })
+      .eq(TREE_TABLE_COLS.CREATOR_UUID, user?.id)
+      .order(TREE_TABLE_COLS.CREATED_AT, { ascending: false })
       .range(start, end);
 
     if (treeError) {
@@ -52,8 +52,8 @@ export default function useTreeAPI() {
     const { data: sharedTrees, error: sharedTreeError } = await supabase
       .from(SHARED_TREE_TABLE)
       .select("*")
-      .eq(SHARED_TREE_TABLE_ROWS.SHARER_EMAIL, user.email)
-      .in(SHARED_TREE_TABLE_ROWS.TREE_UUID, treeUuids);
+      .eq(SHARED_TREE_TABLE_COLS.SHARER_EMAIL, user.email)
+      .in(SHARED_TREE_TABLE_COLS.TREE_UUID, treeUuids);
 
     const sharedTreesByTreeUuid = sharedTrees.reduce((acc, s) => {
       const obj = {
@@ -89,7 +89,7 @@ export default function useTreeAPI() {
 
     const payload = {
       ...tree,
-      [TREE_TABLE_ROWS.CREATOR_UUID]: user?.id,
+      [TREE_TABLE_COLS.CREATOR_UUID]: user?.id,
     };
 
     const { error } = await supabase.from(TREE_TABLE).insert([payload]);
@@ -105,10 +105,10 @@ export default function useTreeAPI() {
   async function updateTree(tree) {
     setLoading(true);
     const EDITABLE_FIELDS = [
-      TREE_TABLE_ROWS.NAME,
-      TREE_TABLE_ROWS.DESCRIPTION,
-      TREE_TABLE_ROWS.IS_PUBLIC,
-      TREE_TABLE_ROWS.IS_EMAIL_SUBSCRIBED,
+      TREE_TABLE_COLS.NAME,
+      TREE_TABLE_COLS.DESCRIPTION,
+      TREE_TABLE_COLS.IS_PUBLIC,
+      TREE_TABLE_COLS.IS_EMAIL_SUBSCRIBED,
     ];
 
     const editableFieldsSet = new Set(EDITABLE_FIELDS);
@@ -126,7 +126,7 @@ export default function useTreeAPI() {
     const { error } = await supabase
       .from(TREE_TABLE)
       .update(payload)
-      .eq(TREE_TABLE_ROWS.UUID, tree.uuid);
+      .eq(TREE_TABLE_COLS.UUID, tree.uuid);
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE);
       setLoading(false);
@@ -143,7 +143,7 @@ export default function useTreeAPI() {
     const { error } = await supabase
       .from(TREE_TABLE)
       .delete()
-      .eq(TREE_TABLE_ROWS.UUID, uuid);
+      .eq(TREE_TABLE_COLS.UUID, uuid);
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE);

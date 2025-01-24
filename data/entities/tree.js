@@ -1,6 +1,6 @@
 export const TREE_TABLE = "tree";
 
-export const TREE_TABLE_ROWS = {
+export const TREE_TABLE_COLS = {
   UUID: "uuid",
   CREATED_AT: "created_at",
   NAME: "name",

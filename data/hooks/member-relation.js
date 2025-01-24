@@ -1,14 +1,14 @@
 import { v4 as uuidv4 } from "uuid";
 import { useCallback, useContext, useEffect, useState } from "react";
-import { RELATION_TABLE, RELATION_TABLE_ROWS } from "../entities/relation";
-import { MEMBER_TABLE, MEMBER_TABLE_ROWS } from "../entities/member";
+import { RELATION_TABLE, RELATION_TABLE_COLS } from "../entities/relation";
+import { MEMBER_TABLE, MEMBER_TABLE_COLS } from "../entities/member";
 import { message } from "antd";
 import { supabase } from "../../utils/supabase";
 import {
   SHARED_TREE_TABLE,
-  SHARED_TREE_TABLE_ROWS,
+  SHARED_TREE_TABLE_COLS,
 } from "../entities/shared-tree";
-import { TREE_TABLE, TREE_TABLE_ROWS } from "../entities/tree";
+import { TREE_TABLE, TREE_TABLE_COLS } from "../entities/tree";
 import { UserContext } from "../contexts/user";
 
 const GENERIC_ERROR_MESSAGE = "Error";
@@ -40,10 +40,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     if (user) {
       const { data: tree, error: treeError } = await supabase
         .from(TREE_TABLE)
-        .select(`${TREE_TABLE_ROWS.CREATOR_UUID},${TREE_TABLE_ROWS.IS_PUBLIC}`)
-        .eq(TREE_TABLE_ROWS.UUID, treeUuid)
+        .select(`${TREE_TABLE_COLS.CREATOR_UUID},${TREE_TABLE_COLS.IS_PUBLIC}`)
+        .eq(TREE_TABLE_COLS.UUID, treeUuid)
         .or(
-          `${TREE_TABLE_ROWS.CREATOR_UUID}.eq.${user?.id},${TREE_TABLE_ROWS.IS_PUBLIC}.eq.true`
+          `${TREE_TABLE_COLS.CREATOR_UUID}.eq.${user?.id},${TREE_TABLE_COLS.IS_PUBLIC}.eq.true`
         );
 
       if (treeError) {
@@ -57,10 +57,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
       const { data: sharee, error: shareeError } = await supabase
         .from(SHARED_TREE_TABLE)
         .select(
-          `${SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL},${SHARED_TREE_TABLE_ROWS.IS_EDITABLE}`
+          `${SHARED_TREE_TABLE_COLS.SHAREE_EMAIL},${SHARED_TREE_TABLE_COLS.IS_EDITABLE}`
         )
-        .eq(SHARED_TREE_TABLE_ROWS.TREE_UUID, treeUuid)
-        .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user?.email);
+        .eq(SHARED_TREE_TABLE_COLS.TREE_UUID, treeUuid)
+        .eq(SHARED_TREE_TABLE_COLS.SHAREE_EMAIL, user?.email);
 
       if (shareeError) {
         setData((d) => ({
@@ -88,8 +88,8 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     } else {
       const { data: tree, error: treeError } = await supabase
         .from(TREE_TABLE)
-        .select(TREE_TABLE_ROWS.IS_PUBLIC)
-        .eq(TREE_TABLE_ROWS.UUID, treeUuid);
+        .select(TREE_TABLE_COLS.IS_PUBLIC)
+        .eq(TREE_TABLE_COLS.UUID, treeUuid);
 
       if (treeError || tree.length === 0) {
         setData((d) => ({
@@ -106,8 +106,8 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     const { data: members, error: membersError } = await supabase
       .from(MEMBER_TABLE)
       .select("*")
-      .eq(MEMBER_TABLE_ROWS.TREE_UUID, treeUuid)
-      .order(MEMBER_TABLE_ROWS.CREATED_AT, { ascending: true });
+      .eq(MEMBER_TABLE_COLS.TREE_UUID, treeUuid)
+      .order(MEMBER_TABLE_COLS.CREATED_AT, { ascending: true });
 
     if (membersError) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE);
@@ -118,8 +118,8 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     const { data: relations, error: relationsError } = await supabase
       .from(RELATION_TABLE)
       .select("*")
-      .eq(RELATION_TABLE_ROWS.TREE_UUID, treeUuid)
-      .order(RELATION_TABLE_ROWS.CREATED_AT, { ascending: true });
+      .eq(RELATION_TABLE_COLS.TREE_UUID, treeUuid)
+      .order(RELATION_TABLE_COLS.CREATED_AT, { ascending: true });
 
     if (relationsError) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE);
@@ -158,9 +158,9 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     // 1. create new member
     let payload = {
       ...memberCopy,
-      [MEMBER_TABLE_ROWS.TREE_UUID]: treeUuid,
-      [MEMBER_TABLE_ROWS.BIRTH_DATE]: memberCopy.birth_date.format(),
-      [MEMBER_TABLE_ROWS.DEATH_DATE]: memberCopy.death_date
+      [MEMBER_TABLE_COLS.TREE_UUID]: treeUuid,
+      [MEMBER_TABLE_COLS.BIRTH_DATE]: memberCopy.birth_date.format(),
+      [MEMBER_TABLE_COLS.DEATH_DATE]: memberCopy.death_date
         ? memberCopy.death_date.format()
         : undefined,
     };
@@ -181,14 +181,14 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     // 2. create new relation between source member and newMember
     payload = {
-      [RELATION_TABLE_ROWS.TREE_UUID]: treeUuid,
-      [RELATION_TABLE_ROWS.FROM_MEMBER_UUID]: selectedMemberUuid,
-      [RELATION_TABLE_ROWS.TO_MEMBER_UUID]: newMember.uuid,
-      [RELATION_TABLE_ROWS.TYPE]: relation.type,
-      [RELATION_TABLE_ROWS.START_DATE]: relation.start_date
+      [RELATION_TABLE_COLS.TREE_UUID]: treeUuid,
+      [RELATION_TABLE_COLS.FROM_MEMBER_UUID]: selectedMemberUuid,
+      [RELATION_TABLE_COLS.TO_MEMBER_UUID]: newMember.uuid,
+      [RELATION_TABLE_COLS.TYPE]: relation.type,
+      [RELATION_TABLE_COLS.START_DATE]: relation.start_date
         ? relation.start_date.format()
         : undefined,
-      [RELATION_TABLE_ROWS.END_DATE]: relation.end_date
+      [RELATION_TABLE_COLS.END_DATE]: relation.end_date
         ? relation.end_date.format()
         : undefined,
     };
@@ -220,7 +220,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     const { error: deleteMemberError } = await supabase
       .from(MEMBER_TABLE)
       .delete()
-      .eq(MEMBER_TABLE_ROWS.UUID, uuid);
+      .eq(MEMBER_TABLE_COLS.UUID, uuid);
 
     if (deleteMemberError) {
       message.error(deleteMemberError?.message || GENERIC_ERROR_MESSAGE);
@@ -242,9 +242,9 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     const payload = {
       ...member,
-      [MEMBER_TABLE_ROWS.TREE_UUID]: treeUuid,
-      [MEMBER_TABLE_ROWS.BIRTH_DATE]: member.birth_date.format(),
-      [MEMBER_TABLE_ROWS.DEATH_DATE]: member.death_date
+      [MEMBER_TABLE_COLS.TREE_UUID]: treeUuid,
+      [MEMBER_TABLE_COLS.BIRTH_DATE]: member.birth_date.format(),
+      [MEMBER_TABLE_COLS.DEATH_DATE]: member.death_date
         ? member.death_date.format()
         : undefined,
     };
@@ -271,17 +271,17 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     const payload = {
       ...member,
-      [MEMBER_TABLE_ROWS.BIRTH_DATE]: member.birth_date.format(),
-      [MEMBER_TABLE_ROWS.DEATH_DATE]: member.death_date
+      [MEMBER_TABLE_COLS.BIRTH_DATE]: member.birth_date.format(),
+      [MEMBER_TABLE_COLS.DEATH_DATE]: member.death_date
         ? member.death_date.format()
         : undefined,
-      [MEMBER_TABLE_ROWS.TREE_UUID]: treeUuid,
+      [MEMBER_TABLE_COLS.TREE_UUID]: treeUuid,
     };
 
     const { data, error } = await supabase
       .from(MEMBER_TABLE)
       .update(payload)
-      .eq(MEMBER_TABLE_ROWS.UUID, selectedMemberUuid);
+      .eq(MEMBER_TABLE_COLS.UUID, selectedMemberUuid);
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE);
@@ -302,10 +302,10 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     }));
 
     const payload = {
-      [RELATION_TABLE_ROWS.FROM_MEMBER_UUID]: selectedMemberUuid,
-      [RELATION_TABLE_ROWS.TO_MEMBER_UUID]: toMemberUuid,
-      [RELATION_TABLE_ROWS.TYPE]: type,
-      [RELATION_TABLE_ROWS.TREE_UUID]: treeUuid,
+      [RELATION_TABLE_COLS.FROM_MEMBER_UUID]: selectedMemberUuid,
+      [RELATION_TABLE_COLS.TO_MEMBER_UUID]: toMemberUuid,
+      [RELATION_TABLE_COLS.TYPE]: type,
+      [RELATION_TABLE_COLS.TREE_UUID]: treeUuid,
     };
 
     const { data, error } = await supabase
@@ -332,11 +332,11 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     const payload = {
       ...relation,
-      [RELATION_TABLE_ROWS.TREE_UUID]: treeUuid,
-      [RELATION_TABLE_ROWS.START_DATE]: relation.start_date
+      [RELATION_TABLE_COLS.TREE_UUID]: treeUuid,
+      [RELATION_TABLE_COLS.START_DATE]: relation.start_date
         ? relation.start_date.format()
         : undefined,
-      [RELATION_TABLE_ROWS.END_DATE]: relation.end_date
+      [RELATION_TABLE_COLS.END_DATE]: relation.end_date
         ? relation.end_date.format()
         : undefined,
     };
@@ -344,7 +344,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     const { data, error } = await supabase
       .from(RELATION_TABLE)
       .update(payload)
-      .eq(RELATION_TABLE_ROWS.UUID, relation.uuid);
+      .eq(RELATION_TABLE_COLS.UUID, relation.uuid);
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE);
@@ -367,7 +367,7 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     const { error } = await supabase
       .from(RELATION_TABLE)
       .delete()
-      .eq(RELATION_TABLE_ROWS.UUID, uuid);
+      .eq(RELATION_TABLE_COLS.UUID, uuid);
 
     if (error) {
       message.error(error?.message || GENERIC_ERROR_MESSAGE);
@@ -412,14 +412,14 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
 
     // 3. update member with filename
     const payload = {
-      [MEMBER_TABLE_ROWS.UUID]: selectedMemberUuid,
-      [MEMBER_TABLE_ROWS.PHOTO_PATH]: publicURL,
+      [MEMBER_TABLE_COLS.UUID]: selectedMemberUuid,
+      [MEMBER_TABLE_COLS.PHOTO_PATH]: publicURL,
     };
 
     const { data: memberData, error: updateError } = await supabase
       .from(MEMBER_TABLE)
       .update(payload)
-      .eq(MEMBER_TABLE_ROWS.UUID, selectedMemberUuid);
+      .eq(MEMBER_TABLE_COLS.UUID, selectedMemberUuid);
 
     if (updateError) {
       message.error(updateError?.message || GENERIC_ERROR_MESSAGE);
@@ -439,14 +439,14 @@ export default function useMemberRelationAPI(treeUuid, selectedMemberUuid) {
     }
 
     const payload = {
-      [MEMBER_TABLE_ROWS.UUID]: selectedMemberUuid,
-      [MEMBER_TABLE_ROWS.PHOTO_PATH]: null,
+      [MEMBER_TABLE_COLS.UUID]: selectedMemberUuid,
+      [MEMBER_TABLE_COLS.PHOTO_PATH]: null,
     };
 
     const { data: memberData, error: updateError } = await supabase
       .from(MEMBER_TABLE)
       .update(payload)
-      .eq(MEMBER_TABLE_ROWS.UUID, selectedMemberUuid);
+      .eq(MEMBER_TABLE_COLS.UUID, selectedMemberUuid);
 
     if (updateError) {
       message.error(updateError?.message || GENERIC_ERROR_MESSAGE);

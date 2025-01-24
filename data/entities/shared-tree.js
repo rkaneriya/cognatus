@@ -1,6 +1,6 @@
 export const SHARED_TREE_TABLE = "shared_tree";
 
-export const SHARED_TREE_TABLE_ROWS = {
+export const SHARED_TREE_TABLE_COLS = {
   UUID: "uuid",
   CREATED_AT: "created_at",
   SHARER_EMAIL: "sharer_email",

@@ -1,16 +1,16 @@
 import moment from "moment";
 import sendgrid from "../../utils/sendgrid";
 import { getServiceSupabase } from "../../utils/supabase";
-import { TREE_TABLE, TREE_TABLE_ROWS } from "../../data/entities/tree";
+import { TREE_TABLE, TREE_TABLE_COLS } from "../../data/entities/tree";
 import {
   RELATION_TABLE,
-  RELATION_TABLE_ROWS,
+  RELATION_TABLE_COLS,
 } from "../../data/entities/relation";
-import { MEMBER_TABLE, MEMBER_TABLE_ROWS } from "../../data/entities/member";
+import { MEMBER_TABLE, MEMBER_TABLE_COLS } from "../../data/entities/member";
 import { RELATION_TYPES } from "../../constants/relation-types";
 import {
   SHAREE_TREE_EXT_TABLE,
-  SHAREE_TREE_EXT_TABLE_ROWS,
+  SHAREE_TREE_EXT_TABLE_COLS,
 } from "../../data/entities/sharee-tree-ext";
 
 const MONTH_FORMAT = "MMMM";
@@ -46,15 +46,15 @@ export default async function handler(req, res) {
     const { data: sharedExtData, error: sharedTreesError } = await supabase
       .from(SHAREE_TREE_EXT_TABLE)
       .select("*")
-      .eq(SHAREE_TREE_EXT_TABLE_ROWS.SHAREE_EMAIL, users[i]?.email)
-      .eq(TREE_TABLE_ROWS.IS_EMAIL_SUBSCRIBED, "true");
+      .eq(SHAREE_TREE_EXT_TABLE_COLS.SHAREE_EMAIL, users[i]?.email)
+      .eq(TREE_TABLE_COLS.IS_EMAIL_SUBSCRIBED, "true");
 
     if (sharedTreesError) {
       return;
     }
 
     // fetch all of user's trees with e-mail subscription
-    const orCondition = `${TREE_TABLE_ROWS.UUID}.in.(${sharedExtData.map((s) => s.tree_uuid)}),and(${TREE_TABLE_ROWS.CREATOR_UUID}.eq.${users[i]?.id},${TREE_TABLE_ROWS.IS_EMAIL_SUBSCRIBED}.eq.true)`;
+    const orCondition = `${TREE_TABLE_COLS.UUID}.in.(${sharedExtData.map((s) => s.tree_uuid)}),and(${TREE_TABLE_COLS.CREATOR_UUID}.eq.${users[i]?.id},${TREE_TABLE_COLS.IS_EMAIL_SUBSCRIBED}.eq.true)`;
     const { data: trees, error: treeError } = await supabase
       .from(TREE_TABLE)
       .select("*")
@@ -70,7 +70,7 @@ export default async function handler(req, res) {
       const { data: members, error: membersError } = await supabase
         .from(MEMBER_TABLE)
         .select("*")
-        .eq(MEMBER_TABLE_ROWS.TREE_UUID, trees[j][TREE_TABLE_ROWS.UUID]);
+        .eq(MEMBER_TABLE_COLS.TREE_UUID, trees[j][TREE_TABLE_COLS.UUID]);
 
       if (membersError) {
         return;
@@ -80,7 +80,7 @@ export default async function handler(req, res) {
       const { data: relations, error: relationsError } = await supabase
         .from(RELATION_TABLE)
         .select("*")
-        .eq(RELATION_TABLE_ROWS.TREE_UUID, trees[j][TREE_TABLE_ROWS.UUID]);
+        .eq(RELATION_TABLE_COLS.TREE_UUID, trees[j][TREE_TABLE_COLS.UUID]);
 
       if (relationsError) {
         return;
@@ -131,7 +131,7 @@ export default async function handler(req, res) {
           ...acc,
           [member.uuid]: member,
         }),
-        {},
+        {}
       );
 
       // (wedding anniversaries from relations)
@@ -186,12 +186,12 @@ export default async function handler(req, res) {
         template_id: "d-9f7a0b356dde43c7808064c90c58d30a",
         from: "info@cognatus.app",
         dynamic_template_data: {
-          subject: `[Cognatus] ${moment().format(MONTH_FORMAT)} - ${trees[j][TREE_TABLE_ROWS.NAME]}`,
-          tree_name: trees[j][TREE_TABLE_ROWS.NAME],
+          subject: `[Cognatus] ${moment().format(MONTH_FORMAT)} - ${trees[j][TREE_TABLE_COLS.NAME]}`,
+          tree_name: trees[j][TREE_TABLE_COLS.NAME],
           birthdays,
           wedding_anniversaries: weddingAnniversaries,
           death_anniversaries: deathAnniversaries,
-          tree_url: `https://www.cognatus.app/trees/${trees[j][TREE_TABLE_ROWS.UUID]}`,
+          tree_url: `https://www.cognatus.app/trees/${trees[j][TREE_TABLE_COLS.UUID]}`,
         },
       };
 

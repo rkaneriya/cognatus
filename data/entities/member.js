@@ -1,6 +1,6 @@
 export const MEMBER_TABLE = "member";
 
-export const MEMBER_TABLE_ROWS = {
+export const MEMBER_TABLE_COLS = {
   UUID: "uuid",
   CREATED_AT: "created_at",
   TREE_UUID: "tree_uuid",

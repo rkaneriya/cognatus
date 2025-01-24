@@ -1,9 +1,9 @@
 import { useEffect, useState, useCallback, useContext } from "react";
 import {
   SHARED_TREE_TABLE,
-  SHARED_TREE_TABLE_ROWS,
+  SHARED_TREE_TABLE_COLS,
 } from "../entities/shared-tree";
-import { TREE_TABLE, TREE_TABLE_ROWS } from "../entities/tree";
+import { TREE_TABLE, TREE_TABLE_COLS } from "../entities/tree";
 import { supabase } from "../../utils/supabase";
 import { UserContext } from "../contexts/user";
 
@@ -19,8 +19,8 @@ export default function useTreeMetadataAPI(uuid) {
     const { data: trees, error: treeError } = await supabase
       .from(TREE_TABLE)
       .select(TREE_TABLE.NAME)
-      .eq(TREE_TABLE_ROWS.CREATOR_UUID, user?.id)
-      .eq(TREE_TABLE_ROWS.UUID, uuid);
+      .eq(TREE_TABLE_COLS.CREATOR_UUID, user?.id)
+      .eq(TREE_TABLE_COLS.UUID, uuid);
 
     if (treeError) {
       return;
@@ -34,8 +34,8 @@ export default function useTreeMetadataAPI(uuid) {
     const { data: sharedTrees, error: sharedTreeError } = await supabase
       .from(SHARED_TREE_TABLE)
       .select(SHARED_TREE_TABLE.NAME)
-      .eq(SHARED_TREE_TABLE_ROWS.SHAREE_EMAIL, user?.email)
-      .eq(SHARED_TREE_TABLE_ROWS.TREE_UUID, uuid);
+      .eq(SHARED_TREE_TABLE_COLS.SHAREE_EMAIL, user?.email)
+      .eq(SHARED_TREE_TABLE_COLS.TREE_UUID, uuid);
 
     if (!sharedTreeError) {
       setData(sharedTrees);

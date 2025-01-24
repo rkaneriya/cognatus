@@ -1,6 +1,6 @@
 export const RELATION_TABLE = "relation";
 
-export const RELATION_TABLE_ROWS = {
+export const RELATION_TABLE_COLS = {
   UUID: "uuid",
   CREATED_AT: "created_at",
   TREE_UUID: "tree_uuid",
