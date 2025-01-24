@@ -2,12 +2,12 @@ import { Typography } from "antd";
 import Head from "next/head";
 
 function Question({ children }) {
-  return <Typography.Title level={4}>{children}</Typography.Title>;
+  return <div className="text-xl font-semibold mb-4">{children}</div>;
 }
 
 function Answer({ children }) {
   return (
-    <div className="pl-5 mb-10 font-light text-sm sm:text-base border-gray-300 border-l-2 flex flex-col gap-4">
+    <div className="pl-5 mb-8 font-light text-sm sm:text-base border-gray-300 border-l-4 flex flex-col gap-4">
       {children}
     </div>
   );
@@ -19,12 +19,15 @@ export default function About() {
       <Head>
         <title>Cognatus | About</title>
       </Head>
-      <Typography.Title level={1}>About</Typography.Title>
+      <div className="flex items-center font-semibold text-4xl mb-5">About</div>
 
       <Question>What is Cognatus?</Question>
       <Answer>
         <p>
-          <Typography.Link href="https://www.cognatus.app">
+          <Typography.Link
+            className="text-base"
+            href="https://www.cognatus.app"
+          >
             Cognatus
           </Typography.Link>{" "}
           is a web app for visualizing and connecting with your kin. It lets you
@@ -36,6 +39,16 @@ export default function About() {
           You can also opt to receive monthly e-mails reminding you of upcoming
           birthdays and anniversaries in one or more of your trees (or trees
           that were shared with you).
+        </p>
+        <p className="font-semibold italic bg-gray-100 w-fit p-2">
+          Interested? Click{" "}
+          <Typography.Link
+            className="text-base"
+            href="https://www.cognatus.app"
+          >
+            here
+          </Typography.Link>{" "}
+          to sign in and make your first tree.
         </p>
       </Answer>
 
@@ -107,6 +120,7 @@ export default function About() {
             href="https://nextjs.org/"
             target="_blank"
             rel="noreferrer"
+            className="text-base"
           >
             Next.js
           </Typography.Link>{" "}
@@ -115,6 +129,7 @@ export default function About() {
             href="https://reactjs.org/"
             target="_blank"
             rel="noreferrer"
+            className="text-base"
           >
             React
           </Typography.Link>{" "}
@@ -123,6 +138,7 @@ export default function About() {
             href="https://ant.design/"
             target="_blank"
             rel="noreferrer"
+            className="text-base"
           >
             Ant Design
           </Typography.Link>{" "}
@@ -131,6 +147,7 @@ export default function About() {
             href="https://supabase.com/"
             target="_blank"
             rel="noreferrer"
+            className="text-base"
           >
             Supabase
           </Typography.Link>
@@ -140,6 +157,7 @@ export default function About() {
             href="https://aws.amazon.com/amplify/"
             target="_blank"
             rel="noreferrer"
+            className="text-base"
           >
             AWS Amplify
           </Typography.Link>
@@ -155,6 +173,7 @@ export default function About() {
             href="https://forms.gle/H73Xvs4qqpc3QPqB9"
             target="_blank"
             rel="noreferrer"
+            className="text-base"
           >
             this form
           </Typography.Link>{" "}
