@@ -10,7 +10,7 @@ _While you're welcome to use the app, please note that this is primarily a perso
 
 <p align="center">
   <a href="https://www.cognatus.app/trees/6168b760-a4c8-4f39-9e01-184401db5f0d" target="_blank">
-    <img width="700" alt="Screenshot 2025-01-24 at 5 03 18 PM" src="https://github.com/user-attachments/assets/338d6f79-9ada-4232-93dc-0904324519bb" />
+    <img width="800" alt="cognatus.app" src="https://github.com/user-attachments/assets/76247a5c-b23f-40cd-a93a-ba9a2eef196a" />
   </a>
 </p>
 
