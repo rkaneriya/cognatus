@@ -53,9 +53,9 @@ yarn dev
 │   │   └── event-email.js # For generating monthly e-mail
 │   ├── index.js
 │   ├── trees
-│   │   └── [uuid].js # Individual tree page
-│   ├── trees-mobile.js # Admin page for viewing/managing trees (mobile)
-│   └── trees.js # Admin page for viewing/managing trees (desktop)
+│   │   └── [uuid].js # Individual tree page (at /trees/:uuid)
+│   ├── trees-mobile.js
+│   └── trees.js # Admin page for viewing & managing trees (desktop)
 ├── public
 │   └── ... # Images, SVGs
 ├── utils

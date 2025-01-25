@@ -48,6 +48,7 @@ export function getRelation(people, relations) {
   let parentCount = 0;
   let childCount = 0;
   let spouseCount = 0;
+  let exCount = 0;
 
   const isLastMale = target.is_male;
   let relationStr = "";
@@ -68,6 +69,9 @@ export function getRelation(people, relations) {
       type === RELATION_TYPES.EX_SPOUSE
     ) {
       spouseCount++;
+      if (type === RELATION_TYPES.EX_SPOUSE) {
+        exCount++;
+      }
     }
   });
 
@@ -129,6 +133,10 @@ export function getRelation(people, relations) {
 
   if (!relationStr) {
     return `${getRawRelation(people, relations)}.`;
+  }
+
+  if (exCount > 0) {
+    relationStr = "ex-" + relationStr;
   }
 
   return `${relationStr}.`;

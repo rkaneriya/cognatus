@@ -5,9 +5,6 @@ module.exports = {
     return config;
   },
   reactStrictMode: true,
-  images: {
-    domains: ["cdn.buymeacoffee.com"],
-  },
   transpilePackages: [
     "antd",
     "@antv",

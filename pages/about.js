@@ -40,7 +40,7 @@ export default function About() {
           birthdays and anniversaries in one or more of your trees (or trees
           that were shared with you).
         </p>
-        <p className="font-semibold italic bg-gray-100 w-fit p-2">
+        <p className="font-semibold italic bg-gray-100 w-fit rounded-[20px] px-4 py-2">
           Interested? Click{" "}
           <Typography.Link
             className="text-base"

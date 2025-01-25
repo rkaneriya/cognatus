@@ -7,10 +7,9 @@ import { useRouter } from "next/router";
 export default function TreeWrapper() {
   const router = useRouter();
   const treeUuid = router?.query?.uuid;
-
   const { data: treeData } = useTreeMetadataAPI(treeUuid);
-  let title = "Cognatus";
 
+  let title = "Cognatus";
   if (treeData[0]?.name) {
     title += ` | ${treeData[0]?.name}`;
   }
