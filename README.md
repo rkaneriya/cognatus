@@ -61,8 +61,7 @@ yarn dev
 ├── utils
 │   └── ... # Formatting, business logic, 3P API clients (Supabase, Sendgrid)
 ├── README.md
-├── styletron.js # To be deleted in favor of Tailwind
-├── tailwind.config.js
+├── tailwind.config.js # Styles use Tailwind CSS
 ├── postcss.config.js
 ├── next.config.js
 ├── package.json

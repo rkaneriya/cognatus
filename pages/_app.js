@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { Provider as StyletronProvider } from "styletron-react";
 import { supabase } from "../utils/supabase";
-import { styletron } from "../styletron";
 import { useRouter } from "next/router";
 import { ROUTES } from "../constants/routes";
 import "./_styles.css";
@@ -31,7 +29,7 @@ export default function MyApp(props) {
           credentials: "same-origin",
           body: JSON.stringify({ event, session }),
         }).then((res) => res.json());
-      },
+      }
     );
 
     return () => {
@@ -41,7 +39,7 @@ export default function MyApp(props) {
 
   const { Component, pageProps } = props;
   return (
-    <StyletronProvider value={styletron}>
+    <>
       <Script
         strategy="lazyOnload"
         src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_KEY}`}
@@ -60,6 +58,6 @@ export default function MyApp(props) {
           <Component {...pageProps} />
         </TreeContextProvider>
       </UserContext.Provider>
-    </StyletronProvider>
+    </>
   );
 }
