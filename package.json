@@ -16,7 +16,7 @@
     "autoprefixer": "^10.4.20",
     "chart.js": "^4.4.7",
     "cytoscape": "^3.20.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "moment": "^2.29.4",
     "next": "^15.2.4",
     "number-to-words": "^1.2.4",
